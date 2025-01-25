@@ -1,0 +1,164 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}"/>
+    <title>PetMet</title>
+    <style>
+        /* Add your custom styles here */
+        .body {
+            background-color: #333;
+        }
+        .header {
+            display: flex;
+            background-color: #333;
+            justify-content: space-between; /* Space between logo and navbar */
+            align-items: center; /* Center items vertically */
+            padding: 10px 20px; /* Padding for the header */
+        }
+        .header a {
+            color: white;
+            text-decoration: none;
+            font-size: 24px; /* Adjust font size for the logo */
+        }
+        .navbar {
+            display: flex;
+            align-items: center; /* Center items vertically */
+            padding: 0; /* Remove padding */
+            margin: 0; /* Remove margin
+                        /* Remove margin */
+                        justify-content: flex-end; /* Align items to the right */
+                    }
+                    .navbar li {
+                        list-style: none;
+                        margin: 0; /* Space between navbar items */
+                        padding: 0 10px; /* Optional: Add some padding for spacing */
+                    }
+                    .navbar .dropdown-menu {
+                        background-color: #ffffff; /* White background for dropdowns */
+                        padding: 0; /* Remove padding from dropdown menu */
+                        margin: 0; /* Remove margin from dropdown menu */
+                        border: none; /* Optional: Remove border for a cleaner look */
+                        z-index: 1000; /* Ensure it appears above other content */
+                        min-width: 50px; /* Set a minimum width for the dropdown */
+                    }
+                    .navbar .dropdown-item {
+                        color: #333; /* Dark text for dropdown items */
+                        padding: 10px 15px; /* Adjust padding for dropdown items */
+                        margin: 0; /* Remove margin from dropdown items */
+                    }
+                    .navbar .dropdown-item:hover {
+                        background-color: #f1f1f1; /* Light hover effect */
+                    }
+                    .nav-item.dropdown {
+                        position: relative; /* Ensure dropdown is positioned correctly */
+                    }
+                    .nav-item.dropdown .dropdown-toggle {
+                        padding-left: 0; /* Remove left padding from the dropdown toggle */
+                    }
+                    .circular-image {
+                        border-radius: 50%; /* Circular logo */
+                        width: 80px; /* Adjust size as needed */
+                        height: 80px; /* Adjust size as needed */
+                        margin-right: 10px; /* Space between logo and text */
+                    }
+                    .notification-icon {
+                        position: relative;
+                        margin-left: 20px; /* Space between the icon and other items */
+                    }
+                    .notification-icon .badge {
+                        position: absolute;
+                        top: -5px;
+                        right: -10px;
+                        background-color: red;
+                        color: white;
+                        border-radius: 50%;
+                        padding: 2px 5px;
+                        font-size: 12px;
+                    }
+                </style>
+            </head>
+            <body>
+                <header class="header">
+                    <a href="{% url 'homepage' %}">
+                        <img src="{% static 'PetMetLogo.jpg' %}" alt="homepage" class="circular-image" /> PetMet
+                    </a>
+                    <nav class="navbar">
+                        <ul class="d-flex">
+                            <li><a href="{% url 'homepage' %}">Home</a></li>
+                            <li class="notification-icon">
+                                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" style="position: relative;">
+                                    <i class="bi bi-bell" style="font-size: 30px; color: white; background-color: black; border-radius: 50%; padding: 5px;width: 25px;"></i>
+                                    {% if notifications_count > 0 %}
+                                    <span class="badge">{{ notifications_count }}</span>
+                                    {% endif %}
+                                </a>
+                                <ul class="dropdown-menu">
+                                    {% for notification in notifications %}
+                                    <li><a href="#" class="dropdown-item">{{ notification.message }}</a></li>
+                                    {% empty %}
+                                    <li><a href="#" class="dropdown-item">No new notifications</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            <li><a href="{% url 'add_pet' %}">Add Pet for Adoption</a></li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">Request</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{% url 'view_requests' %}" class="dropdown-item">Pet Post Adoption Request</a></li>
+                                    <li><a href="{% url 'adoption_requests' %}" class="dropdown-item">My Adoption Request</a></li>
+                                    <li><a href="{% url 'reportadopted_pets' %}" class="dropdown-item">Adopted Pets</a></li>
+                                </ul>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">History</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{% url 'adoption_table' %}" class="dropdown-item">Post History</a></li>
+                                </ul>
+                            </li>
+                            {% if user.is_authenticated %}
+                            <li class="nav-item dropdown">
+                                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">{{ user.username }}</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{% url 'logout' %}" class="dropdown-item">Logout</a></li>
+                                </ul>
+                            </li>
+                            {% else %}
+                            <li><a href="#">Hi</a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </header>
+                <div class="container mt-4">
+                    {% block content %}
+                    {% endblock %}
+                </div>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+                <script src="{% static 'js/jquery.min.js' %}"></script>
+                <script>
+                    $(document).ready(function() {
+                        $('.notification-icon').on('click', function() {
+                            // Make an AJAX call to mark notifications as read
+                            $.ajax({
+                                url: '{% url "mark_notifications_read" %}',  // Create a URL for marking notifications as read
+                                type: 'POST',
+                                data: {
+                                    'csrfmiddlewaretoken': '{{ csrf_token }}'  // Include CSRF token
+                                },
+                                success: function(response) {
+                                    console.log('Notifications marked as read');
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error marking notifications as read:', error);
+                                }
+                            });
+                        });
+                    });
+                </script>
+            </body>
+            </html>

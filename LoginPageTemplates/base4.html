@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>PetMet</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'style2.css' %}"/>
+    <style>
+        body {
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+        #nav-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px; /* Set a fixed width for the sidebar */
+            height: 100%;
+            padding-top: 20px;
+            overflow-y: auto; /* Allow scrolling if content overflows */
+        }
+        #nav-content {
+            padding: 10px;
+        }
+        main {
+            margin-left: 250px; /* Leave space for the sidebar */
+            padding: 20px;
+            flex-grow: 1; /* Allow main to take the remaining space */
+            overflow-y: auto; /* Allow scrolling if content overflows */
+        }
+        .navbar {
+            position: fixed;
+            top: 0;
+            right: 0; /* Align the navbar to the right */
+            left: 250px; /* Align with the sidebar */
+            z-index: 1000; /* Ensure navbar is above other content */
+        }
+
+        /* Custom scrollbar styles for the sidebar */
+        #nav-bar::-webkit-scrollbar {
+            width: 8px; /* Width of the scrollbar */
+        }
+
+        #nav-bar::-webkit-scrollbar-track {
+            background: transparent; /* Background of the scrollbar track */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div id="nav-bar">
+            <div id="nav-header">
+                <a id="nav-title" href="{% url 'homepage_admin' %}" class="text-center">
+                    <img src="{% static 'PetMetLogo.jpg' %}" alt="/" class="circular-image" style="display: inline-block;" />
+                </a>
+            </div>
+            <div id="nav-content">
+                <hr />
+                <div class="nav-button"><a href="{% url 'pending_pets' %}" class="text-white">Pending Pets for Adoption</a></div>
+                <hr/>
+                <div class="nav-button"><a href="{% url 'admin_approved_pet' %}" class="text-white">Approved Pets History</a></div>
+                <hr/>
+                <div class="nav-button"><a href="{% url 'adopted_history' %}" class="text-white">Adopted History</a></div>
+            </div>
+        </div>  
+        <nav class="navbar navbar-dark" style="background-color: var(--navbar-dark-primary);">
+            <div class="ml-auto">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ user.username }}
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                        <a href="{% url 'edit_profile' %}">
+                            <button class="dropdown-item" type="button">Profile</button>
+                        </a>
+                        <a href="{% url 'admin_signup' %}">
+                          <button class="dropdown-item" type="button">Create User</button>
+                      </a>
+                      <a href="{% url 'logout_admin' %}">
+                          <button class="dropdown-item" type="button">Logout</button>
+                      </a>
+                  </div>
+              </div>
+          </div>
+      </nav>
+  </header>
+  
+  <main>
+      {% block content %}
+      {% endblock %}
+  </main>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+<form action="{% url 'adoption_request_view' pk=adopt.pk %}" method="post" class="adoption-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="button" onclick="return validateAdoptionForm()">Confirm Adoption</button>
+</form>

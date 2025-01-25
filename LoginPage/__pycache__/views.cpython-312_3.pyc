@@ -1,0 +1,1226 @@
+ideoprovider\\screenrec_app\\screenrec.exe"
+},{"productName": "screenrec",
+"companyName": "streamingvideoprovider",
+"binProductVersion": "0.1.0.59",
+"binFileVersion": "0.1.0.59",
+"path": "%USERPROFILE%\\appdata\\local\\streamingvideoprovider\\screenrec_app\\uninstall.exe"
+},{"productName": "microsoft visual c++ 2015-2019 redistributable (x64) - 14.29.30139",
+"originalFileName": "vc_redist.x64.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "14.29.30139.0",
+"binFileVersion": "14.29.30139.0",
+"path": "%USERPROFILE%\\appdata\\local\\streamingvideoprovider\\screenrec_app\\vc_redist.x64.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Microsoft EdgeWebView",
+"programId": "0000c00811894967b2d0c34f38f57ac6d0ae0000ffff",
+"compatFlags": "4",
+"restoreAction": "RootDirPath|C:\\Program Files (x86)\\Microsoft\\EdgeWebView\\Application",
+"files" : [{"productName": "microsoft edge",
+"originalFileName": "cookie_exporter.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "123.0.2420.81",
+"binFileVersion": "123.0.2420.81",
+"path": "%programfiles(x86)%\\microsoft\\edgewebview\\application\\123.0.2420.81\\cookie_exporter.exe"
+},{"productName": "microsoft edge",
+"originalFileName": "elevation_service.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "123.0.2420.81",
+"binFileVersion": "123.0.2420.81",
+"path": "%programfiles(x86)%\\microsoft\\edgewebview\\application\\123.0.2420.81\\elevation_service.exe"
+},{"productName": "microsoft edge",
+"originalFileName": "identity_helper.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "123.0.2420.81",
+"binFileVersion": "123.0.2420.81",
+"path": "%programfiles(x86)%\\microsoft\\edgewebview\\application\\123.0.2420.81\\identity_helper.exe"
+},{"productName": "ietoedge bho",
+"originalFileName": "ie_to_edge_stub.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "123.0.2420.81",
+"binFileVersion": "123.0.2420.81",
+"path": "%programfiles(x86)%\\microsoft\\edgewebview\\application\\123.0.2420.81\\bho\\ie_to_edge_stub.exe"
+},{"productName": "microsoft edge",
+"originalFileName": "msedge.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "123.0.2420.81",
+"binFileVersion": "123.0.2420.81",
+"path": "%programfiles(x86)%\\microsoft\\edgewebview\\application\\123.0.2420.81\\msedge.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\OneDriveSetup.exe",
+"programId": "0000ca588d8fa4bc5a8c8915cf7a2767113c0000ffff",
+"compatFlags": "0",
+"restoreAction": "RootDirPath|c:\\program files\\microsoft onedrive\\24.186.0915.0004",
+"files" : [{"productName": "microsoft onedrive",
+"originalFileName": "filecoauth.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "24.186.915.4",
+"binFileVersion": "24.186.915.4",
+"path": "%programfiles%\\microsoft onedrive\\24.186.0915.0004\\filecoauth.exe"
+},{"productName": "microsoft onedrive",
+"originalFileName": "filesyncconfig.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "24.186.915.4",
+"binFileVersion": "24.186.915.4",
+"path": "%programfiles%\\microsoft onedrive\\24.186.0915.0004\\filesyncconfig.exe"
+},{"productName": "microsoft onedrive",
+"originalFileName": "filesynchelper.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "24.186.915.4",
+"binFileVersion": "24.186.915.4",
+"path": "%programfiles%\\microsoft onedrive\\24.186.0915.0004\\filesynchelper.exe"
+},{"productName": "microsoft sharepoint",
+"originalFileName": "microsoft.sharepoint.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "24.186.915.4",
+"binFileVersion": "24.186.915.4",
+"path": "%programfiles%\\microsoft onedrive\\24.186.0915.0004\\microsoft.sharepoint.exe"
+},{"productName": "microsoft sharepoint native messaging client",
+"originalFileName": "microsoft.sharepoint.nativemessaging.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "24.186.915.4",
+"binFileVersion": "24.186.915.4",
+"path": "%programfiles%\\microsoft onedrive\\24.186.0915.0004\\microsoft.sharepoint.nativemessagingclient.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Google Chrome",
+"programId": "0000ccc77a5f2fff3f735404c97442e5e7ba0000ffff",
+"compatFlags": "0",
+"restoreAction": "RootDirPath|C:\\Program Files\\Google\\Chrome\\Application",
+"files" : [{"productName": "google chrome",
+"originalFileName": "chrome.exe",
+"companyName": "google llc",
+"binProductVersion": "129.0.6668.101",
+"binFileVersion": "129.0.6668.101",
+"path": "%programfiles%\\google\\chrome\\application\\chrome.exe"
+},{"aumid": "Chrome",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\google chrome.lnk"
+},{"aumid": "Chrome",
+"path": "%USERPROFILE%\\appdata\\roaming\\microsoft\\internet explorer\\quick launch\\user pinned\\taskbar\\google chrome.lnk"
+},{"aumid": "Chrome",
+"path": "%public%\\desktop\\google chrome.lnk"
+},{"productName": "google chrome installer",
+"companyName": "google llc",
+"binProductVersion": "129.0.6668.101",
+"binFileVersion": "129.0.6668.101",
+"path": "%programfiles%\\google\\chrome\\application\\129.0.6668.101\\installer\\chrmstp.exe"
+},{"productName": "google chrome",
+"originalFileName": "chrome_proxy.exe",
+"companyName": "google llc",
+"binProductVersion": "129.0.6668.101",
+"binFileVersion": "129.0.6668.101",
+"path": "%programfiles%\\google\\chrome\\application\\chrome_proxy.exe"
+},{"productName": "google chrome",
+"originalFileName": "chrome_pwa_launcher.exe",
+"companyName": "google llc",
+"binProductVersion": "129.0.6668.101",
+"binFileVersion": "129.0.6668.101",
+"path": "%programfiles%\\google\\chrome\\application\\129.0.6668.101\\chrome_pwa_launcher.exe"
+},{"productName": "google chrome",
+"originalFileName": "elevation_service.exe",
+"companyName": "google llc",
+"binProductVersion": "129.0.6668.101",
+"binFileVersion": "129.0.6668.101",
+"path": "%programfiles%\\google\\chrome\\application\\129.0.6668.101\\elevation_service.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{F0E3AD40-2BBD-4360-9C76-B9AC9A5886EA}",
+"programId": "0000ced7dd79042c470f661768b0b0e0e7db0000ffff",
+"compatFlags": "16392",
+"restoreAction": "RootDirPath|C:\\Program Files (x86)\\Intel\\Intel(R) Processor Graphics",
+"files" : [{"productName": "intel(r) installation framework",
+"originalFileName": "drv64.exe",
+"companyName": "intel corporation",
+"binProductVersion": "1.4.3.0",
+"binFileVersion": "1.4.3.0",
+"path": "%programfiles(x86)%\\intel\\intel(r) processor graphics\\uninstall\\x64\\drv64.exe"
+},{"productName": "intel(r) graphics",
+"originalFileName": "setup.exe",
+"companyName": "intel corporation",
+"binProductVersion": "1.6.25.0",
+"binFileVersion": "1.6.25.0",
+"path": "%programfiles(x86)%\\intel\\intel(r) processor graphics\\uninstall\\setup.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{69572560-FDEC-4A02-BF84-B0AA63806D3E}",
+"programId": "0000cfbf227c123a31c04c0d4a21660e2f1600000904",
+"compatFlags": "0",
+"restoreAction": "RootDirPath|C:\\Program Files\\Eclipse Adoptium\\jdk-11.0.22.7-hotspot\\",
+"files" : [{"productName": "openjdk platform 11",
+"originalFileName": "jabswitch.exe",
+"companyName": "eclipse adoptium",
+"binProductVersion": "11.0.22.0",
+"binFileVersion": "11.0.22.0",
+"path": "%programfiles%\\eclipse adoptium\\jdk-11.0.22.7-hotspot\\bin\\jabswitch.exe"
+},{"productName": "openjdk platform 11",
+"originalFileName": "jaccessinspector.exe",
+"companyName": "eclipse adoptium",
+"binProductVersion": "11.0.22.0",
+"binFileVersion": "11.0.22.0",
+"path": "%programfiles%\\eclipse adoptium\\jdk-11.0.22.7-hotspot\\bin\\jaccessinspector.exe"
+},{"productName": "openjdk platform 11",
+"originalFileName": "jaccesswalker.exe",
+"companyName": "eclipse adoptium",
+"binProductVersion": "11.0.22.0",
+"binFileVersion": "11.0.22.0",
+"path": "%programfiles%\\eclipse adoptium\\jdk-11.0.22.7-hotspot\\bin\\jaccesswalker.exe"
+},{"productName": "openjdk platform 11",
+"originalFileName": "jaotc.exe",
+"companyName": "eclipse adoptium",
+"binProductVersion": "11.0.22.0",
+"binFileVersion": "11.0.22.0",
+"path": "%programfiles%\\eclipse adoptium\\jdk-11.0.22.7-hotspot\\bin\\jaotc.exe"
+},{"productName": "openjdk platform 11",
+"originalFileName": "jar.exe",
+"companyName": "eclipse adoptium",
+"binProductVersion": "11.0.22.0",
+"binFileVersion": "11.0.22.0",
+"path": "%programfiles%\\eclipse adoptium\\jdk-11.0.22.7-hotspot\\bin\\jar.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{F132AF7F-7BCA-4EDE-8A7C-958108FE7DBC}",
+"programId": "0000d6e904d4bcd9d743976485fb6c7685d70000ffff",
+"compatFlags": "16384",
+"restoreAction": "RootDirPath|C:\\Program Files\\Realtek\\Audio\\HDA",
+"files" : [{"productName": "apo access service (64-bit)",
+"originalFileName": "aertsr64.exe",
+"companyName": "andrea electronics corporation",
+"binProductVersion": "1.0.64.10",
+"binFileVersion": "1.0.64.10",
+"path": "%programfiles%\\realtek\\audio\\hda\\aertsr64.exe"
+},{"productName": "todo: <product name>",
+"originalFileName": "creatert.exe",
+"companyName": "todo: <company name>",
+"binProductVersion": "1.0.0.1",
+"binFileVersion": "1.0.0.1",
+"path": "%programfiles%\\realtek\\audio\\hda\\creatertktoastlnk.exe"
+},{"productName": "conexant apo agent",
+"originalFileName": "cxapoagent.exe",
+"companyName": "conexant systems, inc.",
+"binProductVersion": "1.1.0.0",
+"binFileVersion": "1.1.0.0",
+"path": "%programfiles%\\realtek\\audio\\hda\\cxapoagent64.exe"
+},{"productName": "dts post processing apo",
+"originalFileName": "dtsaudioservice.exe",
+"companyName": "dts",
+"binProductVersion": "1.0.0.0",
+"binFileVersion": "1.0.0.0",
+"path": "%programfiles%\\realtek\\audio\\hda\\dtsaudioservice64.exe"
+},{"productName": "dts post processing apo",
+"originalFileName": "dtsaudioservice.exe",
+"companyName": "dts, inc",
+"binProductVersion": "2.1.1.0",
+"binFileVersion": "2.1.1.0",
+"path": "%programfiles%\\realtek\\audio\\hda\\dtsu2pausrv64.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{042d26ef-3dbe-4c25-95d3-4c1b11b235a7}",
+"programId": "0000e29c312140a260b7947c6feeec24a1000000ffff",
+"compatFlags": "4",
+"restoreAction": "RootDirPath|c:\\programdata\\package cache\\{042d26ef-3dbe-4c25-95d3-4c1b11b235a7}",
+"files" : [{"productName": "microsoft visual c++ 2013 redistributable (x64) - 12.0.40664",
+"originalFileName": "vcredist_x64.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "12.0.40664.0",
+"binFileVersion": "12.0.40664.0",
+"path": "%programdata%\\package cache\\{042d26ef-3dbe-4c25-95d3-4c1b11b235a7}\\vcredist_x64.exe"
+}]
+},{"path": "c:\\program files\\nodejs\\node.exe",
+"programId": "0006f37d60e2f60dc354ea047a1268551d6800000904",
+"compatFlags": "0",
+"files" : [{"productName": "node.js",
+"originalFileName": "node.exe",
+"companyName": "node.js",
+"binProductVersion": "20.13.1.0",
+"binFileVersion": "20.13.1.0",
+"path": "%programfiles%\\nodejs\\node.exe"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\nodejs\\node.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\node.js\\node.js.lnk"
+}]
+}],
+"Update" : [{"path": "HKEY_LOCAL_MACHINE\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\360TotalSecurity",
+"programId": "00000e7dff2004640cd3f2c82cae89f835390000ffff",
+"compatFlags": "256",
+"restoreAction": "RootDirPath|C:\\Program Files (x86)\\360\\Total Security",
+"files" : [{"productName": "360 total security",
+"originalFileName": "qhsafemain.exe",
+"companyName": "qihoo 360 technology co. ltd.",
+"binProductVersion": "10.0.0.1830",
+"binFileVersion": "10.0.0.1830",
+"path": "%programfiles(x86)%\\360\\total security\\qhsafemain.exe"
+},{"aumid": "{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\\360\\Total Security\\QHSafeMain.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\360 security center\\360 total security\\360 total security.lnk"
+},{"aumid": "{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\\360\\Total Security\\QHSafeMain.exe",
+"path": "%USERPROFILE%\\appdata\\roaming\\microsoft\\windows\\start menu\\programs\\360 security center\\360 total security\\360 total security.lnk"
+},{"aumid": "{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\\360\\Total Security\\QHSafeMain.exe",
+"path": "%public%\\desktop\\360 total security.lnk"
+},{"aumid": "Microsoft.AutoGenerated.{6C749863-042C-CC4F-0239-6C882D051807}",
+"path": "%USERPROFILE%\\desktop\\cleanup.lnk"
+},{"aumid": "Microsoft.AutoGenerated.{924E1B5B-8C3A-83C4-A930-E35EFEA406E8}",
+"path": "%USERPROFILE%\\appdata\\roaming\\microsoft\\windows\\start menu\\programs\\360 security center\\360 total security\\patch up.lnk"
+},{"aumid": "Microsoft.AutoGenerated.{924E1B5B-8C3A-83C4-A930-E35EFEA406E8}",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\360 security center\\360 total security\\patch up.lnk"
+},{"productName": "360 sandbox",
+"originalFileName": "sandboxmain.exe",
+"companyName": "qihoo 360 technology co. ltd.",
+"binProductVersion": "8.6.0.1046",
+"binFileVersion": "8.6.0.1046",
+"path": "%programfiles(x86)%\\360\\total security\\ipc\\360boxmain.exe"
+},{"aumid": "{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\\360\\Total Security\\ipc\\360boxmain.exe",
+"path": "%USERPROFILE%\\appdata\\roaming\\microsoft\\windows\\start menu\\programs\\360 security center\\360 total security\\sandbox.lnk"
+},{"aumid": "{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\\360\\Total Security\\ipc\\360boxmain.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\360 security center\\360 total security\\sandbox.lnk"
+},{"productName": "360 tool downloader",
+"originalFileName": "360advtoolexecutor.exe",
+"binProductVersion": "9.8.0.1033",
+"binFileVersion": "9.8.0.1033",
+"path": "%programfiles(x86)%\\360\\total security\\utils\\360advtoolexecutor.exe"
+},{"productName": "360安全卫士",
+"originalFileName": "360antihacker.sys",
+"companyName": "360.cn",
+"binProductVersion": "1.0.0.1185",
+"binFileVersion": "1.0.0.1185",
+"path": "%programfiles(x86)%\\360\\total security\\ipc\\360antihacker.sys"
+},{"productName": "360安全卫士",
+"originalFileName": "360antihacker.sys",
+"companyName": "360.cn",
+"binProductVersion": "1.0.0.1175",
+"binFileVersion": "1.0.0.1175",
+"path": "%programfiles(x86)%\\360\\total security\\ipc\\360antihacker64.sys"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Microsoft Edge",
+"programId": "0000160ee23f5a2234350cba651736e800070000ffff",
+"compatFlags": "0",
+"restoreAction": "RootDirPath|C:\\Program Files (x86)\\Microsoft\\Edge\\Application",
+"files" : [{"productName": "microsoft edge",
+"originalFileName": "msedge.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "123.0.2420.81",
+"binFileVersion": "123.0.2420.81",
+"path": "%programfiles(x86)%\\microsoft\\edge\\application\\msedge.exe"
+},{"aumid": "MSEdge",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\microsoft edge.lnk"
+},{"aumid": "MSEdge",
+"path": "%USERPROFILE%\\desktop\\microsoft edge.lnk"
+},{"aumid": "MSEdge",
+"path": "%USERPROFILE%\\appdata\\roaming\\microsoft\\internet explorer\\quick launch\\user pinned\\taskbar\\microsoft edge.lnk"
+},{"productName": "microsoft edge",
+"originalFileName": "cookie_exporter.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "123.0.2420.81",
+"binFileVersion": "123.0.2420.81",
+"path": "%programfiles(x86)%\\microsoft\\edge\\application\\123.0.2420.81\\cookie_exporter.exe"
+},{"productName": "microsoft edge",
+"originalFileName": "elevation_service.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "123.0.2420.81",
+"binFileVersion": "123.0.2420.81",
+"path": "%programfiles(x86)%\\microsoft\\edge\\application\\123.0.2420.81\\elevation_service.exe"
+},{"productName": "microsoft edge",
+"originalFileName": "identity_helper.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "123.0.2420.81",
+"binFileVersion": "123.0.2420.81",
+"path": "%programfiles(x86)%\\microsoft\\edge\\application\\123.0.2420.81\\identity_helper.exe"
+},{"productName": "ietoedge bho",
+"originalFileName": "ie_to_edge_stub.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "123.0.2420.81",
+"binFileVersion": "123.0.2420.81",
+"path": "%programfiles(x86)%\\microsoft\\edge\\application\\123.0.2420.81\\bho\\ie_to_edge_stub.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\xampp",
+"programId": "00001ad820f4578d76d09eb803f93d68cc500000ffff",
+"compatFlags": "0",
+"restoreAction": "RootDirPath|C:\\xampp",
+"files" : [{"productName": "xampp",
+"originalFileName": "setup.exe",
+"companyName": "apache friends",
+"binProductVersion": "8.2.0.0",
+"binFileVersion": "1.0.0.0",
+"path": "\\xampp\\uninstall.exe"
+},{"aumid": "c:\\xampp\\uninstall.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\xampp\\uninstall xampp.lnk"
+},{"binProductVersion": "1.0.0.0",
+"binFileVersion": "3.3.0.0",
+"path": "\\xampp\\xampp-control.exe"
+},{"aumid": "C:\\xampp\\xampp-control.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\xampp\\xampp control panel.lnk"
+},{"path": "\\xampp\\htdocs"
+},{"aumid": "c:\\xampp\\htdocs",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\xampp\\xampp htdocs folder.lnk"
+},{"productName": "apache http server",
+"originalFileName": "ab.exe",
+"companyName": "apache software foundation",
+"binProductVersion": "2.4.58.0",
+"binFileVersion": "2.4.58.0",
+"path": "\\xampp\\apache\\bin\\ab.exe"
+},{"productName": "apache http server",
+"originalFileName": "ab.exe",
+"companyName": "apache software foundation",
+"binProductVersion": "2.4.58.0",
+"binFileVersion": "2.4.58.0",
+"path": "\\xampp\\apache\\bin\\abs.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\VPNMaster",
+"programId": "000033541d646f2440e58f4a1aa69b27f9840000ffff",
+"compatFlags": "256",
+"restoreAction": "RootDirPath|c:\\program files (x86)\\vpnmaster",
+"files" : [{"productName": "startup",
+"originalFileName": "startup.exe",
+"companyName": "innovative connecting",
+"binProductVersion": "1.0.0.1",
+"binFileVersion": "1.0.0.1",
+"path": "%programfiles(x86)%\\vpnmaster\\startup.exe"
+},{"aumid": "{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\\VPNMaster\\Startup.exe",
+"path": "%USERPROFILE%\\desktop\\vpn proxy master.lnk"
+},{"aumid": "{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\\VPNMaster\\Startup.exe",
+"path": "%USERPROFILE%\\appdata\\roaming\\microsoft\\windows\\start menu\\programs\\vpnmaster\\vpn proxy master.lnk"
+},{"productName": "vpnmaster",
+"originalFileName": "vpnmasterinst.exe",
+"companyName": "innovative connecting",
+"binProductVersion": "1.1.3.0",
+"binFileVersion": "1.1.3.0",
+"path": "%programfiles(x86)%\\vpnmaster\\newclientdl\\clientdl.exe"
+},{"path": "%programfiles(x86)%\\vpnmaster\\installtapx64.exe"
+},{"path": "%programfiles(x86)%\\vpnmaster\\installtapx86.exe"
+},{"path": "%programfiles(x86)%\\vpnmaster\\doh\\master_doh.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{C46EC983-913A-4416-B426-9F16D3473F1B}",
+"programId": "000044be4c032f18023c52c21a657a35b80200000904",
+"compatFlags": "0",
+"restoreAction": "AddPlaceholderCustom|FWLINK~2240672;RootDirPath|C:\\ProgramData\\chocolatey\\lib\\nodejs-lts\\tools\\",
+"files" : [{"aumid": "Microsoft.AutoGenerated.{81829AB0-B87E-21EA-CB6B-D6E81A7AA829}",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\node.js\\uninstall node.js.lnk"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{AC76BA86-1033-1033-7760-BC15014EA700}",
+"programId": "0000581d7b00f06dd37ed0144d56ef5defb900000904",
+"compatFlags": "0",
+"restoreAction": "AddPlaceholderCustom|FWLINK~2238218;RootDirPath|C:\\Program Files\\Adobe\\Acrobat DC\\",
+"files" : [{"productName": "adobe acrobat",
+"originalFileName": "acrobat.exe",
+"companyName": "adobe systems incorporated",
+"binProductVersion": "24.1.20615.0",
+"binFileVersion": "24.1.20615.0",
+"path": "%programfiles%\\adobe\\acrobat dc\\acrobat\\acrobat.exe"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\Adobe\\Acrobat DC\\Acrobat\\Acrobat.exe",
+"path": "%public%\\desktop\\adobe acrobat.lnk"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\Adobe\\Acrobat DC\\Acrobat\\Acrobat.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\adobe acrobat.lnk"
+},{"productName": "adobe acrobat 32bitmapibroker",
+"originalFileName": "32bitmapibroker.exe",
+"companyName": "adobe systems incorporated",
+"binProductVersion": "24.1.20604.0",
+"binFileVersion": "24.1.20604.0",
+"path": "%programfiles%\\adobe\\acrobat dc\\acrobat\\plug_ins\\pi_brokers\\32bitmapibroker.exe"
+},{"productName": "adobe acrobat 64bitmapibroker",
+"originalFileName": "64bitmapibroker.exe",
+"companyName": "adobe systems incorporated",
+"binProductVersion": "24.1.20604.0",
+"binFileVersion": "24.1.20604.0",
+"path": "%programfiles%\\adobe\\acrobat dc\\acrobat\\plug_ins\\pi_brokers\\64bitmapibroker.exe"
+},{"productName": "adobe acrobat",
+"originalFileName": "acrospeedlaunch.exe",
+"companyName": "adobe systems incorporated",
+"binProductVersion": "24.1.20604.0",
+"binFileVersion": "24.1.20604.0",
+"path": "%programfiles%\\adobe\\acrobat dc\\acrobat\\acrobat_sl.exe"
+},{"productName": "adobe acrobat",
+"originalFileName": "acrobatinfo.exe",
+"companyName": "adobe systems incorporated",
+"binProductVersion": "24.1.20615.0",
+"binFileVersion": "24.1.20615.0",
+"path": "%programfiles%\\adobe\\acrobat dc\\acrobat\\acrobatinfo.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Bandicam",
+"programId": "00005ba923bd62d27439105efb6139f2d8060000ffff",
+"compatFlags": "0",
+"restoreAction": "RootDirPath|C:\\Program Files\\Bandicam",
+"files" : [{"productName": "bdcam",
+"originalFileName": "bdcam.exe",
+"companyName": "bandicam company",
+"binProductVersion": "7.1.0.2151",
+"binFileVersion": "7.1.0.2151",
+"path": "%programfiles%\\bandicam\\bdcam.exe"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\Bandicam\\bdcam.exe",
+"path": "%public%\\desktop\\bandicam.lnk"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\Bandicam\\bdcam.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\bandicam\\bandicam.lnk"
+},{"productName": "bandifix",
+"originalFileName": "bdfix.exe",
+"companyName": "bandicam.com",
+"binProductVersion": "2.1.0.121",
+"binFileVersion": "2.1.0.121",
+"path": "%programfiles%\\bandicam\\bdfix.exe"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\Bandicam\\bdfix.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\bandicam\\bandifix.lnk"
+},{"aumid": "Microsoft.AutoGenerated.{59007586-CF19-9DCD-068E-531CB0C5E992}",
+"path": "%programfiles%\\bandicam\\bdcam_%USERNAME%.lnk"
+},{"aumid": "Microsoft.AutoGenerated.{FEEB4ADD-4D96-1E05-C042-6FE00F2DDD1E}",
+"path": "%programfiles%\\bandicam\\bdcam_non%USERNAME%.lnk"
+},{"aumid": "Microsoft.AutoGenerated.{8E8A025F-252D-3E9B-05D7-0B0DCF88209F}",
+"path": "%programfiles%\\bandicam\\bdcam_safemode.lnk"
+},{"productName": "bandicam",
+"companyName": "bandicam company",
+"binProductVersion": "7.1.0.2151",
+"binFileVersion": "7.1.0.2151",
+"path": "%programfiles%\\bandicam\\uninstall.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\ProPlus2019Retail - en-us",
+"programId": "00007615f2ab123b4169fa4a396e801877de0000ffff",
+"compatFlags": "0",
+"restoreAction": "AddPlaceholderCustom|FWLINK~2235476;RootDirPath|C:\\Program Files\\Microsoft Office",
+"files" : [{"productName": "microsoft office",
+"originalFileName": "msaccess.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "16.0.17328.20184",
+"binFileVersion": "16.0.17328.20184",
+"path": "%programfiles%\\microsoft office\\root\\office16\\msaccess.exe"
+},{"aumid": "Microsoft.Office.MSACCESS.EXE.15",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\access.lnk"
+},{"productName": "microsoft® windows® operating system",
+"originalFileName": "appvlp.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "10.0.22000.2116",
+"binFileVersion": "10.0.22000.2116",
+"path": "%programfiles%\\microsoft office\\root\\client\\appvlp.exe"
+},{"aumid": "Microsoft.Office.DATABASECOMPARE.EXE.15",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\microsoft office tools\\database compare.lnk"
+},{"productName": "microsoft office",
+"originalFileName": "excel.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "16.0.17328.20184",
+"binFileVersion": "16.0.17328.20184",
+"path": "%programfiles%\\microsoft office\\root\\office16\\excel.exe"
+},{"aumid": "Microsoft.Office.EXCEL.EXE.15",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\excel.lnk"
+},{"aumid": "Microsoft.Office.EXCEL.EXE.15",
+"path": "%USERPROFILE%\\desktop\\excel.lnk"
+},{"productName": "microsoft office",
+"originalFileName": "setlang.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "16.0.17328.20184",
+"binFileVersion": "16.0.17328.20184",
+"path": "%programfiles%\\microsoft office\\root\\office16\\setlang.exe"
+},{"aumid": "Microsoft.Office.SETLANG.EXE.15",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\microsoft office tools\\office language preferences.lnk"
+},{"productName": "microsoft onenote",
+"originalFileName": "onenote.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "16.0.17328.20184",
+"binFileVersion": "16.0.17328.20184",
+"path": "%programfiles%\\microsoft office\\root\\office16\\onenote.exe"
+},{"aumid": "Microsoft.Office.ONENOTE.EXE.15",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\onenote.lnk"
+},{"productName": "microsoft outlook",
+"originalFileName": "outlook.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "16.0.17328.20184",
+"binFileVersion": "16.0.17328.20184",
+"path": "%programfiles%\\microsoft office\\root\\office16\\outlook.exe"
+},{"aumid": "Microsoft.Office.OUTLOOK.EXE.15",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\outlook.lnk"
+},{"productName": "microsoft office",
+"originalFileName": "powerpnt.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "16.0.17328.20184",
+"binFileVersion": "16.0.17328.20184",
+"path": "%programfiles%\\microsoft office\\root\\office16\\powerpnt.exe"
+},{"aumid": "Microsoft.Office.POWERPNT.EXE.15",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\powerpoint.lnk"
+},{"aumid": "Microsoft.Office.POWERPNT.EXE.15",
+"path": "%USERPROFILE%\\desktop\\powerpoint.lnk"
+},{"productName": "microsoft office",
+"originalFileName": "mspub.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "16.0.17328.20184",
+"binFileVersion": "16.0.17328.20184",
+"path": "%programfiles%\\microsoft office\\root\\office16\\mspub.exe"
+},{"aumid": "Microsoft.Office.MSPUB.EXE.15",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\publisher.lnk"
+},{"productName": "microsoft office",
+"originalFileName": "ocpubmgr.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "16.0.17328.20184",
+"binFileVersion": "16.0.17328.20184",
+"path": "%programfiles%\\microsoft office\\root\\office16\\ocpubmgr.exe"
+},{"aumid": "Microsoft.Office.OcPubMgr.exe.15",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\microsoft office tools\\skype for business recording manager.lnk"
+},{"productName": "microsoft office",
+"originalFileName": "lync.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "16.0.17328.20184",
+"binFileVersion": "16.0.17328.20184",
+"path": "%programfiles%\\microsoft office\\root\\office16\\lync.exe"
+},{"aumid": "Microsoft.Office.lync.exe.15",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\skype for business.lnk"
+},{"aumid": "Microsoft.Office.SPREADSHEETCOMPARE.EXE.15",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\microsoft office tools\\spreadsheet compare.lnk"
+},{"productName": "microsoft office",
+"originalFileName": "msoev.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "16.0.17328.20184",
+"binFileVersion": "16.0.17328.20184",
+"path": "%programfiles%\\microsoft office\\root\\office16\\msoev.exe"
+},{"aumid": "Microsoft.Office.msoev.exe.15",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\microsoft office tools\\telemetry log for office.lnk"
+},{"productName": "microsoft office",
+"originalFileName": "winword.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "16.0.17328.20184",
+"binFileVersion": "16.0.17328.20184",
+"path": "%programfiles%\\microsoft office\\root\\office16\\winword.exe"
+},{"aumid": "Microsoft.Office.WINWORD.EXE.15",
+"path": "%USERPROFILE%\\desktop\\word.lnk"
+},{"aumid": "Microsoft.Office.WINWORD.EXE.15",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\word.lnk"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\360zip",
+"programId": "0000829dbbcac8434bf07f5d6557119fa0e80000ffff",
+"compatFlags": "0",
+"restoreAction": "RootDirPath|C:\\Program Files (x86)\\360\\360zip",
+"files" : [{"productName": "360 zip",
+"originalFileName": "360zip.exe",
+"companyName": "qihoo 360 technology co. ltd.",
+"binProductVersion": "1.1.0.1021",
+"binFileVersion": "1.1.0.1021",
+"path": "%programfiles(x86)%\\360\\360zip\\360zip.exe"
+},{"aumid": "{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\\360\\360zip\\360zip.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\360 security center\\360 zip\\360 zip.lnk"
+},{"aumid": "{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\\360\\360zip\\360zip.exe",
+"path": "%public%\\desktop\\360 zip.lnk"
+},{"productName": "360 zip",
+"originalFileName": "uninstaller.exe",
+"companyName": "qihoo 360 technology co. ltd.",
+"binProductVersion": "1.1.0.1021",
+"binFileVersion": "1.1.0.1021",
+"path": "%programfiles(x86)%\\360\\360zip\\uninstaller.exe"
+},{"aumid": "{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\\360\\360zip\\uninstaller.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\360 security center\\360 zip\\uninstall 360 zip.lnk"
+},{"productName": "360压缩模块",
+"originalFileName": "360extloader.exe",
+"companyName": "360.cn",
+"binProductVersion": "3.2.0.2070",
+"binFileVersion": "3.2.0.2070",
+"path": "%programfiles(x86)%\\360\\360zip\\360extloader.exe"
+},{"productName": "360安全卫士在线安装程序",
+"originalFileName": "360inst.exe",
+"companyName": "360.cn",
+"binProductVersion": "2.2.0.1051",
+"binFileVersion": "2.2.0.1051",
+"path": "%programfiles(x86)%\\360\\360zip\\360zipinst.exe"
+},{"productName": "360压缩",
+"originalFileName": "360zipsandbox.exe",
+"companyName": "360.cn",
+"binProductVersion": "1.0.0.1030",
+"binFileVersion": "1.0.0.1030",
+"path": "%programfiles(x86)%\\360\\360zip\\360zipsandbox.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\VSDC Free Video Editor_is1",
+"programId": "0000949f2e477abe8b6c5d3c23f5c7f5a9330000ffff",
+"compatFlags": "0",
+"restoreAction": "RootDirPath|C:\\Program Files\\FlashIntegro\\",
+"files" : [{"path": "%programfiles%\\flashintegro\\videoeditor\\license agreement.rtf"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\flashintegro\\videoeditor\\license agreement.rtf",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\flashintegro\\vsdc free video editor\\help\\license agreement.lnk"
+},{"productName": "vsdc activation",
+"originalFileName": "registration.exe",
+"companyName": "flash-integro llc",
+"binProductVersion": "9.1.6.535",
+"binFileVersion": "9.1.6.535",
+"path": "%programfiles%\\flashintegro\\videoeditor\\activation.exe"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\FlashIntegro\\VideoEditor\\Activation.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\flashintegro\\vsdc free video editor\\product activation.lnk"
+},{"productName": "vsdc updater",
+"originalFileName": "updater.exe",
+"companyName": "flash-integro llc",
+"binProductVersion": "9.1.6.535",
+"binFileVersion": "9.1.6.535",
+"path": "%programfiles%\\flashintegro\\videoeditor\\updater.exe"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\FlashIntegro\\VideoEditor\\Updater.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\flashintegro\\vsdc free video editor\\product updater.lnk"
+},{"path": "%programfiles%\\flashintegro\\videoeditor\\readme.rtf"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\flashintegro\\videoeditor\\readme.rtf",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\flashintegro\\vsdc free video editor\\help\\readme.lnk"
+},{"productName": "vsdc free video capture",
+"originalFileName": "videocapture.exe",
+"companyName": "flash-integro llc",
+"binProductVersion": "1.3.2.520",
+"binFileVersion": "1.3.2.520",
+"path": "%programfiles%\\flashintegro\\videoeditor\\tools\\screenrecorder.exe"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\FlashIntegro\\VideoEditor\\Tools\\ScreenRecorder.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\flashintegro\\vsdc free video editor\\vsdc free screen recorder.lnk"
+},{"productName": "vsdc video editor",
+"originalFileName": "videoeditor.exe",
+"companyName": "flash-integro llc",
+"binProductVersion": "9.1.6.535",
+"binFileVersion": "9.1.6.535",
+"path": "%programfiles%\\flashintegro\\videoeditor\\videoeditor.exe"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\FlashIntegro\\VideoEditor\\VideoEditor.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\flashintegro\\vsdc free video editor\\vsdc free video editor.lnk"
+},{"path": "%programfiles%\\flashintegro\\videoeditor\\vsdc_manual.pdf"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\flashintegro\\videoeditor\\vsdc_manual.pdf",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\flashintegro\\vsdc free video editor\\help\\vsdc free video editor help.lnk"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\FlashIntegro\\VideoEditor\\VideoEditor.exe",
+"path": "%USERPROFILE%\\desktop\\vsdc free video editor.lnk"
+},{"productName": "vsdc free video capture",
+"originalFileName": "videocapture.exe",
+"companyName": "flash-integro llc",
+"binProductVersion": "1.3.2.521",
+"binFileVersion": "1.3.2.521",
+"path": "%programfiles%\\flashintegro\\videoeditor\\tools\\videocapture.exe"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\FlashIntegro\\VideoEditor\\Tools\\VideoCapture.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\flashintegro\\vsdc free video editor\\vsdc free video capture.lnk"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Inkscape",
+"programId": "0000a04a832adbabb2470d30b2ee02044ee70000ffff",
+"compatFlags": "0",
+"restoreAction": "RootDirPath|c:\\program files\\Inkscape",
+"files" : [{"productName": "inkscape",
+"originalFileName": "inkscape.exe",
+"companyName": "inkscape project",
+"binProductVersion": "1.3.2.0",
+"binFileVersion": "1.3.2.0",
+"path": "%programfiles%\\inkscape\\bin\\inkscape.exe"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\Inkscape\\bin\\inkscape.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\inkscape\\inkscape.lnk"
+},{"productName": "inkview",
+"originalFileName": "inkview.exe",
+"companyName": "inkscape project",
+"binProductVersion": "1.3.2.0",
+"binFileVersion": "1.3.2.0",
+"path": "%programfiles%\\inkscape\\bin\\inkview.exe"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\Inkscape\\bin\\inkview.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\inkscape\\inkview.lnk"
+},{"path": "%programfiles%\\inkscape\\uninstall.exe"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\inkscape\\uninstall.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\inkscape\\uninstall.lnk"
+},{"path": "%programfiles%\\inkscape\\bin\\gdb.exe"
+},{"path": "%programfiles%\\inkscape\\bin\\gdbus.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\DrvCeo2.0",
+"programId": "0000c092f05ba168c40b44d1e81f6caadfbd0000ffff",
+"compatFlags": "0",
+"restoreAction": "RootDirPath|C:\\Program Files (x86)\\SysCeo\\DrvCeo",
+"files" : [{"productName": "驱动总裁",
+"companyName": "sysceo.com",
+"binProductVersion": "2.13.0.8",
+"binFileVersion": "2.13.0.8",
+"path": "%programfiles(x86)%\\sysceo\\drvceo\\drvceo.exe"
+},{"aumid": "{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}\\SysCeo\\DrvCeo\\DrvCeo.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\drvceo2.0\\drvceo.lnk"
+},{"path": "%programfiles(x86)%\\sysceo\\drvceo\\res\\xunlei\\download\\aria2c.exe"
+},{"path": "%programfiles(x86)%\\sysceo\\drvceo\\res\\xunlei\\download\\aria2c_nt5.exe"
+},{"productName": "驱动总裁扩展模块",
+"companyName": "sysceo.com",
+"binProductVersion": "2.0.0.0",
+"binFileVersion": "2.0.0.0",
+"path": "%programfiles(x86)%\\sysceo\\drvceo\\res\\dcappletool.exe"
+},{"companyName": "sysceo.com",
+"binProductVersion": "2.0.0.0",
+"binFileVersion": "2.0.0.0",
+"path": "%programfiles(x86)%\\sysceo\\drvceo\\res\\dccounter.exe"
+}]
+},{"path": "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{771FD6B0-FA20-440A-A002-3B3BAC16DC50}_is1",
+"programId": "0000e129320257e1b5bd2fcdba048a700ad80000ffff",
+"compatFlags": "0",
+"restoreAction": "RootDirPath|C:\\Users\\Admin\\AppData\\Local\\Programs\\Microsoft VS Code\\",
+"files" : [{"path": "%USERPROFILE%\\appdata\\local\\programs\\microsoft vs code\\bin\\code-tunnel.exe"
+},{"productName": "visual studio code",
+"originalFileName": "electron.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "1.94.2.0",
+"binFileVersion": "1.94.2.0",
+"path": "%USERPROFILE%\\appdata\\local\\programs\\microsoft vs code\\code.exe"
+},{"path": "%USERPROFILE%\\appdata\\local\\programs\\microsoft vs code\\tools\\inno_updater.exe"
+},{"productName": "visual studio code                                          ",
+"originalFileName": "                                                  ",
+"companyName": "microsoft corporation                                       ",
+"binProductVersion": "1.94.2.0",
+"binFileVersion": "51.1052.0.0",
+"path": "%USERPROFILE%\\appdata\\local\\programs\\microsoft vs code\\unins000.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\5876-5934-8962-0888",
+"programId": "0000e37e60945cb19e6cb1e8c96390401db70000ffff",
+"compatFlags": "0",
+"restoreAction": "RootDirPath|C:\\Program Files\\Justinmind\\Justinmind",
+"files" : [{"productName": "justinmind",
+"originalFileName": "justinmind.exe",
+"companyName": "unknown",
+"binProductVersion": "1.0.0.0",
+"binFileVersion": "1.0.0.0",
+"path": "%programfiles%\\justinmind\\justinmind\\justinmind.exe"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\Justinmind\\Justinmind\\Justinmind.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\justinmind\\justinmind.lnk"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\Justinmind\\Justinmind\\Justinmind.exe",
+"path": "%public%\\desktop\\justinmind.lnk"
+},{"path": "%programfiles%\\justinmind\\justinmind\\.install4j\\i4jdel.exe"
+},{"productName": "openjdk platform 11",
+"originalFileName": "jabswitch.exe",
+"companyName": "oracle corporation",
+"binProductVersion": "11.0.2.0",
+"binFileVersion": "11.0.2.0",
+"path": "%programfiles%\\justinmind\\justinmind\\app\\jdk\\9.2.0\\bin\\jabswitch.exe"
+},{"productName": "openjdk platform 11",
+"originalFileName": "jaccessinspector.exe",
+"companyName": "oracle corporation",
+"binProductVersion": "11.0.2.0",
+"binFileVersion": "11.0.2.0",
+"path": "%programfiles%\\justinmind\\justinmind\\app\\jdk\\9.2.0\\bin\\jaccessinspector.exe"
+},{"productName": "openjdk platform 11",
+"originalFileName": "jaccesswalker.exe",
+"companyName": "oracle corporation",
+"binProductVersion": "11.0.2.0",
+"binFileVersion": "11.0.2.0",
+"path": "%programfiles%\\justinmind\\justinmind\\app\\jdk\\9.2.0\\bin\\jaccesswalker.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Android Studio",
+"programId": "0000ff490ca3ce6823c505872663cd3766c00000ffff",
+"compatFlags": "0",
+"restoreAction": "RootDirPath|c:\\program files\\Android\\android studio",
+"files" : [{"productName": "android studio",
+"originalFileName": "studio64.exe",
+"companyName": "google",
+"binProductVersion": "2023.3.0.0",
+"binFileVersion": "2023.3.0.0",
+"path": "%programfiles%\\android\\android studio\\bin\\studio64.exe"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\Android\\Android Studio\\bin\\studio64.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\android studio\\android studio.lnk"
+},{"productName": "clang",
+"originalFileName": ",@@productname",
+"companyName": "(",
+"binProductVersion": "0.0.0.0",
+"binFileVersion": "18.0.0.0",
+"path": "%programfiles%\\android\\android studio\\plugins\\c-clangd-plugin\\bin\\clang\\win\\x64\\clangd.exe"
+},{"path": "%programfiles%\\android\\android studio\\lib\\pty4j\\win\\x86-64\\cyglaunch.exe"
+},{"productName": "intellij platform",
+"originalFileName": "elevator.exe",
+"companyName": "jetbrains s.r.o.",
+"binProductVersion": "1.0.0.1",
+"binFileVersion": "1.0.0.1",
+"path": "%programfiles%\\android\\android studio\\bin\\elevator.exe"
+},{"productName": "intellij platform",
+"originalFileName": "fsnotifier64.exe",
+"companyName": "jetbrains s.r.o.",
+"binProductVersion": "14.0.0.16",
+"binFileVersion": "14.0.0.16",
+"path": "%programfiles%\\android\\android studio\\bin\\fsnotifier.exe"
+}]
+},{"path": "c:\\program files\\pchealthcheck\\pchealthcheck.exe",
+"programId": "00061baa1c9573b1a286cc03b8b1549f1ec300000000",
+"compatFlags": "0",
+"files" : [{"originalFileName": "pchealthcheck.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "3.6.2204.8001",
+"binFileVersion": "3.6.2204.8001",
+"path": "%programfiles%\\pchealthcheck\\pchealthcheck.exe"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\PCHealthCheck\\PCHealthCheck.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\pc health check.lnk"
+}]
+},{"path": "c:\\programdata\\360totalsecurity\\desktopplus\\desktopplus64.exe",
+"programId": "00062c830ee2636f972de0b3dbf3b10dec5700000408",
+"compatFlags": "0",
+"files" : [{"productName": "desktop organizer",
+"originalFileName": "desktopplus.exe",
+"companyName": "qihoo 360 technology co. ltd.",
+"binProductVersion": "1.0.0.1146",
+"binFileVersion": "1.0.0.1146",
+"path": "%programdata%\\360totalsecurity\\desktopplus\\desktopplus64.exe"
+},{"aumid": "C:\\ProgramData\\360TotalSecurity\\DesktopPlus\\DesktopPlus64.exe",
+"path": "%USERPROFILE%\\desktop\\tidy desktop.lnk"
+}]
+},{"path": "c:\\program files\\microsoft onedrive\\onedrive.exe",
+"programId": "00066bf0b4589e16f83fabf9e939a1ebf7d200000904",
+"compatFlags": "0",
+"files" : [{"productName": "microsoft onedrive",
+"originalFileName": "onedrive.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "24.186.915.4",
+"binFileVersion": "24.186.915.4",
+"path": "%programfiles%\\microsoft onedrive\\onedrive.exe"
+},{"aumid": "Microsoft.SkyDrive.Desktop",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\onedrive.lnk"
+}]
+},{"path": "c:\\program files\\adobe\\adobe creative cloud\\acc\\creative cloud.exe",
+"programId": "0006c16e478686be91f365597da77dcabc9e00000904",
+"compatFlags": "0",
+"files" : [{"productName": "creative cloud desktop",
+"originalFileName": "creative cloud desktop",
+"companyName": "adobe inc.",
+"binProductVersion": "6.4.0.358",
+"binFileVersion": "6.4.0.358",
+"path": "%programfiles%\\adobe\\adobe creative cloud\\acc\\creative cloud.exe"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\Adobe\\Adobe Creative Cloud\\ACC\\Creative Cloud.exe",
+"path": "%public%\\desktop\\adobe creative cloud.lnk"
+},{"aumid": "Adobe.CreativeCloud",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\adobe creative cloud.lnk"
+}]
+}],
+"Uninstall" : [{"programId": "0000be28a43cf3441c9fbb769c07144eabe30000ffff",
+"files" : [{"aumid": "c"
+}]
+}]}
+##tT>##
+##tT<## 20241025_001808
+{"Install" : [{"path": "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{5ee4d2b6-a5dc-4321-b6bd-3ebc98120a51}",
+"programId": "00000580a2b6c3b567b872dccd30d1b2838b0000ffff",
+"compatFlags": "0",
+"restoreAction": "AddPlaceholderCustom|FWLINK~2244091;RootDirPath|c:\\Users\\Admin\\AppData\\Local\\package cache\\{5ee4d2b6-a5dc-4321-b6bd-3ebc98120a51}",
+"files" : [{"productName": "python 3.12.3 (64-bit)",
+"originalFileName": "python-3.12.3-amd64.exe",
+"companyName": "python software foundation",
+"binProductVersion": "3.12.3150.0",
+"binFileVersion": "3.12.3150.0",
+"path": "%USERPROFILE%\\appdata\\local\\package cache\\{5ee4d2b6-a5dc-4321-b6bd-3ebc98120a51}\\python-3.12.3-amd64.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{2d507699-404c-4c8b-a54a-38e352f32cdd}",
+"programId": "0000079581430c2913cc97c29f1cb94ac22f0000ffff",
+"compatFlags": "4",
+"restoreAction": "RootDirPath|c:\\programdata\\package cache\\{2d507699-404c-4c8b-a54a-38e352f32cdd}",
+"files" : [{"productName": "microsoft visual c++ 2015-2022 redistributable (x64) - 14.32.31326",
+"originalFileName": "vc_redist.x64.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "14.32.31326.0",
+"binFileVersion": "14.32.31326.0",
+"path": "%programdata%\\package cache\\{2d507699-404c-4c8b-a54a-38e352f32cdd}\\vc_redist.x64.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{ef6b00ec-13e1-4c25-9064-b2f383cb8412}",
+"programId": "00000dcd2e13c3fdb7ab4a1ddcb1d5b834960000ffff",
+"compatFlags": "4",
+"restoreAction": "RootDirPath|c:\\programdata\\package cache\\{ef6b00ec-13e1-4c25-9064-b2f383cb8412}",
+"files" : [{"productName": "microsoft visual c++ 2013 redistributable (x64) - 12.0.40660",
+"originalFileName": "vcredist_x64.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "12.0.40660.0",
+"binFileVersion": "12.0.40660.0",
+"path": "%programdata%\\package cache\\{ef6b00ec-13e1-4c25-9064-b2f383cb8412}\\vcredist_x64.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{BE70CF0E-3BF1-47B6-8600-36839E46CD31}",
+"programId": "00000e1d940916fcf19314b8582c9ec0ccc400000904",
+"compatFlags": "0",
+"restoreAction": "RootDirPath|C:\\Program Files\\Microsoft\\jdk-17.0.11.9-hotspot\\",
+"files" : [{"productName": "openjdk platform 17.0.11",
+"originalFileName": "jabswitch.exe",
+"companyName": "microsoft",
+"binProductVersion": "17.0.11.0",
+"binFileVersion": "17.0.11.0",
+"path": "%programfiles%\\microsoft\\jdk-17.0.11.9-hotspot\\bin\\jabswitch.exe"
+},{"productName": "openjdk platform 17.0.11",
+"originalFileName": "jaccessinspector.exe",
+"companyName": "microsoft",
+"binProductVersion": "17.0.11.0",
+"binFileVersion": "17.0.11.0",
+"path": "%programfiles%\\microsoft\\jdk-17.0.11.9-hotspot\\bin\\jaccessinspector.exe"
+},{"productName": "openjdk platform 17.0.11",
+"originalFileName": "jaccesswalker.exe",
+"companyName": "microsoft",
+"binProductVersion": "17.0.11.0",
+"binFileVersion": "17.0.11.0",
+"path": "%programfiles%\\microsoft\\jdk-17.0.11.9-hotspot\\bin\\jaccesswalker.exe"
+},{"productName": "openjdk platform 17.0.11",
+"originalFileName": "jar.exe",
+"companyName": "microsoft",
+"binProductVersion": "17.0.11.0",
+"binFileVersion": "17.0.11.0",
+"path": "%programfiles%\\microsoft\\jdk-17.0.11.9-hotspot\\bin\\jar.exe"
+},{"productName": "openjdk platform 17.0.11",
+"originalFileName": "jarsigner.exe",
+"companyName": "microsoft",
+"binProductVersion": "17.0.11.0",
+"binFileVersion": "17.0.11.0",
+"path": "%programfiles%\\microsoft\\jdk-17.0.11.9-hotspot\\bin\\jarsigner.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{9dff3540-fc85-4ed5-ac84-9e3c7fd8bece}",
+"programId": "00001e77fdde01306a1da1e834bf02151a430000ffff",
+"compatFlags": "4",
+"restoreAction": "RootDirPath|c:\\programdata\\package cache\\{9dff3540-fc85-4ed5-ac84-9e3c7fd8bece}",
+"files" : [{"productName": "microsoft visual c++ 2013 redistributable (x86) - 12.0.40664",
+"originalFileName": "vcredist_x86.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "12.0.40664.0",
+"binFileVersion": "12.0.40664.0",
+"path": "%programdata%\\package cache\\{9dff3540-fc85-4ed5-ac84-9e3c7fd8bece}\\vcredist_x86.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\ILST_25_0",
+"programId": "00001fec66469f52ffcb9c85d8db4481d0360000ffff",
+"compatFlags": "0",
+"restoreAction": "AddPlaceholderCustom|FWLINK~2239025;RootDirPath|C:\\Program Files\\Adobe\\Adobe Illustrator 2021",
+"files" : [{"productName": "adobe illustrator 2021",
+"originalFileName": "illustrator.exe",
+"companyName": "adobe inc.",
+"binProductVersion": "25.0.0.60",
+"binFileVersion": "25.0.0.60",
+"path": "%programfiles%\\adobe\\adobe illustrator 2021\\support files\\contents\\windows\\illustrator.exe"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\Adobe\\Adobe Illustrator 2021\\Support Files\\Contents\\Windows\\Illustrator.exe",
+"path": "%USERPROFILE%\\desktop\\adobe illustrator 2021.lnk"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\Adobe\\Adobe Illustrator 2021\\Support Files\\Contents\\Windows\\Illustrator.exe",
+"path": "%programfiles%\\adobe\\adobe illustrator 2021\\adobe illustrator 2021.lnk"
+},{"aumid": "{6D809377-6AF0-444B-8957-A3773F02200E}\\Adobe\\Adobe Illustrator 2021\\Support Files\\Contents\\Windows\\Illustrator.exe",
+"path": "%programdata%\\microsoft\\windows\\start menu\\programs\\adobe illustrator 2021.lnk"
+},{"productName": "airobin 2021",
+"originalFileName": "airobin.exe",
+"companyName": "adobe inc.",
+"binProductVersion": "25.0.0.60",
+"binFileVersion": "25.0.0.60",
+"path": "%programfiles%\\adobe\\adobe illustrator 2021\\support files\\contents\\windows\\airobin.exe"
+},{"productName": "aisafemodelauncher",
+"originalFileName": "aisafemodelauncher.exe",
+"companyName": "adobe inc",
+"binProductVersion": "1.0.0.1",
+"binFileVersion": "1.0.0.1",
+"path": "%programfiles%\\adobe\\adobe illustrator 2021\\support files\\contents\\windows\\aisafemodelauncher.exe"
+},{"productName": "aisniffer",
+"originalFileName": "aisniffer.exe",
+"companyName": "adobe inc",
+"binProductVersion": "1.0.0.1",
+"binFileVersion": "1.0.0.1",
+"path": "%programfiles%\\adobe\\adobe illustrator 2021\\support files\\contents\\windows\\aisniffer.exe"
+},{"productName": "adobe cep html engine",
+"originalFileName": "cephtmlengine.exe",
+"companyName": "adobe inc",
+"binProductVersion": "10.0.0.64",
+"binFileVersion": "10.0.0.64",
+"path": "%programfiles%\\adobe\\adobe illustrator 2021\\support files\\contents\\windows\\cephtmlengine\\cephtmlengine.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\HAXM",
+"programId": "000047eeebe9a6e61950013a18fd64b8ce800000ffff",
+"compatFlags": "256",
+"restoreAction": "RootDirPath|c:\\program files\\Intel\\HAXM",
+"files" : [{"productName": "intel® hardware accelerated execution manager",
+"originalFileName": "checktool.exe",
+"companyName": "intel corporation",
+"binProductVersion": "7.6.5.0",
+"binFileVersion": "1.0.0.0",
+"path": "%programfiles%\\intel\\haxm\\checktool.exe"
+},{"productName": "haxm",
+"originalFileName": "hax.sys",
+"companyName": "intel  corporation",
+"binProductVersion": "7.6.5.0",
+"binFileVersion": "7.6.5.0",
+"path": "%programfiles%\\intel\\haxm\\intelhaxm.sys"
+},{"productName": "intel® hardware accelerated execution manager",
+"companyName": "intel corporation",
+"binProductVersion": "7.6.5.0",
+"binFileVersion": "7.6.5.0",
+"path": "%programfiles%\\intel\\haxm\\uninstall.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Microsoft Edge Update",
+"programId": "00004d6a32cec1a92ec93c4981eb0187a7e00000ffff",
+"compatFlags": "8",
+"files" : []
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{6798C408-2636-448C-8AC6-F4E341102D27}",
+"programId": "00005b2223d6b6cb5a2af684178750b1104c00000904",
+"compatFlags": "0",
+"files" : []
+},{"path": "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Kingsoft Office",
+"programId": "00005bc02309cae678a27bb86dc2544735370000ffff",
+"compatFlags": "0",
+"restoreAction": "AddPlaceholderCustom|FWLINK~2237694;RootDirPath|C:\\Users\\Admin\\AppData\\Local\\Kingsoft\\WPS Office\\12.2.0.18607",
+"files" : [{"productName": "design science equation editor",
+"originalFileName": "eqnedt32.exe",
+"companyName": "design science, inc.",
+"binProductVersion": "3.30.0.0",
+"binFileVersion": "2007.12.5.0",
+"path": "%USERPROFILE%\\appdata\\local\\kingsoft\\wps office\\12.2.0.18607\\office6\\mui\\ja_jp\\resource\\ksee\\eqnedit.exe"
+},{"productName": "wps office",
+"originalFileName": "et.exe",
+"companyName": "zhuhai kingsoft office software co.,ltd",
+"binProductVersion": "12.2.0.18607",
+"binFileVersion": "12.2.0.18607",
+"path": "%USERPROFILE%\\appdata\\local\\kingsoft\\wps office\\12.2.0.18607\\office6\\et.exe"
+},{"productName": "everything",
+"originalFileName": "everything.exe",
+"companyName": "voidtools",
+"binProductVersion": "1.4.1.1015",
+"binFileVersion": "1.4.1.1015",
+"path": "%USERPROFILE%\\appdata\\local\\kingsoft\\wps office\\12.2.0.18607\\office6\\addons\\everythingsearch\\everythingbinary\\everything.exe"
+},{"productName": "wps office",
+"originalFileName": "kcrashdumper.exe",
+"companyName": "zhuhai kingsoft office software co.,ltd",
+"binProductVersion": "12.2.0.18607",
+"binFileVersion": "12.2.0.18607",
+"path": "%USERPROFILE%\\appdata\\local\\kingsoft\\wps office\\12.2.0.18607\\office6\\kcrashdumper.exe"
+},{"productName": "wps office",
+"originalFileName": "kcrashdumper64.exe",
+"companyName": "zhuhai kingsoft office software co.,ltd",
+"binProductVersion": "12.2.0.18607",
+"binFileVersion": "12.2.0.18607",
+"path": "%USERPROFILE%\\appdata\\local\\kingsoft\\wps office\\12.2.0.18607\\office6\\kcrashdumper64.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{1D8E6291-B0D5-35EC-8441-6616F567A0F7}",
+"programId": "00006941b7a4b9402af5e298e3f8517521d800000000",
+"compatFlags": "4",
+"files" : []
+},{"path": "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{33d1fd90-4274-48a1-9bc1-97e33d9c2d6f}",
+"programId": "0000711e471311256b767312386e0ce130360000ffff",
+"compatFlags": "4",
+"restoreAction": "RootDirPath|c:\\programdata\\package cache\\{33d1fd90-4274-48a1-9bc1-97e33d9c2d6f}",
+"files" : [{"productName": "microsoft visual c++ 2012 redistributable (x86) - 11.0.61030",
+"originalFileName": "vcredist_x86.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "11.0.61030.0",
+"binFileVersion": "11.0.61030.0",
+"path": "%programdata%\\package cache\\{33d1fd90-4274-48a1-9bc1-97e33d9c2d6f}\\vcredist_x86.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{817e21c1-6b3a-4bc1-8c49-67e4e1887b3a}",
+"programId": "00007523254627041588bb352374197874fc0000ffff",
+"compatFlags": "4",
+"restoreAction": "RootDirPath|c:\\programdata\\package cache\\{817e21c1-6b3a-4bc1-8c49-67e4e1887b3a}",
+"files" : [{"productName": "microsoft visual c++ 2015-2022 redistributable (x86) - 14.32.31326",
+"originalFileName": "vc_redist.x86.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "14.32.31326.0",
+"binFileVersion": "14.32.31326.0",
+"path": "%programdata%\\package cache\\{817e21c1-6b3a-4bc1-8c49-67e4e1887b3a}\\vc_redist.x86.exe"
+}]
+},{"path": "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Opera 114.0.5282.115",
+"programId": "000085a815274db324428601eacbdccf41a10000ffff",
+"compatFlags": "0",
+"restoreAction": "AddPlaceholderCustom|FWLINK~2245156;RootDirPath|C:\\Users\\Admin\\AppData\\Local\\Programs\\Opera",
+"files" : [{"productName": "opera browser assistant installer",
+"companyName": "opera software",
+"binProductVersion": "90.0.4480.80",
+"binFileVersion": "90.0.4480.80",
+"path": "%USERPROFILE%\\appdata\\local\\programs\\opera\\assistant\\assistant_installer.exe"
+},{"productName": "opera browser assistant",
+"companyName": "opera software",
+"binProductVersion": "90.0.4480.80",
+"binFileVersion": "90.0.4480.80",
+"path": "%USERPROFILE%\\appdata\\local\\programs\\opera\\assistant\\browser_assistant.exe"
+},{"productName": "opera installer",
+"companyName": "opera software",
+"binProductVersion": "114.0.5282.115",
+"binFileVersion": "114.0.5282.115",
+"path": "%USERPROFILE%\\appdata\\local\\programs\\opera\\114.0.5282.115\\installer.exe"
+},{"path": "%USERPROFILE%\\appdata\\local\\programs\\opera\\114.0.5282.115\\installer_helper_64.exe"
+},{"productName": "opera internet browser",
+"companyName": "opera software",
+"binProductVersion": "114.0.5282.115",
+"binFileVersion": "114.0.5282.115",
+"path": "%USERPROFILE%\\appdata\\local\\programs\\opera\\launcher.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{61087a79-ac85-455c-934d-1fa22cc64f36}",
+"programId": "00009607f506c55c02afb50873c7ac00fb830000ffff",
+"compatFlags": "4",
+"restoreAction": "RootDirPath|c:\\programdata\\package cache\\{61087a79-ac85-455c-934d-1fa22cc64f36}",
+"files" : [{"productName": "microsoft visual c++ 2013 redistributable (x86) - 12.0.40660",
+"originalFileName": "vcredist_x86.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "12.0.40660.0",
+"binFileVersion": "12.0.40660.0",
+"path": "%programdata%\\package cache\\{61087a79-ac85-455c-934d-1fa22cc64f36}\\vcredist_x86.exe"
+}]
+},{"path": "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\ZoomUMX",
+"programId": "00009c58d9c161dd6619fcd8c81a110ccff50000ffff",
+"compatFlags": "0",
+"restoreAction": "RootDirPath|C:\\Users\\Admin\\AppData\\Roaming\\Zoom\\bin",
+"files" : [{"productName": "airhost",
+"originalFileName": "airhost.exe",
+"companyName": "zoom video communications, inc.",
+"binProductVersion": "6.1.12.46889",
+"binFileVersion": "6.1.12.46889",
+"path": "%USERPROFILE%\\appdata\\roaming\\zoom\\bin\\airhost.exe"
+},{"productName": "zoom",
+"originalFileName": "zoom",
+"companyName": "zoom video communications, inc.",
+"binProductVersion": "6.1.12.46889",
+"binFileVersion": "6.1.12.46889",
+"path": "%USERPROFILE%\\appdata\\roaming\\zoom\\bin\\aomhost64.exe"
+},{"productName": "zoom video call",
+"originalFileName": "cptcontrol.exe",
+"companyName": "zoom video communications, inc.",
+"binProductVersion": "6.1.12.46889",
+"binFileVersion": "6.1.12.46889",
+"path": "%USERPROFILE%\\appdata\\roaming\\zoom\\bin\\cptcontrol.exe"
+},{"productName": "zoom video call",
+"originalFileName": "cpthost.exe",
+"companyName": "zoom video communications, inc.",
+"binProductVersion": "6.1.12.46889",
+"binFileVersion": "6.1.12.46889",
+"path": "%USERPROFILE%\\appdata\\roaming\\zoom\\bin\\cpthost.exe"
+},{"productName": "zoom video call",
+"originalFileName": "cptinstall.exe",
+"companyName": "zoom video communications, inc.",
+"binProductVersion": "6.1.12.46889",
+"binFileVersion": "6.1.12.46889",
+"path": "%USERPROFILE%\\appdata\\roaming\\zoom\\bin\\cptinstall.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{1FC1A6C2-576E-489A-9B4A-92D21F542136}",
+"programId": "00009e26d04962c79c9b1834c0c8068bafa600000000",
+"compatFlags": "0",
+"files" : [{"productName": "microsoft® windows® operating system",
+"originalFileName": "expediteupdater",
+"companyName": "microsoft corporation",
+"binProductVersion": "10.0.19041.3626",
+"binFileVersion": "10.0.19041.3626",
+"path": "%programfiles%\\microsoft update health tools\\expediteupdater.exe"
+},{"productName": "microsoft® windows® operating system",
+"originalFileName": "uhssvc",
+"companyName": "microsoft corporation",
+"binProductVersion": "10.0.19041.3626",
+"binFileVersion": "10.0.19041.3626",
+"path": "%programfiles%\\microsoft update health tools\\uhssvc.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\Adobe Creative Cloud",
+"programId": "0000a0f6a45d4209a61c7efa3614548a62280000ffff",
+"compatFlags": "0",
+"restoreAction": "AddPlaceholderCustom|FWLINK~2238485;RootDirPath|c:\\program files (x86)\\Adobe\\adobe creative cloud\\Utils",
+"files" : [{"productName": "7-zip",
+"originalFileName": "7za.exe",
+"companyName": "igor pavlov",
+"binProductVersion": "19.0.0.0",
+"binFileVersion": "19.0.0.0",
+"path": "%programfiles(x86)%\\adobe\\adobe creative cloud\\utils\\zip\\7za.exe"
+},{"productName": "gc validator",
+"originalFileName": "adobegenuinevalidator.exe",
+"companyName": "adobe systems, incorporated",
+"binProductVersion": "8.3.0.49",
+"binFileVersion": "8.3.0.49",
+"path": "%programfiles(x86)%\\adobe\\adobe creative cloud\\utils\\adobegenuinevalidator.exe"
+},{"productName": "creative cloud desktop app",
+"originalFileName": "creative cloud desktop app.exe",
+"companyName": "adobe inc.",
+"binProductVersion": "6.4.0.359",
+"binFileVersion": "6.4.0.359",
+"path": "%programfiles(x86)%\\adobe\\adobe creative cloud\\utils\\creative cloud desktop app.exe"
+},{"productName": "creative cloud",
+"originalFileName": "creative cloud uninstall helper.exe",
+"companyName": "adobe inc.",
+"binProductVersion": "6.4.0.359",
+"binFileVersion": "6.4.0.359",
+"path": "%programfiles(x86)%\\adobe\\adobe creative cloud\\utils\\creative cloud uninstall helper.exe"
+},{"productName": "adobe creative cloud uninstaller",
+"originalFileName": "creative cloud uninstaller.exe",
+"companyName": "adobe inc.",
+"binProductVersion": "6.4.0.359",
+"binFileVersion": "6.4.0.359",
+"path": "%programfiles(x86)%\\adobe\\adobe creative cloud\\utils\\creative cloud uninstaller.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{F0C3E5D1-1ADE-321E-8167-68EF0DE699A5}",
+"programId": "0000a36e62d52bff5b1a012e9b5a3d788c2000000000",
+"compatFlags": "4",
+"files" : []
+},{"path": "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{ca67548a-5ebe-413a-b50c-4b9ceb6d66c6}",
+"programId": "0000a9e48d524e34fb9b37c0e6db372ae45b0000ffff",
+"compatFlags": "4",
+"restoreAction": "RootDirPath|c:\\programdata\\package cache\\{ca67548a-5ebe-413a-b50c-4b9ceb6d66c6}",
+"files" : [{"productName": "microsoft visual c++ 2012 redistributable (x64) - 11.0.61030",
+"originalFileName": "vcredist_x64.exe",
+"companyName": "microsoft corporation",
+"binProductVersion": "11.0.61030.0",
+"binFileVersion": "11.0.61030.0",
+"path": "%programdata%\\package cache\\{ca67548a-5ebe-413a-b50c-4b9ceb6d66c6}\\vcredist_x64.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\BandiMPEG1",
+"programId": "0000b148fc7a7f5258653959e11564906e0a0000ffff",
+"compatFlags": "0",
+"restoreAction": "RootDirPath|C:\\Program Files (x86)\\BandiMPEG1",
+"files" : [{"productName": "bandicam mpeg-1 decoder",
+"companyName": "bandicam company",
+"binProductVersion": "1.0.5.17",
+"binFileVersion": "1.0.5.17",
+"path": "%programfiles(x86)%\\bandimpeg1\\uninstall.exe"
+}]
+},{"path": "HKEY_LOCAL_MACHINE\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{52ABF617-F7B4-40F9-8197-C7490DAA97A3}",
+"programId": "0000b19ea23b8c71cf3f834ecc3e091b4ade00000904",
+"compatFlags": "0",
+"restoreAction": "AddPlaceholderCustom|FWLINK~2244091;RootDirPath|C:\\ProgramData\\Package Cache\\{52ABF617-F7B4-40F9-8197-C7490DAA97A3}v3.12.3150.0\\",
+"files" : [{"productName": "python",
+"originalFileName": "py.exe",
+"companyName": "python software foundation",
+"binProductVersion": "3.12.3150.1013",
+"binFileVersion": "3.12.3150.1013",

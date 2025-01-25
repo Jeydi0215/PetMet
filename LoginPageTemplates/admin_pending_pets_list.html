@@ -1,0 +1,17 @@
+{% extends 'base4.html' %}
+
+{% block content %}
+  <h1>Pending Pets for Adoption</h1>
+  <ul>
+    {% for pet in pending_pets %}
+      <li>
+        {{ pet.name }} ({{ pet.animal_type }})
+        <a href="{% url 'approve_pet' pet.id %}">Approve</a>
+      </li>
+    {% empty %}
+        <div class="beautiful">
+          <p>No pending pets for adoption.</p>
+        </div>
+    {% endfor %}
+  </ul>
+{% endblock %}

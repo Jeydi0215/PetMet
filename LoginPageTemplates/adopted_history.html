@@ -1,0 +1,25 @@
+{% extends 'base4.html' %}  <!-- assuming you have a base template -->
+
+{% block content %}
+<div class="center1">
+  <div class="container">
+    <h1>Adopted History</h1>
+    <div class="row">
+      {% for adoption in adopted_pets%}
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Adoption Request for {{ adoption.name }}</h5>
+              <img class="card-img-top" src="{{ adoption.img.url }}" alt="Pet Image" style="height: 150px; width: 100%; object-fit: cover;">
+              <p class="card-text">Status: {{ adoption.adoption_status }}</p>
+              <p class="card-text">Approval Date: {{ approved_adoptions.approval_date_time }}</p>
+              <!-- Add a button to view more details -->
+              <a href="{% url 'admin_adoption_detail_history' adoption.id %}" class="btn btn-info">View Details</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base4.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Report Details</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ report.title }}</h5>
+            <p><strong>Description:</strong> {{ report.notes }}</p>
+            <p><strong>Date:</strong> {{ report.followup_date }}</p>
+            <!-- Add more fields as necessary -->
+        </div>
+    </div>
+    <a href="{% url 'adopted_history' %}" class="btn btn-secondary mt-3">Back to Adopted History</a>
+</div>
+{% endblock %}

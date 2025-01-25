@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% static "images" as baseURL %}
+{% block content %}
+
+<!-- Add a div to wrap the search bar and center it -->
+<div class="container">
+  <div class="text-center mb">
+    <h2>Find Your Perfect Pet</h2>
+  </div>
+  <div class="row justify-content-center mb-4">
+    <div class="col-md-8">
+      <div class="input-group">
+        <form action="{% url 'search_results' %}" method="get" class="w-100">
+          <input type="text" name="q" class="form-control" placeholder="Search for pets..." aria-label="Search for pets...">
+          <button type="submit" class="btn btn-primary" style="z-index: 1;">Search</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+    <div class="grid-item-container">
+        {% if pets %}
+            {% for pet in pets %}
+                <div class="row justify-content-center custom-row">
+                    {% include 'article.html' with adopt=pet %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No pets available for adoption.</p>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+  .grid-item-container {
+      max-height: 500px; /* Set a maximum height for the container */
+      overflow-y: auto; /* Enable vertical scrolling */
+      padding: 5px; /* Add some padding */
+  }
+
+  .custom-row {
+      width: 50%; /* Set the width to 50% of the parent container */
+      margin: 10px auto; /* Center the row horizontally and add margin */
+  }
+
+  /* Scrollbar styling for modern look */
+  .grid-item-container::-webkit-scrollbar {
+      width: 8px; /* Width of the scrollbar */
+  }
+</style>
+
+{% endblock %}

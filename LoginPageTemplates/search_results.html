@@ -1,0 +1,11 @@
+<!-- search_results.html -->
+<h1>Search Results</h1>
+<ul>
+  {% for adoption in adoption_listings %}
+    <li>
+        <a href="{% url 'pet_detail' adoption.pk %}">{{ adoption.name }}</a>
+    </li>
+  {% empty %}
+    <li>No results found.</li>
+  {% endfor %}
+</ul>

@@ -1,0 +1,36 @@
+{% extends 'base4.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="row no-gutters">
+            <div class="col-md-4">
+                <img src="{{ pet.img.url }}" alt="Pet Image" class="card-img" style="object-fit: cover; height: 300px;">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">{{ pet.name }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Posted at: {{ pet.created_at }} | Adoption ID: {{ pet.adoption_id }}</h6>
+                    <p><strong>Animal Type:</strong> {{ pet.animal_type }}</p>
+                    <p><strong>Breed:</strong> {{ pet.breed }}</p>
+                    <p><strong>Color:</strong> {{ pet.color }}</p>
+                    <p><strong>Gender:</strong> {{ pet.gender }}</p>
+                    <p><strong>Age:</strong> {{ pet.age }}</p>
+                    <p><strong>Location:</strong> {{ pet.location }}</p>
+                    <p><strong>Additional Details:</strong> {{ pet.additional_details }}</p>
+                    <p><strong>Posted by:</strong> {{ pet.author }}</p>
+                    <p><strong>User ID:</strong> {{ pet.user_id }}</p>
+                    <form method="post" action="{% url 'approve_pet' pet.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Submit Approved</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+  .card-body {
+      text-align: left; /* Ensure text is left-aligned */
+  }
+</style>
+{% endblock %}

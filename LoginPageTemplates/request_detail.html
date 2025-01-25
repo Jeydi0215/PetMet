@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="margin-top: 20px;">
+  <div class="card" style="width: 60%; margin: 0 auto;">
+    <div class="card-header">
+      <h1>Request for {{ request.pet.name }}</h1>
+    </div>
+    <div class="card-body" style="text-align: left; display: flex; align-items: flex-start;">
+      <div style="flex: 1;">
+        <p><strong>Pet Name:</strong> {{ request.pet.name }}</p>
+        <p><strong>Animal Type:</strong> {{ request.pet.animal_type }}</p>
+        <p><strong>Requested by:</strong> {{ user_first_name }} {{ user_last_name }}</p>
+        <p><strong>Contact No:</strong> {{ request.contact_number }}</p>
+        <p><strong>Address:</strong> {{ request.address }}</p>
+        <p><strong>Adopter Type:</strong> {{ request.adopter_type }}</p>
+        <p><strong>Living Situation:</strong> {{ request.living_situation }}</p>
+        <p><strong>Previous pet experience:</strong> {{ request.previous_pet_experience }}</p>
+        <p><strong>Owns another pet?:</strong> {{ request.owns_other_pets }}</p>
+        <p><strong>Facebook profile link:</strong> 
+          {% if request.facebook_profile_link %}
+            <a href="{{ request.facebook_profile_link }}" target="_blank">{{ request.facebook_profile_link }}</a>
+          {% else %}
+            Not provided
+          {% endif %}
+        </p>
+        <p><strong>Request Date:</strong> {{ request.request_date }}</p>
+        <p><strong>Status:</strong> {{ request.adoption_request_status }}</p>
+        
+        {% if request.adoption_request_status == 'approved' %}
+          <p><strong>Approval Date and Time:</strong> {{ request.approval_date_time|date:"F j, Y, g:i a" }}</p>
+        {% endif %}
+        
+        <div class="mt-3">
+          {% if request.adoption_request_status == 'pending' %}
+              <form action="{% url 'update_status' request.id 'review' %}" method="post" id="review-form">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-warning">Review</button>
+              </form>
+          {% elif request.adoption_request_status == 'review' %}
+              <form action="{% url 'update_status' request.id 'approved' %}" method="post" id="approve-form">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-success">Approve</button>
+                  <a href="{% url 'update_status' request.id 'rejected' %}" class="btn btn-danger">Reject</a>
+              </form>
+          {% endif %}
+        </div>
+      </div>
+      
+      <div style="flex: 0 0 auto; margin-left: 20px;">
+        {% if request.pet.img %}
+          <img src="{{ request.pet.img.url }}" alt="Image of {{ request.pet.name }}" class="img-fluid" style="max-height: 200px; width: auto;">
+        {% else %}
+          <p>No image available for this pet.</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="card-footer">
+      <a href="{% url 'view_requests' %}" class="btn btn-secondary">Back</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('approve-form').addEventListener('submit', function(event) {
+      var confirmation = confirm("Are you sure you want to approve this request?");
+      if (!confirmation) {
+          event.preventDefault(); // Prevent form submission if the user cancels
+      }
+  });
+
+  document.getElementById('review-form').addEventListener('submit', function(event) {
+      var confirmation = confirm("Are you sure you want to change the status to review?");
+      if (!confirmation) {
+          event.preventDefault(); // Prevent form submission if the user cancels
+      }
+  });
+</script>
+{% endblock %}

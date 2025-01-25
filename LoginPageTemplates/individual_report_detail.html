@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Report Details</h2>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    {% if report.photos %}
+                        <img src="{{ report.photos.url }}" alt="Report Image" class="img-fluid" style="max-width: 100%; height: auto;">
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                    <h5 class="card-title">{{ report.followup_date|date:"Y-m-d" }}</h5>
+                    <p><strong>Living Situation:</strong> {{ report.living_situation }}</p>
+                    <p><strong>Housing Type:</strong> {{ report.housing_type }}</p>
+                    <p><strong>Behavioral Changes:</strong> {{ report.behavioral_changes }}</p>
+                    <p><strong>Health Issues:</strong> {{ report.health_issues }}</p>
+                    <p><strong>Notes:</strong> {{ report.notes }}</p>
+                    <p><strong>Created on:</strong> {{ report.followup_date }}</p>
+                    <!-- Add more fields as needed -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="button" onclick="history.back()" class="btn btn-secondary btn-sm">Back</button>
+</div>
+{% endblock %}

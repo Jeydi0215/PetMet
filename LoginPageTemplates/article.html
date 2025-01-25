@@ -1,0 +1,145 @@
+<style>
+    .pet-item {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin: 20px;
+        transition: transform 0.2s;
+    }
+
+    .pet-item:hover {
+        transform: scale(1.05);
+    }
+
+    .pet-info {
+        padding: 15px;
+        text-align: center;
+    }
+
+    .pet-name {
+        font-size: 1.5em;
+        margin: 10px 0;
+    }
+
+    .pet-info p {
+        margin: 5px 0;
+        color: #555;
+    }
+
+    .btn {
+        margin: 5px;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-light {
+        background-color: #f0f0f0;
+    }
+
+    .btn-light:hover {
+        background-color: #e0e0e0;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .modal-content {
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #fff;
+    }
+
+    .image-container {
+        width: 200px;
+        height: 200px;
+        overflow: hidden;
+        border-radius: 10px;
+    }
+
+    .image-container img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+</style>
+
+<article class="pet-item">
+    <img src="{{ adopt.img.url }}" alt="Pet Image" style="width: 100%; height: 200px; object-fit: cover;">
+    <div class="pet-info">
+        <h3 class="pet-name">{{ adopt.name }}</h3>
+        <p>Animal Type: {{ adopt.animal_type }}</p>
+        <p>Age: {{ adopt.age }}</p>
+        <p>Date: {{ adopt.created_at }}</p>
+        <div class="d-flex justify-content-center mt-5">
+            <button type="button" class="btn btn-light" onclick="document.getElementById('petDetailModal-{{ adopt.pk }}').style.display='block'">View</button>
+            <button type="button" class="btn btn-primary adopt-button" onclick="showAdoptionForm({{ adopt.pk }})">Adopt</button>
+        </div>
+    </div>
+</article>
+
+<!-- Adoption Modal -->
+<div id="adoption-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="document.getElementById('adoption-modal').style.display='none'">&times;</span>
+        <div id="adoption-form-container">
+            <!-- The adoption form will be loaded here via AJAX -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="petDetailModal-{{ adopt.pk }}" class="modal" style="display: none; overflow-y: auto;">
+    <div class="modal-content">
+        <span class="close" onclick="document.getElementById('petDetailModal-{{ adopt.pk }}').style.display='none'">&times;</span>
+        <div style="display: flex; flex-direction: row;">
+            <div class="image-container">
+                <img src="{{ adopt.img.url }}" alt="Pet Image">
+            </div>
+            <div class="details-container" style="padding-left: 20px;">
+                <p>Posted by: {{ adopt.author }}</p>
+                <p>Animal Type: {{ adopt.animal_type }}</p>
+                <p>Age: {{ adopt.age }} yr/s. old</p>
+                <p>Breed: {{ adopt.breed }}</p>
+                <p>Description: {{ adopt.additional_details }}</p>
+                <button type="button" class="btn btn-light" onclick="document.getElementById('petDetailModal-{{ adopt.pk }}').style.display='none'">Back</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showAdoptionForm(pk) {
+        var url = "{% url 'adopt_pet' 12345 %}".replace('12345', pk);
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function(data) {
+                var modal = document.getElementById('adoption-modal');
+                modal.style.display = 'block'; /* Show the modal */
+                var formContainer = document.getElementById('adoption-form-container');
+                formContainer.innerHTML = data; // Load the form into the modal
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching adoption form:", error);
+            }
+        });
+    }
+
+    // Add an event listener to close the modal when the user clicks outside
+    document.addEventListener('click', function(event) {
+        var modal = document.getElementById('adoption-modal');
+        if (event.target === modal) {
+            modal.style.display = 'none'; /* Hide the modal */
+        }
+    });
+</script>

@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <!-- Add a new section to display the adoption requests table -->
+  <div class="adoption-requests-table-container" style="width: 80%; margin: 40px auto; text-align: center;">
+    <h2>My Adoption Requests</h2>
+    <table class="adoption-requests-table" style="background-color: #ffffff; margin: 0 auto; border: 2px solid #ccccff;">
+      <thead>
+        <tr>
+          <th>Pet Name</th>
+          <th>Adoption Status</th>
+          <th>View</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for request in adoption_requests %}
+        <tr>
+          <td>{{ request.adoption.name }}</td>
+          <td>{{ request.status }}</td>
+          <td>
+            <a role="button" class="view-btn" data-adoption-id="{{ request.adoption.id }}" href="{% url "adoption_details" request.adoption.id %}">View</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Modal popup to display adoption details -->
+    <div class="modal">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5>Adoption Details</h5>
+          <button class="close-modal">Close</button>
+        </div>
+        <div class="modal-body">
+          <!-- Adoption details will be displayed here -->
+          <div id="adoption-details"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JavaScript code to fetch adoption details and display in modal -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+  var viewButtons = document.querySelectorAll('.view-btn');
+  var modal = document.querySelector('.modal');
+  var closeModalButton = document.querySelector('.close-modal');
+  var adoptionDetailsContainer = document.querySelector('#adoption-details');
+
+  viewButtons.forEach(function(button) {
+    button.addEventListener('click', function() {
+      var adoptionId = button.dataset.adoptionId;
+      fetchAdoptionDetails(adoptionId);
+    });
+  });
+
+  closeModalButton.addEventListener('click', function() {
+    modal.classList.remove('is-active');
+  });
+
+  function fetchAdoptionDetails(adoptionId) {
+  var url = '/adoption-details/' + adoptionId + '/';
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      adoptionDetailsContainer.innerHTML = data.html;
+      modal.classList.add('is-active');
+    });
+}
+});
+  </script>
+{% endblock %}

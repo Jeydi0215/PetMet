@@ -1,0 +1,28 @@
+{% extends 'base4.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="card" style="max-width: 700px; margin: 0 auto;">
+        <div class="card-body">
+            <h2 class="card-title text-center">{{ admin_approved_pet_detail.name }}</h2>
+            <div class="row">
+                <div class="col-md-4 d-flex justify-content-center">
+                    <img src="{{ admin_approved_pet_detail.img.url }}" alt="Pet Image" class="img-fluid" style="max-width: 100%; height: auto;">
+                </div>
+                <div class="col-md-8">
+                    <p><strong>Animal Type:</strong> {{ admin_approved_pet_detail.animal_type }}</p>
+                    <p><strong>Breed:</strong> {{ admin_approved_pet_detail.breed }}</p>
+                    <p><strong>Color:</strong> {{ admin_approved_pet_detail.color }}</p>
+                    <p><strong>Gender:</strong> {{ admin_approved_pet_detail.gender }}</p>
+                    <p><strong>Age:</strong> {{ admin_approved_pet_detail.age }}</p>
+                    <p><strong>Details:</strong> {{ admin_approved_pet_detail.additional_details }}</p>
+                    <!-- Add more details about the pet here -->
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button type="button" onclick="history.back()" class="btn btn-secondary float-right" style="margin-top: 10px;">Back</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base4.html' %}
+
+{% block content %}
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8"> <!-- Adjust the column size as needed -->
+        <div class="card mt-5"> <!-- Card component -->
+          <div class="card-body">
+            <h1 class="text-center">Welcome to the Home Page</h1>
+            <p>You have successfully logged in as <strong>{{ user.username }}</strong> ({{ user.role }}).</p>
+            <p>Your time in is <strong>{{ philippines_time }}</strong> (Philippines Time).</p>
+            <p>Here you can add any content you want to display on the home page.</p>
+            
+            <!-- Logout Button -->
+            <form action="{% url 'logout_admin' %}" method="post" class="mt-4">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

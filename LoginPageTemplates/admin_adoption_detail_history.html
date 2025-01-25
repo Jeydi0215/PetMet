@@ -1,0 +1,64 @@
+{% extends 'base4.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container">
+    <h2>Adoption Details for {{ adoption.pet.name }}</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Pet Name: {{ adoption.name }}</h5>
+            <p><strong>Status:</strong> {{ adoption.adoption_status }}</p>
+            <p><strong>Request Date:</strong> {{ adopter.request_date }}</p>
+            <p><strong>Adopted by:</strong> {{ adopter.first_name }} {{ adopter.last_name }}</p>
+            <p><strong>Additional Details:</strong> {{ adoption.additional_details }}</p>
+        </div>
+    </div>
+
+    <h2>Track Updates:</h2>
+    <div class="track-updates">
+        {% if track_updates %}
+            <ul class="list-group">
+                {% for update in track_updates %}
+                    <li class="list-group-item">
+                        <strong>Follow-up Date:</strong> {{ update.followup_date }}<br>
+                        <strong>Notes:</strong> {{ update.notes }}<br>
+                        <a href="{% url 'admin_report_detail' update.id %}" class="btn btn-primary btn-sm">View Report</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No track updates available for this adoption.</p>
+        {% endif %}
+    </div>
+
+    <h2>Tracking Period:</h2>
+    <div class="tracking-period">
+        {% if tracking_period %}
+            <p><strong>Start Date:</strong> {{ tracking_period.0 }}</p>
+            <p><strong>End Date:</strong> {{ tracking_period.1 }}</p>
+        {% else %}
+            <p>No tracking period available.</p>
+        {% endif %}
+    </div>
+
+    <a href="{% url 'adopted_history' %}" class="btn btn-secondary mt-3">Back to Adopted History</a>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<style>
+    .track-updates {
+        margin-top: 20px;
+    }
+    .tracking-period {
+        margin-top: 20px;
+        font-weight: bold;
+    }
+    .list-group-item {
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}

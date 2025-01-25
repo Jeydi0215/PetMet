@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <h2>Adopted Pets</h2>
+    {% if adopted_pets %}
+        <ul class="list-group">
+            {% for pet in adopted_pets %}
+                <li class="list-group-item">
+                    <strong>Name:</strong> {{ pet.name }} <br>
+                    <strong>Status:</strong> {{ pet.adoption_status }} <br>
+                    <strong>Description:</strong> {{ pet.additional_details }} <br> <!-- Assuming you meant additional_details -->
+                    <strong>Posted on:</strong> {{ pet.created_at }} <br>
+                    <a href="{% url 'reportRequestpet_detail' pet.id %}" class="btn btn-info">Details</a>  <!-- Details button -->
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No adopted pets found.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+<!-- adoption_request_success.html -->
+
+<!-- The modal window -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+      <h1>Adoption Request Submitted Successfully!</h1>
+      <p>Thank you for submitting your adoption request. We will review your application and get back to you soon.</p>
+      <button id="close-modal">Close</button>
+    </div>
+  </div>
+  
+  <!-- The script to show the modal -->
+  <script>
+    // Get the modal element
+    var modal = document.getElementById("modal");
+  
+    // Show the modal when the page loads
+    window.onload = function() {
+      modal.style.display = "block";
+    };
+  
+    // Close the modal when the close button is clicked
+    document.getElementById("close-modal").addEventListener("click", function() {
+      modal.style.display = "none";
+    });
+  </script>

@@ -1,0 +1,30 @@
+<h1>Adopt {{ pet.name }}</h1>
+<form action="{% url 'adopt_pet' pk=pet.pk %}" method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Adopt</button>
+</form>
+<script>
+    document.getElementById('adoption-form').addEventListener('submit', function(event) {
+        var form = this;
+        var isValid = true;
+
+        // Check if all fields are not empty
+        for (var i = 0; i < form.elements.length; i++) {
+            var element = form.elements[i];
+            if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA' || element.tagName === 'SELECT') {
+                if (element.value.trim() === '') {
+                    isValid = false;
+                    element.style.border = '1px solid red';
+                } else {
+                    element.style.border = '';
+                }
+            }
+        }
+
+        if (!isValid) {
+            event.preventDefault();
+            alert('Please fill in all fields.');
+        }
+    });
+</script>

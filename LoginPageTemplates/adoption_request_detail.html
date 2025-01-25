@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1 style="text-align: center;">Adoption Request</h1>
+  <div class="pet-info" style="margin: 0 auto; text-align: left; background-color: #ffffff; width: 30%;">
+    <img src="{{ pending_pet.img.url }}" alt="Pet Image" style="width: 50%; height: auto; display: block; margin: 0 auto;">
+    <p>Pet Name: {{ pending_pet.name }}</p>
+    <p>Breed: {{ pending_pet.breed }}</p>
+    <p>Color: {{ pending_pet.color }}</p>
+    <p>Gender: {{ pending_pet.gender }}</p>
+    <p>Adoption Status: {{ adoption_request.adoption_request_status }}</p>
+    <input name="submit" type="Submit" onclick="history.back()" value="Back">
+  </div>
+  <!-- Add more details as needed -->
+{% endblock %}

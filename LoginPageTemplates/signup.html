@@ -1,0 +1,65 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+<div class="container">
+  <div class="center">
+    <h1>Register</h1>
+    <form action="signup" method="POST" onsubmit="return myfunction()">
+      {% csrf_token %}
+      <div class="txt_field">
+        <input type="text" name="first_name" required>
+        <span></span>
+        <label>First Name</label>
+      </div>
+      <div class="txt_field">
+        <input type="text" name="last_name" required>
+        <span></span>
+        <label>Last Name</label>
+      </div>
+      <div class="txt_field">
+        <input type="text" name="username" required>
+        <span></span>
+        <label>Username</label>
+      </div>
+      <div class="txt_field">
+        <input type="email" name="email" required>
+        <span></span>
+        <label>Email</label>
+      </div>
+      <div class="txt_field">
+        <input type="password" name="password1" required>
+        <span></span>
+        <label>Password</label>
+      </div>
+      <div class="txt_field">
+        <input type="password" name="password2" required>
+        <span></span>
+        <label>Confirm Password</label>
+      </div>
+      
+      <!-- Terms and Conditions Section -->
+      <div class="txt_field1">
+        <input type="checkbox" name="terms" id="terms" required>
+        <label for="terms">I agree to the <a href="{% url 'terms_conditions' %}" target="_blank">Terms and Conditions</a></label>
+      </div>
+      
+      <div class="pass"></div>
+      <input type="Submit" value="Register">
+      <div class="signup_link">
+        Already had an account? <a href="{% url 'home' %}">Login Here</a>
+      </div>
+      </div>
+    </form>
+  </div>
+</div>
+      <script> 
+          function myfunction(){
+            console.log(message);
+          }
+      </script>
+      {% for message in messages %}
+      <script>
+        alert('{{message}}') 
+      </script>
+      {% endfor %}
+{% endblock %}

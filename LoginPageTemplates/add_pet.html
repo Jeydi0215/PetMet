@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .container {
+        max-height: 100vh; /* Set the maximum height for the container */
+        overflow-y: auto; /* Enable vertical scrolling */
+        overflow-x: hidden; /* Hide horizontal scrolling if not needed */
+        margin-top: 10px; /* Set a specific top margin */
+    }
+
+    /* For Firefox */
+    * {
+        scrollbar-width: thin; /* Makes the scrollbar thinner */
+        scrollbar-color: transparent transparent; /* Thumb and track colors */
+    }
+
+    /* For WebKit browsers (Chrome, Safari) */
+    ::-webkit-scrollbar {
+        width: 8px; /* Width of the scrollbar */
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent; /* Track color */
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: transparent; /* Thumb color */
+        border-radius: 10px; /* Rounded corners for the thumb */
+    }
+
+    /* Optional: Add hover effect for visibility */
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 0, 0, 0.5); /* Change thumb color on hover */
+    }
+</style>
+
+<div class="container">
+    {% if messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <script>
+            $(document).ready(function() {
+                $(".alert").fadeIn().delay(3000).fadeOut();
+            });
+        </script>
+    {% endif %}
+    
+    <div class="card mt-3">  <!-- Added card class -->
+        <div class="card-body">  <!-- Card body for padding -->
+            <h1 class="text-center mb-4">Add Pet for Adoption</h1>
+            <form method="post" enctype="multipart/form-data" id="add-pet-form" class="bg-light p-4 rounded shadow">
+                {% csrf_token %}
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Add Pet</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

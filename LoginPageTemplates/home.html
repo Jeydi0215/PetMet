@@ -1,0 +1,45 @@
+{% extends 'base2.html' %}
+{% load static %}
+{% block content %}
+<div class="text-center" style="position: relative;">
+  <a href="{% url 'landing' %}">
+      <img src="{% static 'PetMetLogo.jpg' %}" alt="/" class="circular-image" style="width: 175px; height: auto; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 10;" />
+  </a>
+</div>
+
+<div style="position: relative; z-index: 1;">
+<div class="container">
+  <div class="center">
+    <h1>Login</h1>
+    <form action="{% url 'login' %}" method="POST" onsubmit="return myfunction()">
+      {% csrf_token %}
+      <div class="txt_field">
+        <input type="text" name="username" required>
+        <span></span>
+        <label>Username</label>
+      </div>
+      <div class="txt_field">
+        <input type="password" name="password" required>
+        <span></span>
+        <label>Password</label>
+      </div>
+      <div class="pass"></div>
+      <input name="submit" type="Submit" value="Login">
+      <div class="signup_link">
+        Not a member? <a href="{% url 'signup' %}">Signup</a><br />
+        Login as <a href="{% url 'admin_home' %}">Admin</a>  <!-- Update this line -->
+    </div>
+    </form>
+  </div>
+</div>
+      <script> 
+        function myfunction(){
+          console.log(message);
+        }
+      </script>
+      {% for message in messages %}
+        <script>
+          alert('{{ message }}');
+        </script>
+      {% endfor %}
+{% endblock %}

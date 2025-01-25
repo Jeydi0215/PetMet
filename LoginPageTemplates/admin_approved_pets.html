@@ -1,0 +1,27 @@
+{% extends 'base4.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="text-center mb-4">Approved Pets</h2>
+    <div class="row">
+        {% for pet in admin_approved_pet %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <img class="card-img-top" src="{{ pet.img.url }}" alt="Pet Image" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ pet.name }}</h5>
+                        <p class="card-text">{{ pet.description }}</p>
+                        <a href="{% url 'admin_approved_pet_detail' pet.id %}" class="btn btn-primary">View</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center">
+                <div class="alert alert-warning" role="alert">
+                    No approved pets found.
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

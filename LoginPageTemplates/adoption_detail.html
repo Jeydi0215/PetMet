@@ -1,20 +1,25 @@
-<!-- adoption detail file -->
 {% extends 'base.html' %}
 
 {% block content %}
   <h1 style="text-align: center;">My Post Adoption Detail</h1>
-  <div class="card" style="margin: 0 auto; width: 30%;">
+  <div class="card" style="margin: 0 auto; width: 50%;">
     <div class="card-body">
-      <h2 class="card-title">{{ adoption.name }}</h2>
-      <img src="{{ adoption.img.url }}" alt="Pet Image" class="card-img-top" style="width: 50%; height: auto; display: block; margin: 0 auto;">
-      <p class="card-text">Animal Type : {{ adoption.animal_type }}</p>
-      <p class="card-text">Breed: {{ adoption.breed }}</p>
-      <p class="card-text">Color: {{ adoption.color }}</p>
-      <p class="card-text">Gender: {{ adoption.gender }}</p>
-      <p class="card-text">Age: {{ adoption.age }}</p>
-      <p class="card-text">Location: {{ adoption.location }}</p>
-      <p class="card-text">Details: {{ adoption.additional_details }}</p>
-      <!-- Add more details about the adoption as needed -->
+      <div class="row">
+        <div class="col-md-4"> <!-- Adjust the column size as needed -->
+          <img src="{{ adoption.img.url }}" alt="Pet Image" class="img-fluid" style="height: auto; display: block; margin: 0 auto;">
+        </div>
+        <div class="col-md-8"> <!-- Adjust the column size as needed -->
+          <h2 class="card-title">{{ adoption.name }}</h2>
+          <p class="card-text">Animal Type: {{ adoption.animal_type }}</p>
+          <p class="card-text">Breed: {{ adoption.breed }}</p>
+          <p class="card-text">Color: {{ adoption.color }}</p>
+          <p class="card-text">Gender: {{ adoption.gender }}</p>
+          <p class="card-text">Age: {{ adoption.age }}</p>
+          <p class="card-text">Location: {{ adoption.location }}</p>
+          <p class="card-text">Details: {{ adoption.additional_details }}</p>
+          <p class="card-text">Status: {{ adoption.adoption_status }}</p>
+        </div>
+      </div>
       <div class="card-footer">
         <input name="submit" type="Submit" onclick="history.back()" value="Back" class="btn btn-secondary">
       </div>

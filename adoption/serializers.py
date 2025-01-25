@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Admin, PetAdoptionRequestTable, PetAdoptionTable, PendingPetForAdoption, TrackUpdateTable
+from .models import Admin, PetAdoptionRequestTable, PetAdoptionTable, PendingPetForAdoption, TrackUpdateTable, Notification
 from django.contrib.auth.hashers import make_password
 
 class AdminSerializer(serializers.ModelSerializer):
@@ -81,3 +81,8 @@ class UpdatePendingPetSerializer(serializers.ModelSerializer):
 
         instance.save()  # Save the updated instance
         return instance
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ['id', 'message', 'created_at', 'is_read']

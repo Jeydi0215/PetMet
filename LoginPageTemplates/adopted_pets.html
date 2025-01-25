@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container">
-    <h2>Adopted Pets</h2>
+    <h2 style="text-align: center;">Adopted Pets</h2>
     {% if adopted_pets %}
         <ul class="list-group">
             {% for pet in adopted_pets %}
@@ -17,5 +16,4 @@
     {% else %}
         <p>No adopted pets found.</p>
     {% endif %}
-</div>
 {% endblock %}

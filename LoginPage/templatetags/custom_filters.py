@@ -11,7 +11,7 @@ def range_list(value):
 @register.filter
 def get_item(dictionary, key):
     """Get an item from a dictionary or return an empty list if the key doesn't exist."""
-    return dictionary.get(key, [])  # Return an empty list if key is not found
+    return dictionary.get(key)  # Return an empty list if key is not found
 
 @register.filter
 def range_filter(value):

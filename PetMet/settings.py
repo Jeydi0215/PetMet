@@ -23,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ALLOWED_HOSTS = ['10.0.2.2', 'localhost', '127.0.0.1']
 
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -48,7 +49,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'LoginPage',
-    'database',
 
 ]
 
@@ -105,6 +105,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'PetMet.wsgi.application'
+# settings.py
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Default session engine
+SESSION_COOKIE_NAME = 'sessionid'  # Default session cookie name
+SESSION_COOKIE_SECURE = False  # Set to True if using HTTPS
+SESSION_COOKIE_AGE = 1209600  # 2 weeks, default is 1209600 seconds
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Optional: expire session on browser close
+SESSION_COOKIE_HTTPONLY = True
+
 
 
 # Database
@@ -143,12 +151,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
+# Internationalization
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+TIME_ZONE = 'Asia/Manila'  # Set this to your desired time zone
 USE_I18N = True
-
 USE_TZ = True
 
 

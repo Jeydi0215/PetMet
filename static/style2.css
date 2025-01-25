@@ -9,23 +9,24 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: Roboto;
+  height: auto; /* Full viewport height */
+  font-family: Poppins;
   background-repeat: no-repeat;
   background-size: cover;
   background-image: url('IMG_4467.jpeg');
   background-attachment: fixed;
   position: relative; /* Required for positioning the pseudo-element */
-  overflow: auto; /* Allow scrolling */
+  overflow-y: auto;
 }
 /* Pseudo-element for thinning the color of the background image */
 body::before {
   content: '';
-  position: absolute; /* Position it absolutely */
+  position: fixed; /* Position it absolutely */
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(255, 255, 255, 0.3); /* White overlay with 30% opacity */
+  background-color: rgba(255, 255, 255, 0.5); /* White overlay with 30% opacity */
   z-index: 0; /* Ensure it is below other content */
 }
 
@@ -38,15 +39,9 @@ body::-webkit-scrollbar-track {
   background: transparent; /* Background of the scrollbar track */
 }
 
-body::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.5); /* Semi-transparent thumb */
-  border-radius: 10px; /* Rounded corners for the thumb */
-}
-
 .container {
   position: relative; /* Ensure content is above the dimmed background */
   z-index: 1; /* Ensure content is above the pseudo-element */
-  align-content: center;
 }
 .center{
     position: absolute;
@@ -605,6 +600,9 @@ input[type="Submit"]:hover{
     flex-grow: 1;
     max-width: 800px; 
     margin: 0 auto;
+  }
+  .center2{
+    margin-top: 10px;
   }
   /* The modal container */
 .modal-container {

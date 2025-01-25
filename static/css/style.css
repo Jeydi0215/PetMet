@@ -228,13 +228,13 @@ button {
 
 
 /* header section start */
-
 .header_section {
     width: 100%;
     float: left;
     background-color: #ffbd59;
-    height: auto;
-    background-size: 100%;
+    height: 80px;
+    min-height: 80px; /* Minimum height */
+    max-height: 150px; /* Maximum height */
 }
 
 .bg-light {
@@ -267,11 +267,7 @@ button {
 }
 
 .navbar-brand {
-    width: 24%;
-}
-
-.navbar {
-    padding: 15px 0px;
+    width: 50%;
 }
 
 
@@ -394,7 +390,7 @@ button {
     width: 50px;
     left: 0px;
     right: 0px;
-    background-color: #f9b116;
+    background-color: #fff;
     height: 10px;
     bottom: 0px;
     margin: 0 auto;
@@ -408,13 +404,16 @@ button {
 }
 
 .service_box {
-    width: 100%;
-    background-color: #f9b116;
-    height: auto;
-    padding: 40px 20px;
-    border-radius: 10px;
-    margin-top: 30px;
-    align-items: stretch;
+    width: 105%;
+    background-color: #f9b116; /* Keep the original background color */
+    height: 750px; /* Set a fixed height for uniformity */
+    padding: 20px; /* Adjust padding to fit the new height */
+    border-radius: 10px; /* Keep the original border radius */
+    margin-top: 30px; /* Keep the original margin */
+    display: flex; /* Use flexbox for alignment */
+    flex-direction: column; /* Stack items vertically */
+    justify-content: space-between; /* Distribute space evenly */
+    align-items: justify; /* Center items horizontally */
 }
 
 .service_box:hover {
@@ -437,6 +436,14 @@ button {
 .residential_text {
     width: 80%;
     font-size: 26px;
+    color: #fcfcfd;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.residential_text1 {
+    width: 80%;
+    font-size: 20px;
     color: #fcfcfd;
     text-align: center;
     margin: 0 auto;
@@ -723,19 +730,21 @@ button {
 }
 
 .shop_taital {
-    width: 100%;
-    float: left;
-    font-size: 80px;
-    text-align: center;
-    justify-content: left;
-    color: #000;
-    font-weight: bold; /* Make the text bold */
     width: 100%; /* Set the width to 100% of the parent container */
+    float: left; /* Make the h1 float to the left */
+    font-size: 80px; /* Set the font size */
+    color: #000; /* Set the text color */
+    font-weight: bold; /* Make the text bold */
     margin: 0; /* Remove default margin */
     padding: 100px 0; /* Optional: Add some padding for spacing */
-
 }
-
+hr {
+    border: 0; /* Remove default border */
+    height: 0.5px; /* Set the height of the line */
+    background-color: #fff; /* Set the color of the line */
+    margin: 40px 0; /* Add vertical spacing above and below the line */
+    width: 100%; /* Make the line span the full width of the container */
+}
 .shop_text {
     width: 100%;
     float: left;

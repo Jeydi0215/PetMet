@@ -5,12 +5,21 @@
 <div class="container">
     <h2>Pet Details</h2>
     <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">{{ pet.name }}</h5>
-            <p><strong>Status:</strong> {{ pet_adoption.adoption_request_status }}</p>
-            <p><strong>ID Adoption:</strong> {{ pet_adoption.id }}</p>
-            <p><strong>Adopted by:</strong> {{ adopter.first_name }} {{ adopter.last_name }}</p>
-            <p><strong>Posted on:</strong> {{ pet.created_at }}</p>
+        <div class="card-body d-flex">
+            <div class="details" style="flex: 1;">
+                <h5 class="card-title">{{ pet.name }}</h5>
+                <p><strong>Status:</strong> {{ pet_adoption.adoption_request_status }}</p>
+                <p><strong>ID Adoption:</strong> {{ pet_adoption.id }}</p>
+                <p><strong>Adopted by:</strong> {{ pet_adoption.first_name }} {{ pet_adoption.last_name }}</p>
+                <p><strong>Posted on:</strong> {{ pet.created_at }}</p>
+            </div>
+            <div class="pet-image" style="flex: 0 0 200px; margin-left: 20px;">  <!-- Fixed width for the image container -->
+                {% if pet.img %}  <!-- Check if the pet has an image -->
+                    <img src="{{ pet.img.url }}" alt="Image of {{ pet.name }}" style="max-width: 100%; max-height: 300px;" class="img-thumbnail"/>
+                {% else %}
+                    <p>No image available for this pet.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
     <div class="mt-3">
@@ -19,6 +28,7 @@
     </div>
 
     <h4 class="mt-4">Monitoring Calendar for {{ monthly_reports.year }} - {{ monthly_reports.month|month_name }}</h4>
+    <h4>Tracking Start Date: {{ monthly_reports.tracking_start_date|date:"Y-m-d" }}</h4>
 
     <div class="month-calendar">
         <h5>{{ monthly_reports.year }} - {{ monthly_reports.month|month_name }}</h5>
@@ -74,14 +84,14 @@
                     <a href="?month=12&year={{ previous_year }}" class="btn btn-secondary">Previous Month</a>
                 {% endwith %}
             {% else %}
-                <a href="?month={{ previous_month }}&year={{ monthly_reports.year }}" class="btn btn-secondary">Previous Month</a>
+            <a href="?month={{ previous_month }}&year={{ monthly_reports.year }}" class="btn btn-secondary">Previous Month</a>
             {% endif %}
         {% endwith %}
         
         {% with next_month=monthly_reports.month|add:1 %}
             {% if next_month > 12 %}
                 {% with next_year=monthly_reports.year|add:1 %}
-                <a href="?month=1&year={{ next_year }}" class="btn btn-secondary">Next Month</a>
+                    <a href="?month=1&year={{ next_year }}" class="btn btn-secondary">Next Month</a>
                 {% endwith %}
             {% else %}
                 <a href="?month={{ next_month }}&year={{ monthly_reports.year }}" class="btn btn-secondary">Next Month</a>
@@ -99,29 +109,38 @@
 </script>
 
 <style>
-    /* Your existing styles for the calendar */
+    /* Modern calendar styles */
     .calendar {
         margin-top: 20px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 1000%; /* Set the width to 80% of the parent container */
+        max-width: 900px; /* Optional: Set a maximum width */
+        margin-left: auto; /* Center the calendar horizontally */
+        margin-right: auto; /* Center the calendar horizontally */
     }
     .calendar-header {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        background-color: #f1f1f1;
+        background-color: #007bff; /* Bootstrap primary color */
+        color: white;
         font-weight: bold;
         text-align: center;
-        border-bottom: 2px solid #ddd;
+        padding: 10px 0;
     }
     .day-header {
         padding: 10px;
-        background-color: #e9ecef;
+        border-right: 1px solid #0056b3; /* Darker shade for separation */
     }
-    .month-calendar {
-        margin-bottom: 30px;
+    .day-header:last-child {
+        border-right: none; /* Remove border for the last header */
     }
     .calendar-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr); /* 7 columns for days of the week */
         gap: 5px;
+        padding: 10px;
     }
     .calendar-day {
         border: 1px solid #ddd;
@@ -131,11 +150,17 @@
         background-color: #ffffff;
         border-radius: 4px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s, transform 0.3s;
+    }
+    .calendar-day:hover {
+        background-color: #f0f8ff; /* Light blue on hover */
+        transform: scale(1.02); /* Slightly enlarge on hover */
     }
     .date {
         font-weight: bold;
         margin-bottom: 5px;
         text-align: center;
+        font-size: 1.2em; /* Larger font for the date */
     }
     .reports {
         font-size: 0.9em;
@@ -146,6 +171,10 @@
         border-radius: 4px;
         padding: 5px;
         margin-bottom: 5px;
+        transition: background-color 0.3s;
+    }
+    .report:hover {
+        background-color: #e2e6ea; /* Slightly darker on hover */
     }
     .no-report {
         color: #6c757d;

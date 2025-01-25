@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
+from django.contrib import messages, admin
 from django.contrib.auth.models import User, auth
 from django.contrib.auth import login
-from adoption.models import PendingPetForAdoption, Admin, PetAdoptionTable, TrackUpdateTable, Notification
+from adoption.models import PendingPetForAdoption, Admin, PetAdoptionTable, TrackUpdateTable, Notification, AdminUser
 from django.core.paginator import Paginator
-from .forms import PetAdoptionForm, SignUpForm, LoginForm, PetAdoptionFormRequest, AdminProfileForm, TrackUpdateForm, PendingPetForAdoptionForm
+from .forms import PetAdoptionForm, SignUpForm, LoginForm, PetAdoptionFormRequest, AdminProfileForm, TrackUpdateForm, PendingPetForAdoptionForm,AdminSignupForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
@@ -15,6 +15,13 @@ from django.contrib.auth import login as auth_login, authenticate
 from django.utils import timezone
 from django.contrib.auth.views import LogoutView
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from geopy.geocoders import Nominatim
+from geopy.exc import GeocoderTimedOut
+from django.views.decorators.http import require_http_methods
+from rest_framework.permissions import BasePermission
+from rest_framework import authentication
+import spacy
 import pytz
 import nltk
 from nltk.tokenize import word_tokenize
@@ -26,12 +33,20 @@ import calendar
 # Get the month names
 months = list(calendar.month_name)
 
+
+def admin_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        if hasattr(request.user, 'adminuser'):
+            return view_func(request, *args, **kwargs)
+        return HttpResponseForbidden("You do not have permission to access this page.")
+    return _wrapped_view
+
 # Accessing the first month
 print(months[1])  # Output: January
 # views.py
 from rest_framework import viewsets
 from adoption.models import Admin, PetAdoptionRequestTable, PetAdoptionTable, PendingPetForAdoption
-from adoption.serializers import AdminSerializer, PetAdoptionRequestTableSerializer, PetAdoptionTableSerializer, PendingPetForAdoptionSerializer, TrackUpdateTableSerializer, UpdatePendingPetSerializer
+from adoption.serializers import AdminSerializer, PetAdoptionRequestTableSerializer, PetAdoptionTableSerializer, PendingPetForAdoptionSerializer, TrackUpdateTableSerializer, UpdatePendingPetSerializer, NotificationSerializer
 
 class AdminViewSet(viewsets.ModelViewSet):
     queryset = Admin.objects.all()
@@ -57,6 +72,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
 from adoption.serializers import PendingPetForAdoptionSerializer
 
 class PendingPetForAdoptionViewSet(viewsets.ModelViewSet):
@@ -72,6 +88,9 @@ class PendingPetForAdoptionViewSet(viewsets.ModelViewSet):
     
 def landing(request):
     return render(request, 'landing.html')  # Ensure 'landing.html' is the correct path
+
+def mobileTermsandConsitions(request):
+    return render(request, 'terms_conditions.html')  # Ensure 'landing.html' is the correct path
 
 from rest_framework import status
 @api_view(['POST'])
@@ -130,19 +149,46 @@ def create_adoption_request(request):
         return Response({"message": "Adoption request created"}, status=status.HTTP_201_CREATED)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(['GET'])
+def RequestAdoptionRequestList(request):
+    user_id = request.GET.get('userId')  # Get the user ID from query parameters
+    if not user_id:
+        return Response({"error": "User  ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Fetch pet IDs associated with the user from PendingPetForAdoption
+    pending_pets = PendingPetForAdoption.objects.filter(user_id=user_id)
+    pet_ids = pending_pets.values_list('id', flat=True)  # Get a list of pet IDs
+
+    if not pet_ids:
+        return Response({"message": "No pending pets found for this user."}, status=status.HTTP_404_NOT_FOUND)
+
+    # Fetch adoption requests based on pet IDs and check for pending or review status
+    adoption_requests = PetAdoptionTable.objects.filter(
+        pet_id__in=pet_ids,
+        adoption_request_status__in=['pending', 'review']  # Check for both 'pending' and 'review' statuses
+    )
+
+    # Serialize the data (assuming you have a serializer set up)
+    serializer = PetAdoptionTableSerializer(adoption_requests, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+
 class PetCreateView(generics.CreateAPIView):
     queryset = PendingPetForAdoption.objects.all()
     serializer_class = PendingPetForAdoptionSerializer
+    permission_classes = [IsAuthenticated]  # Require authentication
 
     def create(self, request, *args, **kwargs):
-        # Use the serializer to validate and save the incoming data
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()  # Save the new pet record
-            return Response(serializer.data, status=status.HTTP_201_CREATED)  # Respond with the created data
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # Return errors if validation fails
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 class PostPendingPetViewSet(viewsets.ViewSet):
     def list(self, request):
@@ -268,7 +314,7 @@ def post_adoption_edit(request, id):
     pet = get_object_or_404(PendingPetForAdoption, id=id)
     
     if request.method == 'POST':
-        form = PendingPetForAdoptionForm(request.POST, instance=pet)
+        form = PendingPetForAdoptionForm(request.POST, request.FILES, instance=pet)  # Include request.FILES
         if form.is_valid():
             form.save()
             return redirect('adoption_table')  # Redirect to the detail view after saving
@@ -296,7 +342,7 @@ def post_adoption_delete(request, id):
         print(f"Deleted pet: {pet.name}.")
         
         # Redirect to the adoption list after deletion
-        return redirect('adoption_list')
+        return redirect('adoption_table')
 
     # Render the confirmation template if the request is not POST
     return render(request, 'post_confirm_delete.html', {'pet': pet})
@@ -556,6 +602,9 @@ def update_status(request, request_id, new_status):
             pending_pet.adoption_status = 'Pet is already adopted'
             pending_pet.save()  # Save the changes to the database
 
+        # Call the new function to update other requests
+        update_other_requests(pet_id)
+
     elif new_status == 'rejected':
         req.approval_date_time = None  # Clear approval date if rejected
 
@@ -565,6 +614,13 @@ def update_status(request, request_id, new_status):
     # Redirect to the view requests page or wherever you want to go after updating
     return redirect('view_requests')  # Make sure 'view_requests' is a valid URL name
 
+def update_other_requests(pet_id):
+    # Filter PetAdoptionTable for requests with the same pet_id and status 'pending' or 'deny'
+    other_requests = PetAdoptionTable.objects.filter(pet_id=pet_id, adoption_request_status__in=['pending', 'deny'])
+    for other_request in other_requests:
+        # Update the adoption status to indicate the pet is already adopted
+        other_request.adoption_request_status = 'Pet is already adopted'
+        other_request.save()  # Save the changes to the database
 
                                                    
 def admin_report_detail(request, report_id):
@@ -578,45 +634,62 @@ def admin_home(request):
 def home(request):
     return render(request, 'home.html')
 
-def custom_login(request):
+
+@csrf_exempt  # Temporarily disable CSRF for debugging
+def admin_login(request):
     if request.method == 'POST':
+        print("CSRF Token from request:", request.POST.get('csrfmiddlewaretoken'))
+        print("CSRF Token from session:", request.META.get('CSRF_COOKIE'))
         username = request.POST.get('username')
         password = request.POST.get('password')
         
-        # Custom authentication logic
-        try:
-            user = Admin.objects.get(username=username)  # Fetch the user by username
-            if user.check_password(password):  # Check the password
-                # Specify the backend when logging in
-                auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')  # Adjust backend as necessary
-                return redirect('homepage_admin')  # Redirect to the admin home page
-            else:
-                messages.error(request, 'Invalid username or password.')
-        except Admin.DoesNotExist:
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            next_url = request.POST.get('next', 'homepage_admin')
+            return redirect(next_url)
+        else:
             messages.error(request, 'Invalid username or password.')
+            print("Invalid login attempt.")
     
-    return render(request, 'registration/login.html')  # Render the login template
+    return render(request, 'admin_home.html')
 
+@login_required
+@admin_required
 def admin_homepage(request):
+    print("Current user:", request.user)  # Debugging line
+    print("Is user authenticated?", request.user.is_authenticated)  # Check if user is authenticated
+    print("Session data:", request.session.items())  # Log session data
+
     # Get the current time in the Philippines
     philippines_tz = pytz.timezone('Asia/Manila')
     philippines_time = timezone.now().astimezone(philippines_tz).strftime('%Y-%m-%d %H:%M:%S')
 
     return render(request, 'admin_homepage.html', {
-        'user': request.user,  # This will still provide user info, even if not authenticated
+        'user': request.user,
         'philippines_time': philippines_time,
     })
 
 def admin_signup(request):
     if request.method == 'POST':
-        form = EmptyForm(request.POST)  # Use the empty form
+        form = AdminSignupForm(request.POST)
         if form.is_valid():
-            # You can add logic here to handle the form submission
-            return redirect('homepage_admin')  # Redirect to a success page (adjust as needed)
+            # Create the user
+            user = form.save(commit=False)  # Don't save yet
+            user.is_staff = form.cleaned_data.get('is_staff')  # Set is_staff based on form input
+            user.save()  # Now save the user
+            
+            # Create an AdminUser  instance
+            AdminUser .objects.create(user=user)  # Create the associated AdminUser 
+            
+            messages.success(request, 'User  created successfully! You can now log in.')
+            return redirect('admin_home')  # Redirect to the login page after successful signup
     else:
-        form = EmptyForm()  # Create a blank form
+        form = AdminSignupForm()
+    
+    return render(request, 'admin_signup.html', {'form': form})
 
-    return render(request, 'admin_signup.html', {'form': form})  # Pass the form to the template
 def admin_approved_pet(request):
     # Query the PendingPetForAdoption model for pets with adoption_status 'approved'
     approved_pets_list = PendingPetForAdoption.objects.filter(adoption_status='approved')
@@ -789,6 +862,7 @@ def reportadopted_pets(request):
     return render(request, 'adopted_pets.html', {'adopted_pets': adopted_pets})
 
 
+@login_required
 def reportRequestpet_detail(request, pet_id):
     # Get the pet object
     pet = get_object_or_404(PendingPetForAdoption, id=pet_id)
@@ -804,23 +878,45 @@ def reportRequestpet_detail(request, pet_id):
         if not track_updates.exists():
             Notification.objects.create(user=request.user, message="No track updates found for this pet.")
         
-        # Get all follow-up dates
+        # Determine the current month and year or use the provided month and year from the request
+        current_month = int(request.GET.get('month', timezone.now().month))
+        current_year = int(request.GET.get('year', timezone.now().year))
+
+        # Calculate the starting date for the tracking period
         followup_dates = track_updates.values_list('followup_date', flat=True)
+        if followup_dates:
+            first_followup_date = min(followup_dates)
+            tracking_start_date = first_followup_date  # Just use the first follow-up date as the starting point
+        else:
+            tracking_start_date = timezone.now()  # Fallback if no follow-up dates
 
-        # Prepare monthly reports
-        current_month = timezone.now().month
-        current_year = timezone.now().year
+        # Filter track updates for the selected month and year
+        filtered_updates = track_updates.filter(
+            followup_date__year=current_year,
+            followup_date__month=current_month
+        )
 
-        # Create a structure to hold daily reports
+        # Count the number of reports for the month
+        report_count = filtered_updates.count()
+
+        # Create a notification if reports are less than 2
+        if report_count < 2:
+            Notification.objects.create(user=request.user, message=f"Only {report_count} reports found for {pet.name} in {current_month}/{current_year}.")
+
+        # Create a structure to hold daily reports for the selected month
         daily_reports = {}
-        for followup_date in followup_dates:
+        for followup_date in filtered_updates.values_list('followup_date', flat=True).distinct():  # Use distinct to avoid duplicates
             day = followup_date.day
             if day not in daily_reports:
                 daily_reports[day] = []
             
             # Use filter instead of get to handle multiple reports
-            reports_for_date = track_updates.filter(followup_date=followup_date)
-            daily_reports[day].extend(reports_for_date)  # Add all reports for that day
+            reports_for_date = filtered_updates.filter(followup_date=followup_date)
+            
+            # Add unique reports for the day
+            for report in reports_for_date:
+                if report not in daily_reports[day]:  # Check for uniqueness
+                    daily_reports[day].append(report)  # Add the report if it's not already in the list
 
         # Calculate empty cells for the calendar
         first_day_of_month = timezone.datetime(current_year, current_month, 1)
@@ -838,6 +934,7 @@ def reportRequestpet_detail(request, pet_id):
             'daily_reports': daily_reports,
             'empty_cells_before': [None] * empty_cells_before,  # Create a list of None for empty cells
             'empty_cells_after': [None] * empty_cells_after,  # Create a list of None for empty cells
+            'tracking_start_date': tracking_start_date,  # Add tracking start date to context
         }
 
     else:
@@ -850,9 +947,11 @@ def reportRequestpet_detail(request, pet_id):
         'track_updates': track_updates,
         'monthly_reports': monthly_reports,
     })
+
 def report_detail(request, id):
-    report = get_object_or_404(TrackUpdateTable, id=id)
-    return render(request, 'report_details.html', {'report': report})
+    # Assuming you have an adoption_id field in your TrackUpdateTable model
+    reports = TrackUpdateTable.objects.filter(id=id)  # Change 'adoption_id' to the actual field name
+    return render(request, 'report_details.html', {'reports': reports})
 
 from django import template
 register = template.Library()
@@ -911,27 +1010,49 @@ def mark_notifications_read(request):
 # Ensure you have the necessary NLTK resources
 nltk.download('punkt')
 
+# Load the spaCy model
+nlp = spacy.load("en_core_web_sm")
+
 def search_results(request):
     query = request.GET.get('q')  # Get the search query from the URL parameters
-    adoption_listings = []  # Initialize an empty list for adoption listings
+    adoption_listings = None  # Initialize adoption_listings to None
 
     if query:  # If there is a search query
-        # Tokenize the query into words
-        tokens = word_tokenize(query.lower())  # Convert to lowercase and tokenize
+        # Process the query with spaCy
+        doc = nlp(query.lower())
 
-        # Filter the PendingPetForAdoption model based on the search query
-        # This is a simple example; you may want to enhance this logic
-        adoption_listings = PendingPetForAdoption.objects.filter(
-            name__icontains=query  # Adjust the field as necessary
-        )
+        # Extract meaningful tokens (e.g., nouns, adjectives, entities)
+        keywords = [token.text for token in doc if not token.is_stop and not token.is_punct]
 
-        # You can further refine the search using tokens
-        for token in tokens:
-            adoption_listings = adoption_listings.filter(
-                additional_details__icontains=token  # Assuming you have a description field
-            )
+        # Optional: Expand keywords with synonyms or related terms
+        synonyms = {
+            "dog": ["dog", "canine", "puppy"],
+            "cat": ["cat", "feline", "kitten"],
+            "small": ["small", "tiny", "little"],
+            "black": ["black", "dark", "ebony"],
+        }
+        expanded_keywords = []
+        for keyword in keywords:
+            expanded_keywords.append(keyword)
+            if keyword in synonyms:
+                expanded_keywords.extend(synonyms[keyword])
 
-    return render(request, 'search_results.html', {'adoption_listings': adoption_listings})
+        # Filter the PendingPetForAdoption model using the expanded keywords
+        q_objects = Q()
+        for keyword in expanded_keywords:
+            q_objects |= Q(animal_type__icontains=keyword) | \
+                        Q(breed__icontains=keyword) | \
+                        Q(color__icontains=keyword) | \
+                        Q(gender__icontains=keyword) | \
+                        Q(age__icontains=keyword) | \
+                        Q(location__icontains=keyword) | \
+                        Q(additional_details__icontains=keyword) | \
+                        Q(author__icontains=keyword)
+
+        adoption_listings = PendingPetForAdoption.objects.filter(q_objects, adoption_status='approved')
+
+    return render(request, 'homepage.html', {'adoption_listings': adoption_listings, 'query': query})
+
 
 from django.contrib.auth import logout as auth_logout
 def logout(request):
@@ -972,12 +1093,325 @@ def edit_profile(request):
     if request.method == 'POST':
         form = AdminProfileForm(request.POST, instance=request.user)
         if form.is_valid():
-            form.save()
-            return redirect('homepage_admin')
+            form.save()  # Save the updated user profile
+            messages.success(request, 'Profile updated successfully!')  # Success message
+            return redirect('homepage_admin')  # Redirect to the admin homepage after successful update
     else:
-        form = AdminProfileForm(instance=request.user)
-    return render(request, 'edit_profile.html', {'form': form})
+        form = AdminProfileForm(instance=request.user)  # Pre-fill the form with the current user's data
+
+    return render(request, 'edit_profile.html', {'form': form})  # Render the form in the template
 
 def admin_approved_pet_detail(request, pet_id):
     admin_approved_pet_detail = PendingPetForAdoption.objects.get(id=pet_id)
     return render(request, 'admin_approved_pet_detail.html', {'admin_approved_pet_detail': admin_approved_pet_detail})
+
+@require_http_methods(['POST'])
+def send_notification(request):
+    recipient_id = request.POST.get('recipient_id')
+    message = request.POST.get('message')
+    try:
+        recipient = User.objects.get(id=recipient_id)
+        notification = Notification(user=recipient, message=message)
+        notification.save()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False})
+
+###################################   API SECTION    ###################################################################
+from django.middleware.csrf import get_token
+def get_csrf_token(request):
+    csrf_token = get_token(request)
+    return JsonResponse({'csrfToken': csrf_token})
+
+import json
+from django.views import View
+from rest_framework_simplejwt.tokens import RefreshToken
+class login_react(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            # Parse the JSON body
+            data = json.loads(request.body)
+            username = data.get('username')
+            password = data.get('password')
+
+            # Check if username and password are provided
+            if not username or not password:
+                return JsonResponse({'error': 'Username and password are required.'}, status=400)
+
+            # Authenticate the user
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                
+                # Generate token
+                refresh = RefreshToken.for_user(user)
+                return JsonResponse({
+                    'message': 'Login successful',
+                    'user_id': user.id,
+                    'username': user.username,
+                    'token': str(refresh.access_token)  # Include the access token
+                })
+            else:
+                return JsonResponse({'error': 'Invalid credentials'}, status=400)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+        
+@csrf_exempt  # Use this for testing; consider using CSRF protection in production
+def api_signup(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        first_name = data.get('first_name')
+        last_name = data.get('last_name')
+        email = data.get('email')
+
+        # Create the user
+        user = User.objects.create_user(username=username, password=password, first_name=first_name, last_name=last_name, email=email)
+        return JsonResponse({'message': 'User  created successfully'}, status=201)
+
+    return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+class AdoptionRequestUpdateView(generics.UpdateAPIView):
+    queryset = PetAdoptionTable.objects.all()
+    serializer_class = PetAdoptionTableSerializer
+
+    def put(self, request, *args, **kwargs):
+        # Get the adoption request object by ID
+        try:
+            adoption_request = self.get_object()
+        except PetAdoptionTable.DoesNotExist:
+            return Response({'error': 'Adoption request not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Update the adoption_request_status
+        adoption_request_status = request.data.get('adoption_request_status')
+        if adoption_request_status:
+            adoption_request.adoption_request_status = adoption_request_status
+
+            # If the status is set to "review", you can add any additional logic here if needed
+            if adoption_request_status == 'review':
+                # You can add any specific logic for when the status is set to "review"
+                pass
+
+            # If approving, set the approval date and time and update the pet status
+            elif adoption_request_status == 'approved':
+                adoption_request.approval_date_time = timezone.now()  # Assuming you have this field
+
+                # Update the corresponding pet's adoption status
+                pet_id = adoption_request.pet_id  # Assuming pet_id is a field in PetAdoptionTable
+                try:
+                    pending_pet = PendingPetForAdoption.objects.get(id=pet_id)
+                    pending_pet.adoption_status = 'Pet is already adopt'  # Update the adoption status
+                    pending_pet.save()  # Save the changes
+                except PendingPetForAdoption.DoesNotExist:
+                    return Response({'error': 'Pending pet not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+            # If denying, you can add any additional logic here if needed
+            elif adoption_request_status == 'rejected':
+                adoption_request.approval_date_time = timezone.now()  # Assuming you have this field
+
+        # Save the updated object
+        adoption_request.save()
+
+        # Serialize the updated object and return the response
+        serializer = self.get_serializer(adoption_request)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+class AdoptionRequestList(generics.ListAPIView):
+    """
+    View to list all pending pets for a specific user.
+    """
+    serializer_class = PetAdoptionTableSerializer
+    permission_classes = [IsAuthenticated]  # Ensure the user is authenticated
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the pending pets
+        for the user as determined by the user_id in the URL.
+        """
+        user_id = self.kwargs['user_id']  # Get user_id from the URL
+        return PetAdoptionTable.objects.filter(user_id=user_id)  # Filter by user_id and status
+    
+
+def get_pending_pets(request):
+    geolocator = Nominatim(user_agent="pet_adoption_app")
+    pending_pets = PendingPetForAdoption.objects.filter(adoption_status='approved')
+    
+    pet_data = []
+    for pet in pending_pets:
+        try:
+            # Get coordinates from location string
+            location = geolocator.geocode(pet.location)
+            latitude = location.latitude if location else None
+            longitude = location.longitude if location else None
+        except GeocoderTimedOut:
+            # Handle timeout error
+            latitude = None
+            longitude = None
+            print(f"Geocoding timed out for location: {pet.location}")
+
+        pet_data.append({
+            'id':pet.id,
+            'name': pet.name,
+            'animal_type': pet.animal_type,
+            'breed': pet.breed,
+            'color': pet.color,
+            'gender': pet.gender,
+            'age': pet.age,
+            'location': pet.location,
+            'latitude': latitude,
+            'longitude': longitude,
+            'additional_details': pet.additional_details,
+            'img': pet.img.url if pet.img else None,
+            'author': pet.author,
+            'created_at': pet.created_at.isoformat(),
+        })
+    
+    return JsonResponse(pet_data, safe=False)
+
+def get_traffic_data(request, pet_id):
+    try:
+        logging.info(f"Fetching traffic data for pet ID: {pet_id}")
+        pet = PendingPetForAdoption.objects.get(id=pet_id)
+        logging.info(f"Pet object: {pet}")
+
+        geolocator = Nominatim(user_agent="petmet_app")
+        max_attempts = 3
+        attempt = 0
+
+        while attempt < max_attempts:
+            try:
+                location = geolocator.geocode(pet.location, timeout=10)  # Set a timeout of 10 seconds
+                logging.info(f"Geocoded location: {location}")
+                break
+            except GeocoderTimedOut:
+                logging.error("Geocoding service timed out. Retrying...")
+                attempt += 1
+            except GeocoderServiceError as e:
+                logging.error(f"Geocoding service error: {str(e)}")
+                return JsonResponse({'error': str(e)}, status=500)
+
+        if location:
+            traffic_data = {
+                'coordinates': [
+                    {'latitude': location.latitude, 'longitude': location.longitude},
+                    # Add more coordinates as needed
+                ]
+            }
+            logging.info(f"Traffic data: {traffic_data}")
+            return JsonResponse(traffic_data)
+        else:
+            logging.error("Location not found")
+            return JsonResponse({'error': 'Location not found'}, status=404)
+    except PendingPetForAdoption.DoesNotExist:
+        logging.error(f"Pet not found with ID: {pet_id}")
+        return JsonResponse({'error': 'Pet not found'}, status=404)
+    except Exception as e:
+        logging.error(f"Error fetching traffic data: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+def search_pending_pets(request):
+    if request.method == 'GET':
+        search_term = request.GET.get('search')
+        if search_term:
+            pending_pets = PendingPetForAdoption.objects.filter(
+                Q(adoption_status='approved') &
+                (
+                    Q(name__icontains=search_term) |
+                    Q(animal_type__icontains=search_term) |
+                    Q(breed__icontains=search_term) |
+                    Q(color__icontains=search_term) |
+                    Q(gender__icontains=search_term) |
+                    Q(age__icontains=search_term) |
+                    Q(location__icontains=search_term) |
+                    Q(additional_details__icontains=search_term)
+                )
+            )
+        else:
+            pending_pets = PendingPetForAdoption.objects.filter(adoption_status='approved')
+        results = []
+        for pet in pending_pets:
+            results.append({
+                'id': pet.id,
+                'name': pet.name,
+                'animal_type': pet.animal_type,
+                'breed': pet.breed,
+                'color': pet.color,
+                'gender': pet.gender,
+                'age': pet.age,
+                'location': pet.location,
+                'additional_details': pet.additional_details,
+                'img': pet.img.url,
+                'author': pet.author,
+            })
+        return JsonResponse({'results': results}, safe=False)
+    else:
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_get_notifications(request):
+    notifications = Notification.objects.filter(user=request.user, is_read=False)
+    notifications_data = [{'id': n.id, 'message': n.message, 'created_at': n.created_at} for n in notifications]
+    return Response({'notifications': notifications_data, 'count': notifications.count()})
+
+class GetNotificationsView(APIView):
+  def get(self, request):
+    user_id = request.query_params.get('user_id', None)
+    
+    if user_id:
+      # Fetch notifications for the specified user ID
+      notifications = Notification.objects.filter(user_id=user_id).order_by('-created_at')
+      unread_notifications = notifications.filter(is_read=False)
+      
+      serializer = NotificationSerializer(notifications, many=True)
+      
+      # Return the notifications and count
+      return Response({
+        'notifications': serializer.data,
+        'count': unread_notifications.count(),
+      }, status=200)
+    else:
+      # Return an error if no user_id is provided
+      return Response({'error': 'User   ID is required'}, status=400)
+    
+def create_user_and_token(username, password):
+    user = User.objects.create_user(username=username, password=password)
+    token = Token.objects.create(user=user)
+    return token.key
+
+class IsAuthenticatedUser(BasePermission):
+    def has_permission(self, request, view):
+        user_id = request.data.get('user_id', None)
+        if not user_id:
+            return False
+        user = request.user
+        if user.id != int(user_id):
+            return False
+        return True
+
+class ReactMarkNotificationAsReadView(APIView):
+    authentication_classes = []
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        notification_id = request.query_params.get('notification_id', None)
+
+        if not notification_id:
+            return Response({'error': 'Notification ID is required'}, status=400)
+
+        try:
+            notification = Notification.objects.filter(id=notification_id).first()
+            if notification:
+                notification.is_read = True  # Mark the notification as read
+                notification.save()
+                return Response({'message': 'Notification marked as read'}, status=200)
+            else:
+                return Response({'error': 'Notification not found'}, status=404)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)

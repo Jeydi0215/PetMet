@@ -133,7 +133,6 @@ class PendingPetForAdoption(models.Model):
     img = models.ImageField(upload_to='pics')
     author = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
-    adoption_id = models.CharField(max_length=36, unique=True, blank=True)
     adoption_status = models.CharField(max_length=20, default='pending')
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # new field
 
@@ -141,8 +140,6 @@ class PendingPetForAdoption(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        if not self.adoption_id:
-            self.adoption_id = str(uuid.uuid4())
         self.author = self.user.username  # Set author to user's username
         super(PendingPetForAdoption, self).save(*args, **kwargs)
 
@@ -181,4 +178,10 @@ class Notification(models.Model):
 
 # Don't forget to run migrations after adding the new model
 
+class AdminUser (models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # Add any additional fields you want for admin users
+    is_super_admin = models.BooleanField(default=False)  # Example field
 
+    def __str__(self):
+        return self.user.username

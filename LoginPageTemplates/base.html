@@ -91,21 +91,6 @@
                     <nav class="navbar">
                         <ul class="d-flex">
                             <li><a href="{% url 'homepage' %}">Home</a></li>
-                            <li class="notification-icon">
-                                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" style="position: relative;">
-                                    <i class="bi bi-bell" style="font-size: 30px; color: white; background-color: black; border-radius: 50%; padding: 5px;width: 25px;"></i>
-                                    {% if notifications_count > 0 %}
-                                    <span class="badge">{{ notifications_count }}</span>
-                                    {% endif %}
-                                </a>
-                                <ul class="dropdown-menu">
-                                    {% for notification in notifications %}
-                                    <li><a href="#" class="dropdown-item">{{ notification.message }}</a></li>
-                                    {% empty %}
-                                    <li><a href="#" class="dropdown-item">No new notifications</a></li>
-                                    {% endfor %}
-                                </ul>
-                            </li>
                             <li><a href="{% url 'add_pet' %}">Add Pet for Adoption</a></li>
                             <li class="nav-item dropdown">
                                 <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">Request</a>
@@ -121,6 +106,21 @@
                                     <li><a href="{% url 'adoption_table' %}" class="dropdown-item">Post History</a></li>
                                 </ul>
                             </li>
+                            <li class="notification-icon">
+                                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" style="position: relative;">
+                                    <i class="bi bi-bell" style="font-size: 30px; color: white; background-color: black; border-radius: 50%; padding: 5px;width: 25px;"></i>
+                                    {% if notifications_count > 0 %}
+                                    <span class="badge">{{ notifications_count }}</span>
+                                    {% endif %}
+                                </a>
+                                <ul class="dropdown-menu">
+                                    {% for notification in notifications %}
+                                    <li><a href="#" class="dropdown-item">{{ notification.message }}</a></li>
+                                    {% empty %}
+                                    <li><a href="#" class="dropdown-item">No new notifications</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
                             {% if user.is_authenticated %}
                             <li class="nav-item dropdown">
                                 <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">{{ user.username }}</a>
@@ -134,7 +134,7 @@
                         </ul>
                     </nav>
                 </header>
-                <div class="container mt-4">
+                <div class="container">
                     {% block content %}
                     {% endblock %}
                 </div>

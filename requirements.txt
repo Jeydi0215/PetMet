@@ -1,8 +1,0 @@
-django
-djangorestframework
-djangorestframework-simplejwt
-spacy
-nltk
-geopy
-pytz
-nominatim 

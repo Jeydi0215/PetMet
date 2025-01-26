@@ -1,19 +1,13 @@
 {
-    "builds": [
-      {
+    "builds": [{
         "src": "PetMet/wsgi.py",
         "use": "@vercel/python",
-        "config": {
-          "maxLambdaSize": "15mb",
-          "runtime": "python3.9",
-          "installCommand": "pip install django"
-        }
-      }
-    ],
+        "config": { "maxLambdaSize": "15mb", "runtime": "python3.9" }
+    }],
     "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "PetMet/wsgi.py"
-      }
+        {
+            "src": "/(.*)",
+            "dest": "PetMet/wsgi.py"
+        }
     ]
-  }
+}

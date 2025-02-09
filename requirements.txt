@@ -1,8 +1,15 @@
 django
 djangorestframework
 djangorestframework-simplejwt
+numpy==1.23.5
 spacy
 nltk
 geopy
 pytz
 nominatim 
+psycopg2-binary
+dj_database_url
+whitenoise[brotli]
+gunicorn
+django-cors-headers
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0.tar.gz

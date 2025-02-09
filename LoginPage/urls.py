@@ -1,7 +1,7 @@
 from django.urls import path, include
 from . import views
 from rest_framework.routers import DefaultRouter
-from .views import PetCreateView, PostPendingPetViewSet, PendingPetList, ReactAdoptedPetsView, ReactAdoptPetDetailView, ReactTrackUpdateList, UpdatePendingPetView,  ReactCustomUserDetailView, ReactCreateUserView, login_react, AdoptionRequestUpdateView, AdoptionRequestList, GetNotificationsView, ReactMarkNotificationAsReadView
+from .views import PetCreateView, PostPendingPetViewSet, AdminAdoptedPetDetailView, AdminAdoptedPetsList, AdminApprovedPetsList, AdminPendingPetList, PendingPetList, ReactAdoptedPetsView, ReactAdoptPetDetailView, AdminLoginView, ReactTrackUpdateList, UpdatePendingPetView,  ReactCustomUserDetailView, ReactCreateUserView, login_react, AdoptionRequestUpdateView, AdoptionRequestList, GetNotificationsView, ReactMarkNotificationAsReadView, UpdatePendingPetView
 #, PetSearchView, AdoptionRequestList,, RequestAdoptionRequestList, AdoptionRequestUpdateView, UserSignupView, AdminLoginView, AdminPendingPetList,AdminPetViewSet, AdminApprovedPetsList, AdminAdoptedPetsList, AdoptionDetailView,AdminAdoptedPetDetailView,
 router = DefaultRouter()
 router.register(r'admins', views.AdminViewSet)
@@ -58,11 +58,11 @@ urlpatterns = [
     #path('api/requestpetadoptiontable/', RequestAdoptionRequestList, name='adoption-requests'),
     path('api/petadoptiontable-requests/<int:pk>/', AdoptionRequestUpdateView.as_view(), name='petadoption-request-update'),
     path('api/auth/signup/', views.api_signup, name='user-signup'),
-    #path('api/admin_login/', AdminLoginView.as_view(), name='admin_login'),
-    #path('api/pets/pending/', AdminPendingPetList.as_view(), name='admin_pending-pets'),
+    path('api/admin_login/', AdminLoginView.as_view(), name='react_admin_login'),
+    path('api/pets/pending/', AdminPendingPetList.as_view(), name='admin_pending-pets'),
     #path('api/admin_pets/<str:pk>/', AdminPetViewSet.as_view({'patch': 'partial_update'}), name='admin_pet-detail'),
-    #path('api/pets/admin_approved/', AdminApprovedPetsList.as_view(), name='admin_approved-pets-list'),
-    #path('api/pets/admin_adopted/', AdminAdoptedPetsList.as_view(), name='admin_adopted-pets-list'),
+    path('api/pets/admin_approved/', AdminApprovedPetsList.as_view(), name='admin_approved-pets-list'),
+    path('api/pets/admin_adopted/', AdminAdoptedPetsList.as_view(), name='admin_adopted-pets-list'),
     path('reportadopted_pets/', views.reportadopted_pets, name='reportadopted_pets'),
     path('reportRequestpet_detail/<int:pet_id>/', views.reportRequestpet_detail, name='reportRequestpet_detail'),  # Detail view for a specific pet
     path('add_report/<int:pet_id>/', views.add_report, name='add_report'),
@@ -78,7 +78,7 @@ urlpatterns = [
     path('api/react_track_update_table/', ReactTrackUpdateList.as_view(), name='react_track-update-list'),
     path('api/react_edit_postpending-pets/<int:pk>/', UpdatePendingPetView.as_view(), name='update_pending_pet'),
     path('api/postpending-pets/<int:post_id>/', views.delete_pending_pet, name='delete_pending_pet'),
-    #path('api/pets/admin_pet_adoption/<int:pk>/', AdminAdoptedPetDetailView.as_view(), name='admin_pet_adoption-detail'),
+    path('api/pets/admin_pet_adoption/<int:pk>/', AdminAdoptedPetDetailView.as_view(), name='admin_pet_adoption-detail'),
     path('api/react_admin_user/<int:pk>/', ReactCustomUserDetailView.as_view(), name='react_customuser-detail'),
     path('api/react_create_users/', ReactCreateUserView.as_view()),
     path('terms/', views.terms_conditions_view, name='terms_conditions'),
@@ -93,4 +93,5 @@ urlpatterns = [
     path('api/mark_notification_as_read/', ReactMarkNotificationAsReadView.as_view(), name='mark_notification_as_read'),
     path('send-notification/', views.send_notification, name='send_notification'),
     path('api/reactTermsandConditions/', views.mobileTermsandConsitions, name='reactTermsandConditions'),
+    path('api/pets/pending/<int:pk>/', UpdatePendingPetView.as_view(), name='update_pending_pet'),
 ]

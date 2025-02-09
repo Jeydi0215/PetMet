@@ -19,6 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut
 from django.views.decorators.http import require_http_methods
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import BasePermission
 from rest_framework import authentication
 import spacy
@@ -1415,3 +1416,107 @@ class ReactMarkNotificationAsReadView(APIView):
                 return Response({'error': 'Notification not found'}, status=404)
         except Exception as e:
             return Response({'error': str(e)}, status=500)
+        
+class AdminLoginView(APIView):
+    authentication_classes = [TokenAuthentication, BasicAuthentication]
+    permission_classes = []
+
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({'message': 'Username does not exist'}, status=401)
+
+        if not user.check_password(password):
+            return Response({'message': 'Invalid password'}, status=401)
+
+        try:
+            admin_user = AdminUser  .objects.get(user_id=user.id)
+        except AdminUser  .DoesNotExist:
+            return Response({'message': 'User   is not an admin'}, status=401)
+
+        return Response({'message': 'Login successful', 'id': user.id})
+    
+class AdminPendingPetList(APIView):
+    def get(self, request):
+        pending_pets = PendingPetForAdoption.objects.filter(adoption_status='pending')
+        serializer = PendingPetForAdoptionSerializer(pending_pets, many=True)
+        return Response(serializer.data)
+    
+class UpdatePendingPetView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = []
+
+    def patch(self, request, pk):
+        try:
+            pet = PendingPetForAdoption.objects.get(pk=pk)
+        except PendingPetForAdoption.DoesNotExist:
+            return Response({'message': 'Pet not found'}, status=404)
+
+        serializer = PendingPetForAdoptionSerializer(pet, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+    
+class AdminApprovedPetsList(APIView):
+    def get(self, request):
+        approved_pets = PendingPetForAdoption.objects.filter(adoption_status='approved')
+        serializer = PendingPetForAdoptionSerializer(approved_pets, many=True)
+        return Response({'results': serializer.data})
+    
+class AdminAdoptedPetsList(APIView):
+    def get(self, request):
+        adopted_pets = PendingPetForAdoption.objects.filter(adoption_status='Pet is already adopt')
+        serializer = PendingPetForAdoptionSerializer(adopted_pets, many=True)
+        return Response({'results': serializer.data})
+
+class AdminAdoptedPetDetailView(APIView):
+    def get(self, request, pk, format=None):
+        try:
+            # Step 1: Filter the PendingPetForAdoption model by the received id
+            adoption = PendingPetForAdoption.objects.filter(id=pk).first()
+
+            if adoption:
+                # Step 2: Get the adopter's details using the pet_id from the adoption
+                adopter = PetAdoptionTable.objects.filter(pet_id=adoption.id).first()
+
+                if adopter:  # Check if an adopter was found
+                    # Step 3: Get the track updates for the adoption using the adopter's id
+                    track_updates = TrackUpdateTable.objects.filter(pet_adoption_request_id=adopter.id)
+
+                    # Step 4: Calculate the tracking period
+                    tracking_period = []
+                    for update in track_updates:
+                        followup_date = update.followup_date
+                        tracking_period.append(followup_date)
+                        tracking_period.append(followup_date + datetime.timedelta(days=183))  # 6 months
+
+                    # Initialize an empty list to store the response data
+                    response_data = []
+
+                    # Iterate over the pet adoption records
+                    for pet_adoption in PetAdoptionTable.objects.filter(pet_id=adoption.id, adoption_request_status='approved'):
+                        # Serialize the pet adoption data
+                        pet_adoption_serializer = PetAdoptionTableSerializer(pet_adoption)
+
+                        # Filter the track updates based on the pet_id
+                        filtered_track_updates = TrackUpdateTable.objects.filter(pet_adoption_request_id=pet_adoption.id)
+
+                        # Combine the data into a single response
+                        response_data.append({
+                            'pet_adoption': pet_adoption_serializer.data,
+                            'calendar_updates': [update.followup_date for update in filtered_track_updates]  # Filtered follow-up dates
+                        })
+
+                    return Response(response_data, status=status.HTTP_200_OK)
+                else:
+                    # If no adopter is found, you might want to handle this case
+                    return Response({'error': 'No adopter found'}, status=status.HTTP_404_NOT_FOUND)
+            else:
+                return Response({'error': 'No adoption found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

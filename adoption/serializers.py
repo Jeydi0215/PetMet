@@ -83,6 +83,19 @@ class UpdatePendingPetSerializer(serializers.ModelSerializer):
         return instance
 
 class NotificationSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+
     class Meta:
         model = Notification
-        fields = ['id', 'message', 'created_at', 'is_read']
+        fields = ['user', 'message', 'is_read']
+
+    def create(self, validated_data):
+        user = validated_data.pop('user')
+        notification = Notification.objects.create(user=user, message=validated_data['message'])
+        return notification
+    
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email']

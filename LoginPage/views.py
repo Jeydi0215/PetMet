@@ -47,7 +47,7 @@ print(months[1])  # Output: January
 # views.py
 from rest_framework import viewsets
 from adoption.models import Admin, PetAdoptionRequestTable, PetAdoptionTable, PendingPetForAdoption
-from adoption.serializers import AdminSerializer, PetAdoptionRequestTableSerializer, PetAdoptionTableSerializer, PendingPetForAdoptionSerializer, TrackUpdateTableSerializer, UpdatePendingPetSerializer, NotificationSerializer
+from adoption.serializers import AdminSerializer, PetAdoptionRequestTableSerializer, PetAdoptionTableSerializer, PendingPetForAdoptionSerializer, TrackUpdateTableSerializer, UpdatePendingPetSerializer, NotificationSerializer, UserSerializer
 
 class AdminViewSet(viewsets.ModelViewSet):
     queryset = Admin.objects.all()
@@ -507,7 +507,18 @@ class ReactCreateUserView(APIView):
     def post(self, request):
         serializer = AdminSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            # Create the user
+            user = User.objects.create_user(
+                username=serializer.validated_data['username'],
+                email=serializer.validated_data['email'],
+                password=serializer.validated_data['password']
+            )
+            user.is_staff = serializer.validated_data.get('is_staff', False)  # Set is_staff based on form input
+            user.save()  # Now save the user
+            
+            # Create an AdminUser  instance
+            AdminUser.objects.create(user=user)  # Create the associated AdminUser 
+            
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         print(serializer.errors)  # Print out the serializer errors
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -1481,12 +1492,18 @@ class AdminAdoptedPetDetailView(APIView):
             adoption = PendingPetForAdoption.objects.filter(id=pk).first()
 
             if adoption:
+                print("Adoption found:", adoption)
+
                 # Step 2: Get the adopter's details using the pet_id from the adoption
                 adopter = PetAdoptionTable.objects.filter(pet_id=adoption.id).first()
 
                 if adopter:  # Check if an adopter was found
-                    # Step 3: Get the track updates for the adoption using the adopter's id
+                    print("Adopter found:", adopter)
+
+                    # Step 3: Get the track updates for the adoption using the pet_adoption ID
                     track_updates = TrackUpdateTable.objects.filter(pet_adoption_request_id=adopter.id)
+
+                    print("Track updates:", track_updates)
 
                     # Step 4: Calculate the tracking period
                     tracking_period = []
@@ -1495,22 +1512,37 @@ class AdminAdoptedPetDetailView(APIView):
                         tracking_period.append(followup_date)
                         tracking_period.append(followup_date + datetime.timedelta(days=183))  # 6 months
 
+                    print("Tracking period:", tracking_period)
+
                     # Initialize an empty list to store the response data
                     response_data = []
 
                     # Iterate over the pet adoption records
                     for pet_adoption in PetAdoptionTable.objects.filter(pet_id=adoption.id, adoption_request_status='approved'):
+                        print("Pet adoption:", pet_adoption)
+
                         # Serialize the pet adoption data
                         pet_adoption_serializer = PetAdoptionTableSerializer(pet_adoption)
 
-                        # Filter the track updates based on the pet_id
+                        # Filter the track updates based on the pet_adoption ID
                         filtered_track_updates = TrackUpdateTable.objects.filter(pet_adoption_request_id=pet_adoption.id)
+
+                        print("Filtered track updates:", filtered_track_updates)
+
+                        # Get the pending pet details
+                        pending_pet = PendingPetForAdoption.objects.filter(id=adoption.id).first()
+
+                        print("Pending pet:", pending_pet)
 
                         # Combine the data into a single response
                         response_data.append({
                             'pet_adoption': pet_adoption_serializer.data,
-                            'calendar_updates': [update.followup_date for update in filtered_track_updates]  # Filtered follow-up dates
+                            'track_updates': TrackUpdateTableSerializer(filtered_track_updates, many=True).data,  # Include the track updates in the response data
+                            'pending_pet': PendingPetForAdoptionSerializer(pending_pet).data,  # Include the pending pet details in the response data
+                            'notes': [update.notes for update in filtered_track_updates]  # Include the notes in the response data
                         })
+
+                    print("Response data:", response_data)
 
                     return Response(response_data, status=status.HTTP_200_OK)
                 else:
@@ -1520,3 +1552,45 @@ class AdminAdoptedPetDetailView(APIView):
                 return Response({'error': 'No adoption found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class AuthUserView(APIView):
+    def get(self, request):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+class PetAdoptionTableView(APIView):
+    def get(self, request):
+        pet_adoption_table = PetAdoptionTable.objects.all()
+        serializer = PetAdoptionTableSerializer(pet_adoption_table, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ApiNotificationView(APIView):
+    def post(self, request):
+        serializer = NotificationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        else:
+            print(serializer.errors)
+            return Response(serializer.errors, status=400)
+        
+class AdminReactAdminUserView(APIView):
+    def get(self, request, pk):
+        try:
+            user = User.objects.get(pk=pk)
+            serializer = UserSerializer(user)
+            return Response(serializer.data)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+    def patch(self, request, pk):
+        try:
+            user = User.objects.get(pk=pk)
+            serializer = UserSerializer(user, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)

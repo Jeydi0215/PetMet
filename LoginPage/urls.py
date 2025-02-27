@@ -1,7 +1,7 @@
 from django.urls import path, include
 from . import views
 from rest_framework.routers import DefaultRouter
-from .views import PetCreateView, PostPendingPetViewSet, AdminAdoptedPetDetailView, AdminAdoptedPetsList, AdminApprovedPetsList, AdminPendingPetList, PendingPetList, ReactAdoptedPetsView, ReactAdoptPetDetailView, AdminLoginView, ReactTrackUpdateList, UpdatePendingPetView,  ReactCustomUserDetailView, ReactCreateUserView, login_react, AdoptionRequestUpdateView, AdoptionRequestList, GetNotificationsView, ReactMarkNotificationAsReadView, UpdatePendingPetView
+from .views import PetCreateView, PostPendingPetViewSet, AdminAdoptedPetDetailView, AdminAdoptedPetsList, AdminApprovedPetsList, AdminPendingPetList, PendingPetList, ReactAdoptedPetsView, ReactAdoptPetDetailView, AdminLoginView, ReactTrackUpdateList, UpdatePendingPetView,  ReactCustomUserDetailView, ReactCreateUserView, login_react, AdoptionRequestUpdateView, AdoptionRequestList, GetNotificationsView, ReactMarkNotificationAsReadView, UpdatePendingPetView, AuthUserView, PetAdoptionTableView, ApiNotificationView, AdminReactAdminUserView
 #, PetSearchView, AdoptionRequestList,, RequestAdoptionRequestList, AdoptionRequestUpdateView, UserSignupView, AdminLoginView, AdminPendingPetList,AdminPetViewSet, AdminApprovedPetsList, AdminAdoptedPetsList, AdoptionDetailView,AdminAdoptedPetDetailView,
 router = DefaultRouter()
 router.register(r'admins', views.AdminViewSet)
@@ -94,4 +94,8 @@ urlpatterns = [
     path('send-notification/', views.send_notification, name='send_notification'),
     path('api/reactTermsandConditions/', views.mobileTermsandConsitions, name='reactTermsandConditions'),
     path('api/pets/pending/<int:pk>/', UpdatePendingPetView.as_view(), name='update_pending_pet'),
+    path('api/auth/users/', AuthUserView.as_view()),
+    path('api/pets/pet_adoption_table/', PetAdoptionTableView.as_view()),
+    path('api/notifications/', ApiNotificationView.as_view()),
+    path('api/react_admin_useraccount/<int:pk>/', AdminReactAdminUserView.as_view()),
 ]

@@ -45,8 +45,14 @@
                         margin: 0; /* Remove margin from dropdown menu */
                         border: none; /* Optional: Remove border for a cleaner look */
                         z-index: 1000; /* Ensure it appears above other content */
-                        min-width: 50px; /* Set a minimum width for the dropdown */
-                    }
+                        min-width: 200px; /* Set a minimum width for the dropdown */
+                      }
+                      
+                      @media (min-width: 768px) {
+                        .navbar .dropdown-menu {
+                          min-width: 300px; /* Set a minimum width for the dropdown on larger screens */
+                        }
+                      }
                     .navbar .dropdown-item {
                         color: #333; /* Dark text for dropdown items */
                         padding: 10px 15px; /* Adjust padding for dropdown items */
@@ -81,6 +87,10 @@
                         padding: 2px 5px;
                         font-size: 12px;
                     }
+                    .notification-icon .dropdown-menu {
+                        right: 20px; /* Move the dropdown menu to the left */
+                        left: auto; /* Remove the default left position */
+                      }
                 </style>
             </head>
             <body>

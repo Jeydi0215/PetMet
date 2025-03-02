@@ -1566,14 +1566,17 @@ class PetAdoptionTableView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ApiNotificationView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
+        print("Incoming data:", request.data)  # Debugging line
         serializer = NotificationSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
+            serializer.save()  # Save the notification to the database
+            return Response(serializer.data, status=201)  # Return the created notification data
         else:
-            print(serializer.errors)
-            return Response(serializer.errors, status=400)
+            print(serializer.errors)  # Log validation errors
+            return Response(serializer.errors, status=400)  # Return validation errors
         
 class AdminReactAdminUserView(APIView):
     def get(self, request, pk):

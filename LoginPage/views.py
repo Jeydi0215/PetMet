@@ -611,7 +611,7 @@ def update_status(request, request_id, new_status):
         pending_pet = PendingPetForAdoption.objects.filter(id=pet_id).first()
         if pending_pet:
             # Update the adoption status to indicate the pet is already adopted
-            pending_pet.adoption_status = 'Pet is already adopted'
+            pending_pet.adoption_status = 'Pet is already adopt'
             pending_pet.save()  # Save the changes to the database
 
         # Call the new function to update other requests

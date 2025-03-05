@@ -96,60 +96,52 @@ def mobileTermsandConsitions(request):
 from rest_framework import status
 @api_view(['POST'])
 def create_adoption_request(request):
-    data = request.data
-    pet_id = data.get('pet')  # This should match the key you're sending from the frontend
-    user_id = data.get('user')
-    contact_number = data.get('contact_number')
-    address = data.get('address')
-    adopter_type = data.get('adopter_type')
-    living_situation = data.get('living_situation')
-    previous_pet_experience = data.get('previous_pet_experience')
-    owns_other_pets = data.get('owns_other_pets')
-    facebook_profile_link = data.get('facebook_profile_link')  # New field
-    first_name = data.get('firstname')  # New field
-    last_name = data.get('lastname')  # New field
-
-    if not pet_id:
-        return Response({"error": "pet_id is required"}, status=status.HTTP_400_BAD_REQUEST)
-
-    # Create the adoption request
-    try:
+    # Use a serializer to validate and deserialize the input data
+    serializer = PetAdoptionTableSerializer(data=request.data)
+    
+    if serializer.is_valid():
+        data = serializer.validated_data
+        pet_id = data['pet']
+        user_id = data['user']
+        
         # Create the adoption request
-        adoption_request = PetAdoptionTable.objects.create(
-            pet_id=pet_id,
-            user_id=user_id,
-            contact_number=contact_number,
-            address=address,
-            adopter_type=adopter_type,
-            living_situation=living_situation,
-            previous_pet_experience=previous_pet_experience,
-            owns_other_pets=owns_other_pets,
-            facebook_profile_link=facebook_profile_link,  # Include the new field
-            first_name=first_name,  # Include first_name
-            last_name=last_name,  # Include last_name
-            # Other fields...
-        )
-
-        # Find the pet owner using the pet_id
-        pet = PendingPetForAdoption.objects.filter(id=pet_id).first()  # Adjust this if your pet model is different
-        if pet:
-            pet_owner_id = pet.user_id  # Assuming user_id is the owner of the pet
-
-            # Create a notification for the pet owner
-            Notification.objects.create(
-                user_id=pet_owner_id,
-                message=f"An adoption request for your pet (Name: {pet.name}) has been submitted."
+        try:
+            adoption_request = PetAdoptionTable.objects.create(
+                pet_id=pet_id,
+                user_id=user_id,
+                contact_number=data['contact_number'],
+                address=data['address'],
+                adopter_type=data['adopter_type'],
+                living_situation=data['living_situation'],
+                previous_pet_experience=data['previous_pet_experience'],
+                owns_other_pets=data['owns_other_pets'],
+                facebook_profile_link=data['facebook_profile_link'],
+                first_name=data['firstname'],
+                last_name=data['lastname'],
             )
 
-        # Create a notification for the user who submitted the request
-        Notification.objects.create(
-            user_id=user_id,
-            message=f"Adoption request for pet Name {pet.name} has been submitted successfully."
-        )
+            # Find the pet owner using the pet_id
+            pet = PendingPetForAdoption.objects.filter(id=pet_id).first()
+            if pet:
+                pet_owner_id = pet.user_id  # Assuming user_id is the owner of the pet
 
-        return Response({"message": "Adoption request created"}, status=status.HTTP_201_CREATED)
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                # Create a notification for the pet owner
+                Notification.objects.create(
+                    user_id=pet_owner_id,
+                    message=f"An adoption request for your pet (Name: {pet.name}) has been submitted."
+                )
+
+            # Create a notification for the user who submitted the request
+            Notification.objects.create(
+                user_id=user_id,
+                message=f"Adoption request for pet Name {pet.name} has been submitted successfully."
+            )
+
+            return Response({"message": "Adoption request created"}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
 @api_view(['GET'])

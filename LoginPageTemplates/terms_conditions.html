@@ -1,24 +1,202 @@
 {% extends 'base2.html' %}
 
 {% block content %}
-<div class="container">
-    <h1 class="title">Data Privacy Act</h1>
-    <p class="intro">This Data Privacy Act outlines how SKYLARK collects, uses, discloses, and protects your personal information when you visit our website and use our services.</p>
+<style>
+    .privacy-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        position: relative;
+    }
+    
+    .back-button {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background-color: #4ECDC4;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 8px 15px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+    }
+    
+    .back-button:hover {
+        background-color: #3aa8a0;
+        transform: translateX(-3px);
+    }
+    
+    .back-button i {
+        margin-right: 5px;
+    }
+    
+    .title {
+        color: #2c3e50;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        text-align: center;
+        font-size: 2.2rem;
+        padding-top: 10px;
+    }
+    
+    .intro {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        color: #4a5568;
+        margin-bottom: 2.5rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-left: 4px solid #4ECDC4;
+        border-radius: 0 5px 5px 0;
+    }
+    
+    .terms-section {
+        margin-bottom: 2.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #eaeaea;
+    }
+    
+    .terms-section:last-child {
+        border-bottom: none;
+    }
+    
+    .terms-section h2 {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 1.2rem;
+        font-size: 1.5rem;
+        position: relative;
+        padding-left: 15px;
+    }
+    
+    .terms-section h2:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 5px;
+        height: 20px;
+        width: 5px;
+        background: #4ECDC4;
+        border-radius: 3px;
+    }
+    
+    .terms-section p {
+        color: #4a5568;
+        line-height: 1.7;
+        margin-bottom: 1.2rem;
+    }
+    
+    .info-list {
+        padding-left: 1.5rem;
+        margin: 1.2rem 0;
+    }
+    
+    .info-list li {
+        margin-bottom: 0.8rem;
+        line-height: 1.6;
+        color: #4a5568;
+        position: relative;
+        padding-left: 1.5rem;
+    }
+    
+    .info-list li:before {
+        content: "•";
+        color: #4ECDC4;
+        font-weight: bold;
+        position: absolute;
+        left: 0;
+    }
+    
+    .info-list strong {
+        color: #2c3e50;
+    }
+    
+    .contact-info {
+        list-style: none;
+        padding-left: 0;
+    }
+    
+    .contact-info li {
+        margin-bottom: 0.8rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .contact-info strong {
+        min-width: 150px;
+        color: #2c3e50;
+    }
+    
+    .contact-info a {
+        color: #4ECDC4;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .contact-info a:hover {
+        color: #3aa8a0;
+        text-decoration: underline;
+    }
+    
+    @media (max-width: 768px) {
+        .privacy-container {
+            padding: 1.5rem;
+        }
+        
+        .title {
+            font-size: 1.8rem;
+            padding-top: 40px;
+        }
+        
+        .terms-section h2 {
+            font-size: 1.3rem;
+        }
+        
+        .contact-info li {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .contact-info strong {
+            margin-bottom: 0.3rem;
+        }
+        
+        .back-button {
+            top: 15px;
+            left: 15px;
+        }
+    }
+</style>
+
+<div class="privacy-container">
+    <button class="back-button" onclick="window.history.back();">
+        <i class="fas fa-arrow-left"></i> Go Back
+    </button>
+    
+    <h1 class="title">Data Privacy Policy</h1>
+    <p class="intro">This Data Privacy Policy outlines how SKYLARK collects, uses, discloses, and protects your personal information in compliance with the Data Privacy Act and other applicable regulations. By using our website and services, you consent to the practices described in this policy.</p>
 
     <div class="terms-section">
         <h2>1. Information We Collect</h2>
-        <p>We may collect the following types of personal information:</p>
+        <p>We may collect the following types of personal information, <strong>only with your explicit consent</strong>:</p>
         <ul class="info-list">
             <li><strong>Personal Identification Information:</strong> Name, email address, phone number, and other contact details.</li>
             <li><strong>Account Information:</strong> Username, password, and other information related to your account.</li>
             <li><strong>Usage Data:</strong> Information about how you use our website and services, including your IP address, browser type, and access times.</li>
-            <li><strong>Cookies and Tracking Technologies:</strong> We use cookies and similar technologies to enhance your experience on our website.</li>
+            <li><strong>Cookies and Tracking Technologies:</strong> We use cookies and similar technologies to enhance your experience on our website. You can manage your cookie preferences through your browser settings.</li>
         </ul>
     </div>
 
     <div class="terms-section">
         <h2>2. How We Use Your Information</h2>
-        <p>We may use the information we collect for various purposes, including:</p>
+        <p>We will only use your personal information for the following purposes, <strong>with your consent</strong>:</p>
         <ul class="info-list">
             <li>To provide and maintain our services.</li>
             <li>To notify you about changes to our services.</li>
@@ -27,55 +205,70 @@
             <li>To gather analysis or valuable information so that we can improve our services.</li>
             <li>To monitor the usage of our services.</li>
             <li>To detect, prevent, and address technical issues.</li>
-            <li>To send you newsletters, marketing or promotional materials, and other information that may be of interest to you.</li>
+            <li>To send you newsletters, marketing or promotional materials, and other information that may be of interest to you. <strong>You can opt out of marketing communications at any time.</strong></li>
         </ul>
     </div>
 
     <div class="terms-section">
         <h2>3. Disclosure of Your Information</h2>
-        <p>We may share your personal information in the following situations:</p>
+        <p>We will only share your personal information in the following situations, <strong>with your consent or as required by law</strong>:</p>
         <ul class="info-list">
-            <li><strong>With Service Providers:</strong> We may share your personal information with service providers to monitor and analyze the use of our services, to contact you, or for payment processing.</li>
-            <li><strong>For Business Transfers:</strong> If we are involved in a merger, acquisition, or asset sale, your personal information may be transferred.</li>
+            <li><strong>With Service Providers:</strong> We may share your personal information with service providers to monitor and analyze the use of our services, to contact you, or for payment processing. These providers are contractually obligated to protect your data.</li>
+            <li><strong>For Business Transfers:</strong> If we are involved in a merger, acquisition, or asset sale, your personal information may be transferred. You will be notified of any such change.</li>
             <li><strong>With Affiliates:</strong> We may share your information with our affiliates, in which case we will require those affiliates to honor this Privacy Policy.</li>
-            <li><strong>With Business Partners:</strong> We may share your information with our business partners to offer you certain products, services, or promotions.</li>
+            <li><strong>With Business Partners:</strong> We may share your information with our business partners to offer you certain products, services, or promotions. <strong>You will have the option to opt out of such sharing.</strong></li>
+            <li><strong>Legal Obligations:</strong> We may disclose your information if required to do so by law or in response to valid requests by public authorities.</li>
         </ul>
     </div>
 
     <div class="terms-section">
         <h2>4. Data Security</h2>
-        <p>We take the security of your personal information seriously and implement reasonable security measures to protect it. However, no method of transmission over the internet or method of electronic storage is 100% secure, and we cannot guarantee its absolute security.</p>
+        <p>We take the security of your personal information seriously and implement reasonable security measures to protect it, including encryption, access controls, and regular security audits. However, no method of transmission over the internet or method of electronic storage is 100% secure, and we cannot guarantee its absolute security.</p>
     </div>
 
     <div class="terms-section">
         <h2>5. Your Rights</h2>
-        <p>Depending on your location, you may have the following rights regarding your personal information:</p>
+        <p>Under the Data Privacy Act and other applicable laws, you have the following rights regarding your personal information:</p>
         <ul class="info-list">
-            <li>The right to access, update, or delete the information we have on you.</li>
-            <li>The right to rectification.</li>
-            <li>The right to object.</li>
-            <li>The right to data portability.</li>
-            <li>The right to withdraw consent.</li>
+            <li><strong>The right to access:</strong> You can request a copy of the personal information we hold about you.</li>
+            <li><strong>The right to rectification:</strong> You can request corrections to any inaccurate or incomplete data.</li>
+            <li><strong>The right to erasure:</strong> You can request the deletion of your personal information under certain conditions.</li>
+            <li><strong>The right to restrict processing:</strong> You can request that we limit the processing of your personal information.</li>
+            <li><strong>The right to object:</strong> You can object to the processing of your personal information for specific purposes, such as marketing.</li>
+            <li><strong>The right to data portability:</strong> You can request a copy of your data in a structured, machine-readable format.</li>
+            <li><strong>The right to withdraw consent:</strong> You can withdraw your consent for us to process your data at any time.</li>
+        </ul>
+        <p>To exercise any of these rights, please contact us using the information provided below.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>6. Changes to This Data Privacy Policy</h2>
+        <p>We may update our Data Privacy Policy from time to time. We will notify you of any changes by posting the new Data Privacy Policy on this page and, where appropriate, through email notification. You are advised to review this Data Privacy Policy periodically for any changes. Changes to this Data Privacy Policy are effective when they are posted on this page.</p>
+    </div>
+
+    <div class="terms-section">
+        <h2>7. Contact Us</h2>
+        <p>If you have any questions about this Data Privacy Policy or wish to exercise your rights, please contact us:</p>
+        <ul class="contact-info">
+            <li><strong>Email:</strong> <a href="mailto:petmet.info@gmail.com">petmet.info@gmail.com</a></li>
+            <li><strong>Data Protection Officer:</strong> If applicable, provide the contact details of your Data Protection Officer (DPO).</li>
         </ul>
     </div>
 
     <div class="terms-section">
-        <h2>6. Changes to This Data Privacy Act</h2>
-        <p>We may update our Data Privacy Act from time to time. We will notify you of any changes by posting the new Data Privacy Act on this page. You are advised to review this Data Privacy Act periodically for any changes. Changes to this Data Privacy Act are effective when they are posted on this page.</p>
+        <h2>8. Effective Date</h2>
+        <p>This Data Privacy Policy is effective as of <strong>January 1, 2024</strong>.</p>
     </div>
+</div>
 
-    <div class="terms-section">
-        <div class="terms-section">
-            <h2>7. Contact Us</h2>
-            <p>If you have any questions about this Data Privacy Act, please contact us:</p>
-            <ul class="contact-info">
-                <li><strong>Email:</strong> <a href="mailto:petmet.info@gmail.com">petmet.info@gmail.com</a></li>
-            </ul>
-        </div>
-    
-        <div class="terms-section">
-            <h2>8. Effective Date</h2>
-            <p>This Data Privacy Act is effective as of <strong>January 1, 2024</strong>.</p>
-        </div>
-    </div>
-    {% endblock %}
+<script>
+    // Alternative back button functionality that goes to home if no history
+    document.querySelector('.back-button').addEventListener('click', function(e) {
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            window.location.href = "{% url 'landing' %}";
+        }
+    });
+</script>
+{% endblock %}

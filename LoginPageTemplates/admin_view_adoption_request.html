@@ -1,0 +1,250 @@
+{% extends 'base4.html' %}
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow-lg border-0" style="max-width: 800px; margin: 0 auto;">
+        <div class="card-header bg-gradient-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">
+                    <i class="fas fa-file-alt mr-2"></i>Adoption Request for {{ request.pet.name }}
+                </h2>
+                <span class="badge bg-white text-primary fs-6">
+                    {{ request.adoption_request_status|title }}
+                </span>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            <div class="row">
+                <!-- Left Column - Pet Info -->
+                <div class="col-md-5 text-center">
+                    {% if request.pet.img %}
+                    <div class="mb-3">
+                        <img src="{{ request.pet.img.url }}" 
+                             alt="{{ request.pet.name }}" 
+                             class="img-fluid rounded shadow-sm"
+                             style="max-height: 250px; width: auto;">
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4 bg-light rounded">
+                        <i class="fas fa-paw fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No image available</p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="pet-info bg-light p-3 rounded mb-3">
+                        <h5 class="text-primary mb-3">
+                            <i class="fas fa-paw mr-2"></i>Pet Information
+                        </h5>
+                        <p class="mb-2"><strong>Name:</strong> {{ request.pet.name }}</p>
+                        <p class="mb-2"><strong>Type:</strong> {{ request.pet.animal_type }}</p>
+                    </div>
+                </div>
+                
+                <!-- Right Column - Request Details -->
+                <div class="col-md-7">
+                    <div class="request-details">
+                        <h5 class="text-primary mb-3">
+                            <i class="fas fa-user mr-2"></i>Adopter Information
+                        </h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <p class="mb-1"><strong>Name:</strong></p>
+                                <p>{{ user_first_name }} {{ user_last_name }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <p class="mb-1"><strong>Contact:</strong></p>
+                                <p>{{ request.contact_number }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <p class="mb-1"><strong>Address:</strong></p>
+                            <p>{{ request.address }}</p>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <p class="mb-1"><strong>Adopter Type:</strong></p>
+                                <p>{{ request.adopter_type }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <p class="mb-1"><strong>Living Situation:</strong></p>
+                                <p>{{ request.living_situation }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <p class="mb-1"><strong>Previous Experience:</strong></p>
+                                <p>{{ request.previous_pet_experience }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <p class="mb-1"><strong>Owns Other Pets:</strong></p>
+                                <p>{{ request.owns_other_pets }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <p class="mb-1"><strong>ID Type:</strong></p>
+                                <p>{{ request.id_type }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <p class="mb-1"><strong>ID Number:</strong></p>
+                                <p>{{ request.id_number }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <p class="mb-1"><strong>Facebook Profile:</strong></p>
+                            <p>
+                                {% if request.facebook_profile_link %}
+                                <a href="{{ request.facebook_profile_link }}" target="_blank" class="text-primary">
+                                    <i class="fab fa-facebook mr-1"></i>View Profile
+                                </a>
+                                {% else %}
+                                <span class="text-muted">Not provided</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <p class="mb-1"><strong>Request Date:</strong></p>
+                                <p>{{ request.request_date|date:"M j, Y" }}</p>
+                            </div>
+                            {% if request.adoption_request_status == 'approved' %}
+                            <div class="col-md-6 mb-3">
+                                <p class="mb-1"><strong>Approved On:</strong></p>
+                                <p>{{ request.approval_date_time|date:"M j, Y, g:i a" }}</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="mt-4 pt-3 border-top">
+                {% if request.adoption_request_status == 'pending' %}
+                <form action="{% url 'update_status' request.id 'review' %}" method="post" id="review-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-search mr-1"></i>Mark for Review
+                    </button>
+                </form>
+                {% elif request.adoption_request_status == 'review' %}
+                <div class="d-flex gap-2">
+                    <form action="{% url 'update_status' request.id 'approved' %}" method="post" id="approve-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check mr-1"></i>Approve Request
+                        </button>
+                    </form>
+                    <a href="{% url 'update_status' request.id 'rejected' %}" class="btn btn-danger">
+                        <i class="fas fa-times mr-1"></i>Reject Request
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card-footer bg-light">
+            <a href="{% url 'admin_adoption_request' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left mr-1"></i> Back to Requests
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom Styles */
+    .card {
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
+    }
+    
+    .pet-info {
+        border-left: 4px solid #3a7bd5;
+    }
+    
+    .request-details p {
+        margin-bottom: 0.25rem;
+    }
+    
+    .request-details strong {
+        color: #495057;
+        min-width: 120px;
+        display: inline-block;
+    }
+    
+    .badge {
+        font-size: 0.85em;
+        padding: 0.5em 0.75em;
+    }
+    
+    .btn {
+        font-weight: 500;
+        padding: 0.5rem 1.25rem;
+    }
+    
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+    
+    .btn-warning {
+        background-color: #ffc107;
+        border-color: #ffc107;
+        color: #212529;
+    }
+    
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+    
+    @media (max-width: 768px) {
+        .card {
+            width: 95%;
+        }
+        
+        .col-md-5, .col-md-7 {
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+    }
+</style>
+
+<script>
+    // Confirmation dialogs
+    document.getElementById('approve-form')?.addEventListener('submit', function(event) {
+        if (!confirm("Are you sure you want to approve this adoption request?")) {
+            event.preventDefault();
+        }
+    });
+    
+    document.getElementById('review-form')?.addEventListener('submit', function(event) {
+        if (!confirm("Mark this request for further review?")) {
+            event.preventDefault();
+        }
+    });
+    
+    // Add click handler for reject button if needed
+    document.querySelector('a.btn-danger')?.addEventListener('click', function(event) {
+        if (!confirm("Are you sure you want to reject this adoption request?")) {
+            event.preventDefault();
+        }
+    });
+</script>
+{% endblock %}

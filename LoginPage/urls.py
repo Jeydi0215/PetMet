@@ -1,7 +1,7 @@
 from django.urls import path, include
 from . import views
 from rest_framework.routers import DefaultRouter
-from .views import PetCreateView, PostPendingPetViewSet, AdminAdoptedPetDetailView, AdminAdoptedPetsList, AdminApprovedPetsList, AdminPendingPetList, PendingPetList, ReactAdoptedPetsView, ReactAdoptPetDetailView, AdminLoginView, ReactTrackUpdateList, UpdatePendingPetView,  ReactCustomUserDetailView, ReactCreateUserView, login_react, AdoptionRequestUpdateView, AdoptionRequestList, GetNotificationsView, ReactMarkNotificationAsReadView, UpdatePendingPetView, AuthUserView, PetAdoptionTableView, ApiNotificationView, AdminReactAdminUserView
+from .views import PetCreateView, PostPendingPetViewSet, AdminAdoptedPetDetailView, AdminAdoptedPetsList, AdminApprovedPetsList, AdminPendingPetList, PendingPetList, ReactAdoptedPetsView, ReactAdoptPetDetailView, AdminLoginView, ReactTrackUpdateList, UpdatePendingPetView,  ReactCustomUserDetailView, ReactCreateUserView, login_react, AdoptionRequestUpdateView, AdoptionRequestList, GetNotificationsView, ReactMarkNotificationAsReadView, UpdatePendingPetView, AuthUserView, PetAdoptionTableView, ApiNotificationView, AdminReactAdminUserView, MyAdoptedPetReportReactTrackUpdateList
 #, PetSearchView, AdoptionRequestList,, RequestAdoptionRequestList, AdoptionRequestUpdateView, UserSignupView, AdminLoginView, AdminPendingPetList,AdminPetViewSet, AdminApprovedPetsList, AdminAdoptedPetsList, AdoptionDetailView,AdminAdoptedPetDetailView,
 router = DefaultRouter()
 router.register(r'admins', views.AdminViewSet)
@@ -47,6 +47,13 @@ urlpatterns = [
     path('adopted-history/', views.adopted_history, name='adopted_history'),
     path('edit-profile/', views.edit_profile, name='edit_profile'),
     path('admin_approved_pet_detail/<int:pet_id>/', views.admin_approved_pet_detail, name='admin_approved_pet_detail'),
+    path('admin_adoption_request/', views.admin_adoption_request, name='admin_adoption_request'),
+    path('admin_view_all_requests/', views.admin_view_all_requests, name='admin_view_all_requests'),
+    path('admin_view_adoption_request/<int:request_id>/', views.admin_view_adoption_request, name='admin_view_adoption_request'),
+    path('admin_view_pending_requests/', views.admin_view_pending_requests, name='admin_view_pending_requests'),
+    path('admin_view_review_list/', views.admin_view_review_list, name='admin_view_review_list'),
+    path('admin_view_approved_list/', views.admin_view_approved_list, name='admin_view_approved_list'),
+    path('admin_view_rejected_list/', views.admin_view_rejected_list, name='admin_view_rejected_list'),
     path('api/login_react/', login_react.as_view(), name='login_react'),
     path('api/create_adoption_request/', views.create_adoption_request, name='create_adoption_request'),
     #path('api/adoption-id/', views.get_latest_adoption_id, name='get_latest_adoption_id'),
@@ -64,7 +71,9 @@ urlpatterns = [
     path('api/pets/admin_approved/', AdminApprovedPetsList.as_view(), name='admin_approved-pets-list'),
     path('api/pets/admin_adopted/', AdminAdoptedPetsList.as_view(), name='admin_adopted-pets-list'),
     path('reportadopted_pets/', views.reportadopted_pets, name='reportadopted_pets'),
+    path('OwnerReportadopted_pets/', views.OwnerReportadopted_pets, name='OwnerReportadopted_pets'),
     path('reportRequestpet_detail/<int:pet_id>/', views.reportRequestpet_detail, name='reportRequestpet_detail'),  # Detail view for a specific pet
+    path('OwnerReportRequestpet_detail/<int:pet_id>/', views.OwnerReportRequestpet_detail, name='OwnerReportRequestpet_detail'),  # Detail view for a specific pet
     path('add_report/<int:pet_id>/', views.add_report, name='add_report'),
     path('report_details/<int:pet_adoption_id>/', views.report_details, name='report_details'),
     path('report/<int:id>/', views.report_detail, name='report_detail'),
@@ -76,6 +85,7 @@ urlpatterns = [
     path('api/react_adopt_pet_adoption_table/<int:pk>/', ReactAdoptPetDetailView.as_view(), name='react_adopt_pet-detail'),
     path('api/react_add_report/', views.react_add_report, name='react_add_report'),
     path('api/react_track_update_table/', ReactTrackUpdateList.as_view(), name='react_track-update-list'),
+    path('api/my_adopted_pet_report_react_track_update_table/', MyAdoptedPetReportReactTrackUpdateList.as_view(), name='react_track-update-list'),
     path('api/react_edit_postpending-pets/<int:pk>/', UpdatePendingPetView.as_view(), name='update_pending_pet'),
     path('api/postpending-pets/<int:post_id>/', views.delete_pending_pet, name='delete_pending_pet'),
     path('api/pets/admin_pet_adoption/<int:pk>/', AdminAdoptedPetDetailView.as_view(), name='admin_pet_adoption-detail'),
@@ -98,4 +108,7 @@ urlpatterns = [
     path('api/pets/pet_adoption_table/', PetAdoptionTableView.as_view()),
     path('api/notifications/', ApiNotificationView.as_view()),
     path('api/react_admin_useraccount/<int:pk>/', AdminReactAdminUserView.as_view()),
+    path('pet_adoption_terms_and_conditions/', views.pet_adoption_terms_and_conditions, name='pet_adoption_terms_and_conditions'),
+    path('api/api_react_adopted-pets/<int:user_id>/', views.api_react_adopted_pets, name='api_react_adopted_pets'),
+    path('api/react_adopted-pets-public/<int:user_id>/', views.react_adopted_pets_public, name='react_adopted_pets_public'),
 ]

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages, admin
 from django.contrib.auth.models import User, auth
 from django.contrib.auth import login
-from adoption.models import PendingPetForAdoption, Admin, PetAdoptionTable, TrackUpdateTable, Notification, AdminUser
+from adoption.models import PendingPetForAdoption, Admin, PetAdoptionTable, TrackUpdateTable, Notification, AdminUser, PageView
 from django.core.paginator import Paginator
 from .forms import PetAdoptionForm, SignUpForm, LoginForm, PetAdoptionFormRequest, AdminProfileForm, TrackUpdateForm, PendingPetForAdoptionForm,AdminSignupForm
 from django.contrib.auth.decorators import login_required
@@ -23,6 +23,21 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import BasePermission
 from rest_framework import authentication
 import spacy
+import numpy as np
+import torch
+import torchvision.models as models
+import torchvision.transforms as transforms
+from torchvision import models, transforms
+from PIL import Image
+from sentence_transformers import SentenceTransformer, util
+from googlesearch import search as google_search
+import requests
+from bs4 import BeautifulSoup
+import re
+from collections import defaultdict
+from django.shortcuts import render 
+from django.http import JsonResponse
+
 import pytz
 import nltk
 from nltk.tokenize import word_tokenize
@@ -30,6 +45,65 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 # Create your views here.
 import calendar
+
+import json
+
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer  # Corrected import
+
+import torchvision.models as models
+from transformers import pipeline
+import rank_bm25
+from rank_bm25 import BM25Okapi
+
+
+
+
+# Initialize NLP with fallback
+try:
+    nlp = spacy.load("en_core_web_md")
+except OSError:
+    print("Downloading spaCy medium model... (this may take a few minutes)")
+    from spacy.cli import download
+    download("en_core_web_md")
+    nlp = spacy.load("en_core_web_md")
+
+
+# Load models
+nlp_lg = spacy.load("en_core_web_lg")
+sentence_model = SentenceTransformer('all-mpnet-base-v2')
+image_model = models.mobilenet_v2(pretrained=True)
+image_model.eval()
+
+# Load the pre-trained model
+model = models.mobilenet_v2(pretrained=True)
+model.eval()
+
+# Load MobileNetV2 once
+image_model = models.mobilenet_v2(pretrained=True)
+image_model.classifier = torch.nn.Identity()  # Remove classification head
+image_model.eval()
+
+# Image preprocessing pipeline
+preprocess = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),  # Convert image to tensor
+    transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                         std=[0.229, 0.224, 0.225])
+])
+
+def extract_image_features(img_path):
+    img = Image.open(img_path).convert('RGB')
+    input_tensor = preprocess(img).unsqueeze(0)  # Add batch dimension
+
+    with torch.no_grad():
+        features = image_model(input_tensor)
+
+    return features.squeeze().numpy()  # Return as a flat NumPy array
+
+
 
 # Get the month names
 months = list(calendar.month_name)
@@ -97,59 +171,73 @@ from rest_framework import status
 @api_view(['POST'])
 def create_adoption_request(request):
     data = request.data
-    pet_id = data.get('pet')  # This should match the key you're sending from the frontend
+    pet_id = data.get('pet')
     user_id = data.get('user')
     contact_number = data.get('contact_number')
     address = data.get('address')
+    id_type = data.get('id_type')  # Add this
+    id_number = data.get('id_number')  # Add this
     adopter_type = data.get('adopter_type')
     living_situation = data.get('living_situation')
     previous_pet_experience = data.get('previous_pet_experience')
     owns_other_pets = data.get('owns_other_pets')
-    facebook_profile_link = data.get('facebook_profile_link')  # New field
-    first_name = data.get('firstname')  # New field
-    last_name = data.get('lastname')  # New field
+    facebook_profile_link = data.get('facebook_profile_link')
+    first_name = data.get('firstname')  # Note client uses 'firstname'
+    last_name = data.get('lastname')  # Note client uses 'lastname'
+    request_date_time = data.get('request_date_time')  # Add this
 
-    if not pet_id:
-        return Response({"error": "pet_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+    # Validate required fields
+    required_fields = ['pet', 'user', 'contact_number', 'address', 'id_type', 
+                      'id_number', 'firstname', 'lastname', 'previous_pet_experience',
+                      'owns_other_pets', 'facebook_profile_link']
+    
+    missing_fields = [field for field in required_fields if not data.get(field)]
+    if missing_fields:
+        return Response(
+            {"error": f"Missing required fields: {', '.join(missing_fields)}"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
-    # Create the adoption request
     try:
-        # Create the adoption request
         adoption_request = PetAdoptionTable.objects.create(
             pet_id=pet_id,
             user_id=user_id,
             contact_number=contact_number,
             address=address,
+            id_type=id_type,  # Add this
+            id_number=id_number,  # Add this
             adopter_type=adopter_type,
             living_situation=living_situation,
             previous_pet_experience=previous_pet_experience,
             owns_other_pets=owns_other_pets,
-            facebook_profile_link=facebook_profile_link,  # Include the new field
-            first_name=first_name,  # Include first_name
-            last_name=last_name,  # Include last_name
-            # Other fields...
+            facebook_profile_link=facebook_profile_link,
+            first_name=first_name,
+            last_name=last_name,
+            request_date=request_date_time  # Add this
         )
 
-        # Find the pet owner using the pet_id
-        pet = PendingPetForAdoption.objects.filter(id=pet_id).first()  # Adjust this if your pet model is different
+        # Notification logic remains the same
+        pet = PendingPetForAdoption.objects.filter(id=pet_id).first()
         if pet:
-            pet_owner_id = pet.user_id  # Assuming user_id is the owner of the pet
-
-            # Create a notification for the pet owner
             Notification.objects.create(
-                user_id=pet_owner_id,
+                user_id=pet.user_id,
                 message=f"An adoption request for your pet (Name: {pet.name}) has been submitted."
             )
 
-        # Create a notification for the user who submitted the request
         Notification.objects.create(
             user_id=user_id,
-            message=f"Adoption request for pet Name {pet.name} has been submitted successfully."
+            message=f"Adoption request for pet {pet.name} has been submitted successfully."
         )
 
-        return Response({"message": "Adoption request created"}, status=status.HTTP_201_CREATED)
+        return Response(
+            {"message": "Adoption request created successfully", "id": adoption_request.id},
+            status=status.HTTP_201_CREATED
+        )
     except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
     
 
 @api_view(['GET'])
@@ -245,7 +333,7 @@ def adopt_pet(request, pk):
             adoption_request = PetAdoptionTable()  # Create an instance of PetAdoptionTable
             adoption_request.pet_id = pet.id  # Assign the id of the pet to the pet_id field
             adoption_request.user_id = request.user.id  # Assign the id of the user to the user_id field
-            adoption_request.adoption_status = 'pending'  # Set the adoption status to 'pending'
+            adoption_request.adoption_request_status = 'pending'  # Set the adoption status to 'pending'
             adoption_request.first_name = form.cleaned_data['first_name']  # Save first name
             adoption_request.last_name = form.cleaned_data['last_name']  # Save last name
             adoption_request.contact_number = form.cleaned_data['contact_number']
@@ -255,7 +343,9 @@ def adopt_pet(request, pk):
             adoption_request.previous_pet_experience = form.cleaned_data['previous_pet_experience']
             adoption_request.owns_other_pets = form.cleaned_data['owns_other_pets']
             adoption_request.facebook_profile_link = form.cleaned_data['facebook_profile_link']
-            adoption_request.request_date_time = timezone.now().astimezone(pytz.timezone('Asia/Manila'))  # Save the current date and time in the Philippines timezone
+            adoption_request.id_type = form.cleaned_data['id_type']  # Save ID type
+            adoption_request.id_number = form.cleaned_data['id_number']  # Save ID number
+            adoption_request.request_date = timezone.now().astimezone(pytz.timezone('Asia/Manila'))  # Save the current date and time in the Philippines timezone
             
             try:
                 adoption_request.save()  # Save the instance to the database
@@ -268,16 +358,15 @@ def adopt_pet(request, pk):
                     notification_message = f"There is a new adoption request for your pet: {pet.name}."
                     Notification.objects.create(user=pet_owner, message=notification_message)
                     
-                    # Optionally, you can send an email notification here
-                    # send_mail(
-                    #     'New Adoption Request',
-                    #     notification_message,
-                    #     'from@example.com',
-                    #     [pet_owner.email],
-                    #     fail_silently=False,
-                    # )
-                    
                     messages.success(request, f"Notification sent to {pet_owner.username} about the adoption request for {pet.name}.")
+
+                # Notify the user with ID 10
+                user_id_10 = User.objects.get(pk=10)  # Get the user with ID 10
+                if user_id_10:
+                    notification_message_for_user_10 = f"A new adoption request has been submitted for the pet: {pet.name}."
+                    Notification.objects.create(user=user_id_10, message=notification_message_for_user_10)
+                    print(f"Notification sent to user ID 10: {user_id_10.username}")
+
             except Exception as e:
                 print("Error saving adoption request:", e)  # Print any errors when saving the adoption request
                 messages.error(request, "There was an error saving your adoption request.")
@@ -368,8 +457,9 @@ def logout_admin(request):
 
 @login_required
 def view_requests(request):
-    user_requests = PendingPetForAdoption.objects.filter(user_id=request.user.id)
-    adoption_requests = PetAdoptionTable.objects.filter(pet_id__in=user_requests.values_list('id', flat=True))
+    # Fetch all adoption requests
+    adoption_requests = PetAdoptionTable.objects.all()
+    
     request_list = []
     for req in adoption_requests:
         pet = PendingPetForAdoption.objects.get(id=req.pet_id)
@@ -379,6 +469,7 @@ def view_requests(request):
             'pet_animal_type': pet.animal_type,
             'adoption_request_status': req.adoption_request_status,
         })
+    
     return render(request, 'requests.html', {'requests': request_list})
 
 from rest_framework.exceptions import NotFound
@@ -456,17 +547,18 @@ class ReactAdoptPetDetailView(generics.RetrieveAPIView):
                         response_data['follow_up_dates'] = 'No records yet'
 
                     # Fetch reports related to the pet adoption
+                    # In your get() method, update the reports part to:
                     reports = TrackUpdateTable.objects.filter(pet_adoption_request_id=adoption_details.id)
                     response_data['reports'] = [
                         {
                             'id': report.id,
-                            'date': report.followup_date,
+                            'date': report.followup_date.strftime('%Y-%m-%d'),  # Ensure consistent date format
                             'description': report.notes,
                             'living_situation': report.living_situation,
                             'housing_type': report.housing_type,
                             'behavioral_changes': report.behavioral_changes,
                             'health_issues': report.health_issues,
-                            'photos': report.photos.url if report.photos else None  # Handle binary data
+                            'photos': report.photos.url if report.photos else None
                         } for report in reports
                     ]
 
@@ -525,6 +617,8 @@ class ReactCreateUserView(APIView):
         
 from rest_framework.parsers import MultiPartParser, FormParser
 from datetime import date
+
+# Keep your existing react_add_report endpoint as is
 @api_view(['POST'])
 def react_add_report(request):
     if request.method == 'POST':
@@ -583,6 +677,7 @@ def view_request(request, request_id):
         'user_first_name': user_first_name,
         'user_last_name': user_last_name,
     })
+
 def update_status(request, request_id, new_status):
     # Get the request object or return a 404 if not found
     req = get_object_or_404(PetAdoptionTable, pk=request_id)
@@ -594,7 +689,7 @@ def update_status(request, request_id, new_status):
     if new_status == 'approved':
         req.approval_date_time = timezone.now()  # Set current time as approval date
         # Notify the user about the reporting requirement
-        message = "You need to report for 15 days starting from the approval date."
+        message = "Your request for adoption has been approved. You need to report for 15 days starting from the approval date."
         messages.info(request, message)  # Pass the message to the next view
 
         # Create a notification for the user
@@ -611,7 +706,7 @@ def update_status(request, request_id, new_status):
         pending_pet = PendingPetForAdoption.objects.filter(id=pet_id).first()
         if pending_pet:
             # Update the adoption status to indicate the pet is already adopted
-            pending_pet.adoption_status = 'Pet already adopted'
+            pending_pet.adoption_status = 'Pet is already adopted'
             pending_pet.save()  # Save the changes to the database
 
         # Call the new function to update other requests
@@ -624,14 +719,14 @@ def update_status(request, request_id, new_status):
     req.save()
 
     # Redirect to the view requests page or wherever you want to go after updating
-    return redirect('view_requests')  # Make sure 'view_requests' is a valid URL name
+    return redirect('admin_adoption_request')  # Make sure 'admin_adoption_request' is a valid URL name
 
 def update_other_requests(pet_id):
     # Filter PetAdoptionTable for requests with the same pet_id and status 'pending' or 'deny'
     other_requests = PetAdoptionTable.objects.filter(pet_id=pet_id, adoption_request_status__in=['pending', 'deny'])
     for other_request in other_requests:
         # Update the adoption status to indicate the pet is already adopted
-        other_request.adoption_request_status = 'Pet is already adopted'
+        other_request.adoption_request_status = 'Pet is already adopt'
         other_request.save()  # Save the changes to the database
 
                                                    
@@ -645,6 +740,9 @@ def admin_home(request):
 
 def home(request):
     return render(request, 'home.html')
+
+def pet_adoption_terms_and_conditions(request):
+    return render(request, 'pet_adoption_terms_and_condition.html')  # Render the admin home template
 
 
 @csrf_exempt  # Temporarily disable CSRF for debugging
@@ -678,9 +776,15 @@ def admin_homepage(request):
     philippines_tz = pytz.timezone('Asia/Manila')
     philippines_time = timezone.now().astimezone(philippines_tz).strftime('%Y-%m-%d %H:%M:%S')
 
+    # Fetch unread notifications for the logged-in user
+    notifications = Notification.objects.filter(user=request.user, is_read=False)  # Get unread notifications
+    notifications_count = notifications.count()  # Count unread notifications
+
     return render(request, 'admin_homepage.html', {
         'user': request.user,
         'philippines_time': philippines_time,
+        'notifications': notifications,  # Pass notifications to the template
+        'notifications_count': notifications_count,  # Pass notifications count to the template
     })
 
 def admin_signup(request):
@@ -819,7 +923,7 @@ def get_approved_pets(page_number=None):
 def terms_conditions_view(request):
     return render(request, 'terms_conditions.html')
 
-from django.shortcuts import render 
+
 # Get an instance of a logger
 
 logger = logging.getLogger(__name__)
@@ -842,6 +946,8 @@ def pet_list(request):
     }
     return render(request, 'article.html', context)
 
+
+
 def add_pet(request):
     if request.method == 'POST':
         form = PendingPetForAdoptionForm(request.POST, request.FILES)  # Include request.FILES for image uploads
@@ -851,6 +957,18 @@ def add_pet(request):
             pending_pet.user = request.user  # Assign the user
             pending_pet.save()  # Save the instance to the database
             
+            # Extract and store image features
+            if pending_pet.img:  # Check if an image is provided
+                features = extract_image_features(pending_pet.img.path)  # Extract features
+                pending_pet.image_features = json.dumps(features.tolist())  # Convert to JSON string
+                pending_pet.save(update_fields=['image_features'])  # Save the features
+
+            # Create a notification for the admin (user with ID 10)
+            admin_user = User.objects.get(pk=10)  # Fetch the admin user
+            if admin_user:
+                notification_message = f"A new pet post for adoption has been submitted by {request.user.username}."
+                Notification.objects.create(user=admin_user, message=notification_message)
+
             # Add a success message
             messages.success(request, 'Pet added successfully!')
             # Render the same template with the form and the success message
@@ -863,15 +981,27 @@ def add_pet(request):
 
     return render(request, 'add_pet.html', {'form': form})  # Render the template with the form
 
-@login_required  # Require the user to be logged in to access this view
 def reportadopted_pets(request):
+    # If you want to show all pets with approved adoption requests (regardless of pet's individual status)
+    approved_requests = PetAdoptionTable.objects.filter(
+        adoption_request_status='approved',
+        user=request.user
+    )
+    
+    pet_ids = approved_requests.values_list('pet_id', flat=True)
+    adopted_pets = PendingPetForAdoption.objects.filter(id__in=pet_ids)
+    
+    return render(request, 'adopted_pets.html', {'adopted_pets': adopted_pets})
+
+@login_required  # Require the user to be logged in to access this view
+def OwnerReportadopted_pets(request):
     # Retrieve adopted pets for the logged-in user
     adopted_pets = PendingPetForAdoption.objects.filter(
         adoption_status__in=['Pet_is_already_adopt', 'Pet is already adopt'],
         user=request.user  # Check if the user ID matches
     )
 
-    return render(request, 'adopted_pets.html', {'adopted_pets': adopted_pets})
+    return render(request, 'owner_adopted_pets.html', {'adopted_pets': adopted_pets})
 
 
 @login_required
@@ -960,6 +1090,92 @@ def reportRequestpet_detail(request, pet_id):
         'monthly_reports': monthly_reports,
     })
 
+@login_required
+def OwnerReportRequestpet_detail(request, pet_id):
+    # Get the pet object
+    pet = get_object_or_404(PendingPetForAdoption, id=pet_id)
+
+    # Filter the PetAdoptionTable for the given pet
+    pet_adoption = PetAdoptionTable.objects.filter(pet=pet).first()  # Get the first matching adoption
+
+    if pet_adoption:
+        # Filter the TrackUpdateTable for the matching pet adoption request
+        track_updates = TrackUpdateTable.objects.filter(pet_adoption_request=pet_adoption)
+
+        # Check if there are no track updates
+        if not track_updates.exists():
+            Notification.objects.create(user=request.user, message="No track updates found for this pet.")
+        
+        # Determine the current month and year or use the provided month and year from the request
+        current_month = int(request.GET.get('month', timezone.now().month))
+        current_year = int(request.GET.get('year', timezone.now().year))
+
+        # Calculate the starting date for the tracking period
+        followup_dates = track_updates.values_list('followup_date', flat=True)
+        if followup_dates:
+            first_followup_date = min(followup_dates)
+            tracking_start_date = first_followup_date  # Just use the first follow-up date as the starting point
+        else:
+            tracking_start_date = timezone.now()  # Fallback if no follow-up dates
+
+        # Filter track updates for the selected month and year
+        filtered_updates = track_updates.filter(
+            followup_date__year=current_year,
+            followup_date__month=current_month
+        )
+
+        # Count the number of reports for the month
+        report_count = filtered_updates.count()
+
+        # Create a notification if reports are less than 2
+        if report_count < 2:
+            Notification.objects.create(user=request.user, message=f"Only {report_count} reports found for {pet.name} in {current_month}/{current_year}.")
+
+        # Create a structure to hold daily reports for the selected month
+        daily_reports = {}
+        for followup_date in filtered_updates.values_list('followup_date', flat=True).distinct():  # Use distinct to avoid duplicates
+            day = followup_date.day
+            if day not in daily_reports:
+                daily_reports[day] = []
+            
+            # Use filter instead of get to handle multiple reports
+            reports_for_date = filtered_updates.filter(followup_date=followup_date)
+            
+            # Add unique reports for the day
+            for report in reports_for_date:
+                if report not in daily_reports[day]:  # Check for uniqueness
+                    daily_reports[day].append(report)  # Add the report if it's not already in the list
+
+        # Calculate empty cells for the calendar
+        first_day_of_month = timezone.datetime(current_year, current_month, 1)
+        last_day_of_month = timezone.datetime(current_year, current_month, calendar.monthrange(current_year, current_month)[1])
+
+        # Calculate the number of empty cells before the first day of the month
+        empty_cells_before = (first_day_of_month.weekday() + 1) % 7  # Adjust for Sunday as the first day of the week
+        empty_cells_after = (6 - last_day_of_month.weekday())  # Calculate empty cells after the last day
+
+        # Prepare the monthly reports context
+        monthly_reports = {
+            'year': current_year,
+            'month': current_month,
+            'days_list': list(range(1, 32)),  # Days of the month
+            'daily_reports': daily_reports,
+            'empty_cells_before': [None] * empty_cells_before,  # Create a list of None for empty cells
+            'empty_cells_after': [None] * empty_cells_after,  # Create a list of None for empty cells
+            'tracking_start_date': tracking_start_date,  # Add tracking start date to context
+        }
+
+    else:
+        track_updates = []  # No adoption found
+        monthly_reports = None
+
+    return render(request, 'OwnerReportRequest.html', {
+        'pet': pet,
+        'pet_adoption': pet_adoption,
+        'track_updates': track_updates,
+        'monthly_reports': monthly_reports,
+    })
+
 def report_detail(request, id):
     # Assuming you have an adoption_id field in your TrackUpdateTable model
     reports = TrackUpdateTable.objects.filter(id=id)  # Change 'adoption_id' to the actual field name
@@ -1022,48 +1238,573 @@ def mark_notifications_read(request):
 # Ensure you have the necessary NLTK resources
 nltk.download('punkt')
 
+class PetSearchAI:
+    def __init__(self):
+        # Initialize with database data
+        self.db_data = None
+        self.tfidf_vectorizer = None
+        self.tfidf_matrix = None
+        self.load_database_data()
+        
+        # Known pets configuration
+        self.known_pets = {
+            'garfield': {
+                'animal_type': 'cat',
+                'color': 'orange',
+                'habits': ['lazy', 'lasagna'],
+                'boost': 2.0
+            },
+            'odie': {
+                'animal_type': 'dog',
+                'color': 'white',
+                'boost': 1.5
+            }
+        }
+        
+        self.attribute_weights = {
+            'animal_type': 1.2,
+            'color': 1.1,
+            'breed': 1.0,
+            'gender': 0.9,
+            'habits': 0.8
+        }
+    
+    # Replace the pandas-dependent parts in your PetSearchAI class:
+
+def load_database_data(self):
+    """Load and preprocess data from database without pandas"""
+    pets = PendingPetForAdoption.objects.filter(adoption_status='approved')
+    
+    # Store data as list of dictionaries
+    self.db_data = []
+    for pet in pets:
+        self.db_data.append({
+            'id': pet.id,
+            'name': pet.name,
+            'animal_type': pet.animal_type,
+            'breed': pet.breed,
+            'color': pet.color,
+            'gender': pet.gender,
+            'age': pet.age,
+            'location': pet.location,
+            'additional_details': pet.additional_details,
+            'full_description': ' '.join(str(val) for val in [
+                pet.name, pet.animal_type, pet.breed, pet.color,
+                pet.gender, pet.age, pet.location, pet.additional_details
+            ] if val)
+        })
+    
+    # Initialize TF-IDF vectorizer with just the descriptions
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    self.tfidf_vectorizer = TfidfVectorizer(stop_words='english')
+    descriptions = [pet['full_description'] for pet in self.db_data]
+    self.tfidf_matrix = self.tfidf_vectorizer.fit_transform(descriptions)
+
+def extract_features_from_db(self, query):
+    """Database feature extraction without pandas"""
+    # Exact matches (same as before)
+    exact_matches = PendingPetForAdoption.objects.filter(
+        Q(name__icontains=query) |
+        Q(animal_type__icontains=query) |
+        Q(breed__icontains=query) |
+        Q(color__icontains=query) |
+        Q(additional_details__icontains=query)
+    ).filter(adoption_status='approved')
+    
+    if exact_matches.exists():
+        return exact_matches
+    
+    # TF-IDF similarity without pandas
+    query_vec = self.tfidf_vectorizer.transform([query])
+    similarities = cosine_similarity(query_vec, self.tfidf_matrix)
+    
+    # Get top 5 most similar pets
+    top_indices = similarities.argsort()[0][-5:][::-1]
+    similar_pet_ids = [self.db_data[idx]['id'] for idx in top_indices]
+    
+    return PendingPetForAdoption.objects.filter(
+        id__in=similar_pet_ids, 
+        adoption_status='approved'
+    )
+    
+    def analyze_query_with_ml(self, query):
+        """Enhanced analysis combining NLP and database patterns"""
+        # First check for known pets
+        doc = nlp_lg(query.lower())
+        attributes = defaultdict(list)
+        
+        for name, info in self.known_pets.items():
+            if name in query.lower():
+                for attr, value in info.items():
+                    if attr != 'boost':
+                        if isinstance(value, list):
+                            attributes[attr].extend(value)
+                        else:
+                            attributes[attr].append(value)
+                attributes['boost'] = info.get('boost', 1.0)
+                return dict(attributes)
+        
+        # Extract attributes using NLP
+        attributes = {
+            'color': None,
+            'gender': None,
+            'animal_type': None,
+            'habits': [],
+            'name': None,
+            'breed': None
+        }
+        
+        # Check database for common patterns
+        common_colors = self.db_data['color'].value_counts().index.tolist()
+        common_breeds = self.db_data['breed'].value_counts().index.tolist()
+        common_habits = set()
+        
+        # Extract common habits from additional_details
+        for details in self.db_data['additional_details'].dropna():
+            for token in nlp_lg(details.lower()):
+                if token.pos_ == 'ADJ' and len(token.text) > 3:
+                    common_habits.add(token.text)
+        
+        # Update attributes based on database patterns
+        for token in doc:
+            if token.text.lower() in common_colors:
+                attributes['color'] = token.text.lower()
+            elif token.text.lower() in common_breeds:
+                attributes['breed'] = token.text.lower()
+            elif token.text.lower() in common_habits:
+                attributes['habits'].append(token.text.lower())
+            elif token.lemma_ in ['cat', 'dog', 'bird', 'rabbit']:
+                attributes['animal_type'] = token.lemma_
+            elif token.lemma_ in ['male', 'female']:
+                attributes['gender'] = token.lemma_
+        
+        return {k: v for k, v in attributes.items() if v}
+    
+    def hybrid_search(self, query):
+        """Combine database ML, NLP, and semantic search"""
+        # Step 1: Get database matches using ML
+        db_matches = self.extract_features_from_db(query)
+        
+        # Step 2: Extract attributes with enhanced NLP
+        attributes = self.analyze_query_with_ml(query)
+        
+        # Step 3: Apply attribute filters
+        if attributes.get('animal_type'):
+            db_matches = db_matches.filter(
+                animal_type__iexact=attributes['animal_type']
+            )
+        if attributes.get('color'):
+            db_matches = db_matches.filter(
+                color__iexact=attributes['color']
+            )
+        if attributes.get('breed'):
+            db_matches = db_matches.filter(
+                breed__iexact=attributes['breed']
+            )
+        if attributes.get('habits'):
+            for habit in attributes['habits']:
+                db_matches = db_matches.filter(
+                    additional_details__icontains=habit
+                )
+        
+        # Convert to list for semantic search
+        pets = list(db_matches)
+        if not pets:
+            return []
+        
+        # Step 4: Apply semantic search to refined results
+        pet_descriptions = [self.get_pet_description(pet) for pet in pets]
+        description_embeddings = sentence_model.encode(
+            pet_descriptions, 
+            convert_to_tensor=True
+        )
+        query_embedding = sentence_model.encode(query, convert_to_tensor=True)
+        
+        similarities = util.cos_sim(query_embedding, description_embeddings)[0]
+        ranked_pets = sorted(
+            zip(pets, similarities), 
+            key=lambda x: x[1], 
+            reverse=True
+        )
+        
+        return [pet for pet, _ in ranked_pets]
+    
+    def get_pet_description(self, pet):
+        """Generate comprehensive pet description"""
+        description_parts = [
+            pet.name or "",
+            pet.animal_type or "",
+            pet.breed or "",
+            pet.color or "",
+            pet.gender or "",
+            str(pet.age) + " years old" if pet.age else "",
+            pet.location or "",
+            pet.additional_details or ""
+        ]
+        return " ".join(part for part in description_parts if part).strip()
+
+def analyze_query(self, query):
+        """Enhanced NLP analysis with fallback to simple matching"""
+        try:
+            doc = nlp(query.lower())
+            attributes = defaultdict(list)
+            
+            # Check for known pets
+            for name, info in self.known_pets.items():
+                if name in query.lower():
+                    for attr, value in info.items():
+                        if attr != 'boost':
+                            if isinstance(value, list):
+                                attributes[attr].extend(value)
+                            else:
+                                attributes[attr].append(value)
+                    attributes['boost'] = info.get('boost', 1.0)
+                    return dict(attributes)
+            
+            # Simple attribute extraction (fallback if NLP fails)
+            attributes = {
+                'color': next((c for c in ['orange', 'black', 'white'] 
+                             if c in query.lower()), None),
+                'animal_type': next((a for a in ['cat', 'dog', 'bird'] 
+                                  if a in query.lower()), None)
+            }
+            return {k: v for k, v in attributes.items() if v}
+            
+        except Exception as e:
+            print(f"Error in NLP analysis: {e}")
+            return {}
+
+
 # Load the spaCy model
 nlp = spacy.load("en_core_web_sm")
 
-def search_results(request):
-    query = request.GET.get('q')  # Get the search query from the URL parameters
-    adoption_listings = None  # Initialize adoption_listings to None
+def extract_attributes(query):
+    """
+    Enhanced pet attributes extraction from the search query with known pets database.
+    """
+    # Known pets database (expand as needed)
+    KNOWN_PETS = {
+        'hachiko': {'animal_type': 'dog', 'breed': 'akita', 'traits': ['loyal', 'faithful']},
+        'garfield': {'animal_type': 'cat', 'color': 'orange', 'traits': ['lazy', 'loves lasagna']},
+        'odie': {'animal_type': 'dog', 'color': 'white'},
+        'nermal': {'animal_type': 'cat', 'color': 'gray'}
+    }
 
-    if query:  # If there is a search query
-        # Process the query with spaCy
-        doc = nlp(query.lower())
+    # Common attributes to look for
+    colors = ['black', 'white', 'brown', 'gray', 'orange', 'yellow', 'red', 'blue', 'green']
+    genders = ['male', 'female']
+    animal_types = ['cat', 'dog', 'bird', 'rabbit', 'hamster', 'fish', 'turtle']
+    habits = ['playful', 'friendly', 'quiet', 'active', 'lazy', 'energetic',
+              'cuddly', 'independent', 'protective', 'smart']
 
-        # Extract meaningful tokens (e.g., nouns, adjectives, entities)
-        keywords = [token.text for token in doc if not token.is_stop and not token.is_punct]
+    # Initialize attributes
+    attributes = {
+        "color": None,
+        "gender": None,
+        "animal_type": None,
+        "habits": [],
+        "name": None,
+        "breed": None,
+        "traits": []
+    }
 
-        # Optional: Expand keywords with synonyms or related terms
-        synonyms = {
-            "dog": ["dog", "canine", "puppy"],
-            "cat": ["cat", "feline", "kitten"],
-            "small": ["small", "tiny", "little"],
-            "black": ["black", "dark", "ebony"],
+    query_lower = query.lower()
+
+    # Check for known pets first
+    for name, attrs in KNOWN_PETS.items():
+        if name in query_lower:
+            attributes.update(attrs)
+            attributes["name"] = name.capitalize()
+            return attributes
+
+    # Extract color
+    for color in colors:
+        if color in query_lower:
+            attributes["color"] = color
+            break
+
+    # Extract gender
+    for gender in genders:
+        if gender in query_lower:
+            attributes["gender"] = gender
+            break
+
+    # Extract animal type
+    for animal in animal_types:
+        if animal in query_lower:
+            attributes["animal_type"] = animal
+            break
+
+    # Extract habits
+    for habit in habits:
+        if habit in query_lower:
+            attributes["habits"].append(habit)
+
+    # Check if query might be a name
+    if len(query.split()) == 1 and not any(word in query_lower for word in colors + genders + animal_types + habits):
+        attributes["name"] = query
+
+    return attributes
+
+
+
+# Load a multilingual model (supports >50 languages)
+model = SentenceTransformer('distiluse-base-multilingual-cased-v2')  # Good trade-off between speed and accuracy
+image_model = models.mobilenet_v2(pretrained=True)
+image_model.eval()
+
+
+class PetSearchEnhancer:
+    def __init__(self):
+        self.legendary_pets = {
+            'hachiko': {'type': 'dog', 'breed': 'akita', 'traits': ['loyal', 'faithful']},
+            'garfield': {'type': 'cat', 'breed': 'orange tabby', 'traits': ['lazy']}
         }
-        expanded_keywords = []
-        for keyword in keywords:
-            expanded_keywords.append(keyword)
-            if keyword in synonyms:
-                expanded_keywords.extend(synonyms[keyword])
+    
+    def web_context_search(self, query):
+        """Get web context about the search term"""
+        try:
+            # Get top 3 Google results
+            search_results = list(google_search(query, num=3, stop=3, pause=2))
+            
+            context = ""
+            for url in search_results:
+                try:
+                    page = requests.get(url, timeout=5)
+                    soup = BeautifulSoup(page.content, 'html.parser')
+                    text = ' '.join([p.get_text() for p in soup.find_all('p')])
+                    context += text[:2000] + " "  # Limit per page
+                except:
+                    continue
+            
+            return context[:5000]  # Total limit
+        except:
+            return ""
 
-        # Filter the PendingPetForAdoption model using the expanded keywords
-        q_objects = Q()
-        for keyword in expanded_keywords:
-            q_objects |= Q(animal_type__icontains=keyword) | \
-                        Q(breed__icontains=keyword) | \
-                        Q(color__icontains=keyword) | \
-                        Q(gender__icontains=keyword) | \
-                        Q(age__icontains=keyword) | \
-                        Q(location__icontains=keyword) | \
-                        Q(additional_details__icontains=keyword) | \
-                        Q(author__icontains=keyword)
+    def analyze_query(self, query):
+        """Enhanced analysis with web context"""
+        # Check legendary pets first
+        query_lower = query.lower()
+        for name, info in self.legendary_pets.items():
+            if name in query_lower:
+                return {
+                    'is_legendary': True,
+                    'type': info['type'],
+                    'breed': info['breed'],
+                    'traits': info['traits']
+                }
+        
+        # Get web context for unknown terms
+        web_context = self.web_context_search(query)
+        combined_text = f"{query}. {web_context}"
+        doc = nlp(combined_text)
+        
+        # Extract pet attributes from context
+        result = {'is_legendary': False}
+        
+        # Detect animal type
+        animal_types = ['dog', 'cat', 'bird']
+        for token in doc:
+            if token.lemma_ in animal_types:
+                result['type'] = token.lemma_
+                break
+        
+        # Detect breed (more complex pattern matching)
+        breed_keywords = {
+            'akita': r'\bakita\b',
+            'tabby': r'\btabby\b',
+            'persian': r'\bpersian\b'
+        }
+        for breed, pattern in breed_keywords.items():
+            if re.search(pattern, combined_text, re.I):
+                result['breed'] = breed
+                break
+        
+        return result
 
-        adoption_listings = PendingPetForAdoption.objects.filter(q_objects, adoption_status='approved')
+# Unified configuration for famous pets
+FAMOUS_PETS = {
+    'hachiko': {
+        'filters': {
+            'animal_type__iexact': 'dog',
+            'breed__icontains': 'akita',
+            'additional_details__icontains': 'loyal'
+        },
+        'boost': 5.0
+    },
+    'garfield': {
+        'filters': {
+            'animal_type__iexact': 'cat',
+            'color__iexact': 'orange',
+            'additional_details__icontains': 'lazy'
+        },
+        'boost': 5.0
+    },
+    'marie': {
+        'filters': {
+            'animal_type__iexact': 'cat',
+            'color__iexact': 'white',
+            'breed__icontains': 'persian'
+        },
+        'boost': 5.0
+    }
+}
 
-    return render(request, 'homepage.html', {'adoption_listings': adoption_listings, 'query': query})
+def search_pets(query):
+    base_query = PendingPetForAdoption.objects.filter(adoption_status='approved')
+    
+    # Extract query attributes
+    attributes = extract_attributes(query)
+
+    # **STRICT AGE FILTER** 🛠️ (Ensures only pets below 5 months are included)
+    if "below 5 months" in query.lower():
+        base_query = base_query.filter(age__lt=5)
+
+    # Apply other filters
+    if attributes.get("animal_type"):
+        base_query = base_query.filter(animal_type__iexact=attributes["animal_type"])
+    if attributes.get("color"):
+        base_query = base_query.filter(color__iexact=attributes["color"])
+    if attributes.get("breed"):
+        base_query = base_query.filter(breed__iexact=attributes["breed"])
+
+    pets = list(base_query)
+    if not pets:
+        return []
+
+    # **BM25 Ranking for Relevance**
+    pet_descriptions = [get_pet_description(pet) for pet in pets]
+    bm25 = BM25Okapi([desc.split() for desc in pet_descriptions])
+    query_tokens = query.lower().split()
+    scores = bm25.get_scores(query_tokens)
+
+    ranked_pets = sorted(zip(pets, scores), key=lambda x: x[1], reverse=True)
+    return [pet for pet, _ in ranked_pets]
+
+
+# Usage in Django view
+def search_results(request):
+    """Handles pet search requests from the HTML side."""
+    query = request.GET.get("q", "").strip()
+    
+    if query:
+        adoption_listings = search_pets(query)
+    else:
+        adoption_listings = PendingPetForAdoption.objects.filter(adoption_status='approved')
+
+    return render(request, 'homepage.html', {
+        'adoption_listings': adoption_listings,
+        'query': query
+    })
+
+def autocomplete_suggestions(request):
+    """Provides **real-time suggestions** based on pet attributes."""
+    query = request.GET.get("q", "").strip().lower()
+    if not query:
+        return JsonResponse({"suggestions": []})
+
+    pets = PendingPetForAdoption.objects.filter(
+        Q(name__icontains=query) | Q(breed__icontains=query) | Q(additional_details__icontains=query)
+    ).values_list("name", flat=True)
+
+    return JsonResponse({"suggestions": list(set(pets))})
+
+
+def extract_image_features_from_query(query):
+    """
+    Placeholder for extracting features from query images.
+    In a real implementation, this would process an uploaded image.
+    """
+    return np.zeros((1280,))  # Placeholder
+
+def get_pet_description(pet):
+    """
+    Original description generator you need to keep
+    """
+    description_parts = [
+        pet.name or "",
+        pet.animal_type or "",
+        pet.breed or "",
+        pet.color or "",
+        pet.gender or "",
+        str(pet.age) + " years old" if pet.age else "",
+        pet.location or "",
+        pet.additional_details or ""
+    ]
+    return " ".join(part for part in description_parts if part).strip()
+
+
+
+
+def search_pets(query):
+    """
+    Enhanced search that first filters by explicit attributes, then applies semantic search.
+    """
+    base_query = PendingPetForAdoption.objects.filter(adoption_status='approved')
+    if not query:
+        return base_query
+    
+    # First apply attribute filtering
+    attributes = extract_attributes(query)
+    
+    if attributes['animal_type']:
+        base_query = base_query.filter(animal_type__iexact=attributes['animal_type'])
+    if attributes['color']:
+        base_query = base_query.filter(color__iexact=attributes['color'])
+    if attributes['gender']:
+        base_query = base_query.filter(gender__iexact=attributes['gender'])
+    
+    pets = list(base_query)
+    if not pets:
+        return []
+    
+    # Then apply semantic search to the filtered results
+    pet_descriptions = [get_pet_description(pet) for pet in pets]
+    description_embeddings = model.encode(pet_descriptions, convert_to_tensor=True)
+    query_embedding = model.encode(query, convert_to_tensor=True)
+    
+    similarities = util.cos_sim(query_embedding, description_embeddings)[0]
+    ranked_pets = sorted(zip(pets, similarities), key=lambda x: x[1], reverse=True)
+    return [pet for pet, _ in ranked_pets]
+
+# Usage in your view:
+def search_results(request):
+    query = request.GET.get('q', '')
+    if query:
+        adoption_listings = search_pets(query)
+    else:
+        adoption_listings = PendingPetForAdoption.objects.filter(adoption_status='approved')
+    
+    return render(request, 'homepage.html', {
+        'adoption_listings': adoption_listings,
+        'query': query
+    })
+
+
+def generate_pet_description(pet):
+    name = pet.name or "This pet"
+    gender = pet.gender.lower() if pet.gender else ""
+    color = pet.color.lower() if pet.color else ""
+    age = pet.age.lower() if pet.age else ""
+    breed = pet.breed.lower() if pet.breed else ""
+    animal = pet.animal_type.lower() if pet.animal_type else ""
+    location = pet.location or "an undisclosed location"
+    details = pet.additional_details or ""
+
+    desc = f"{name} is a {age} old {gender} {color} {breed} {animal} from {location}. "
+    if details:
+        desc += f"{name} is known for being {details.lower().strip('.')}."
+    return desc.strip()
+
+def landing(request):
+    # Get or create the page view counter
+    page_view, created = PageView.objects.get_or_create(page_name='landing')
+    
+    # Increment the view count
+    page_view.views += 1
+    page_view.save()
+    
+    return render(request, 'landing.html', {'page_view': page_view})
 
 
 from django.contrib.auth import logout as auth_logout
@@ -1128,6 +1869,108 @@ def send_notification(request):
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False})
+    
+def admin_adoption_request(request):
+    return render(request, 'admin_adoption_request.html')
+
+def admin_view_all_requests(request):
+    # Fetch all adoption requests
+    adoption_requests = PetAdoptionTable.objects.all()
+    
+    request_list = []
+    for req in adoption_requests:
+        pet = PendingPetForAdoption.objects.get(id=req.pet_id)
+        request_list.append({
+            'id': req.id,
+            'pet_name': pet.name,
+            'pet_animal_type': pet.animal_type,
+            'adoption_request_status': req.adoption_request_status,
+            'request_date':req.request_date,
+        })
+    
+    return render(request, 'admin_view_all_requests.html', {'requests': request_list})
+
+def admin_view_adoption_request(request, request_id):
+    # Retrieve the adoption request using the provided request_id
+    req = get_object_or_404(PetAdoptionTable, pk=request_id)
+    
+    # Get the first name and last name directly from the adoption request
+    user_first_name = req.first_name
+    user_last_name = req.last_name
+    
+    # Pass the request and user details to the template
+    return render(request, 'admin_view_adoption_request.html', {
+        'request': req,
+        'user_first_name': user_first_name,
+        'user_last_name': user_last_name,
+    })
+
+def admin_view_pending_requests(request):
+    # Fetch only adoption requests with status 'pending'
+    adoption_requests = PetAdoptionTable.objects.filter(adoption_request_status='pending')
+    
+    request_list = []
+    for req in adoption_requests:
+        pet = get_object_or_404(PendingPetForAdoption, id=req.pet_id)  # Use get_object_or_404 for safety
+        request_list.append({
+            'id': req.id,
+            'pet_name': pet.name,
+            'pet_animal_type': pet.animal_type,
+            'adoption_request_status': req.adoption_request_status,
+            'request_date':req.request_date,
+        })
+    
+    return render(request, 'admin_view_pending_list.html', {'requests': request_list})
+
+def admin_view_review_list(request):
+    # Fetch only adoption requests with status 'pending'
+    adoption_requests = PetAdoptionTable.objects.filter(adoption_request_status='review')
+    
+    request_list = []
+    for req in adoption_requests:
+        pet = get_object_or_404(PendingPetForAdoption, id=req.pet_id)  # Use get_object_or_404 for safety
+        request_list.append({
+            'id': req.id,
+            'pet_name': pet.name,
+            'pet_animal_type': pet.animal_type,
+            'adoption_request_status': req.adoption_request_status,
+            'request_date':req.request_date,
+        })
+    
+    return render(request, 'admin_view_review_list.html', {'requests': request_list})
+def admin_view_approved_list(request):
+    # Fetch only adoption requests with status 'pending'
+    adoption_requests = PetAdoptionTable.objects.filter(adoption_request_status='approved')
+    
+    request_list = []
+    for req in adoption_requests:
+        pet = get_object_or_404(PendingPetForAdoption, id=req.pet_id)  # Use get_object_or_404 for safety
+        request_list.append({
+            'id': req.id,
+            'pet_name': pet.name,
+            'pet_animal_type': pet.animal_type,
+            'adoption_request_status': req.adoption_request_status,
+            'request_date':req.request_date,
+        })
+    
+    return render(request, 'admin_view_approved_list.html', {'requests': request_list})
+
+def admin_view_rejected_list(request):
+    # Fetch only adoption requests with status 'pending'
+    adoption_requests = PetAdoptionTable.objects.filter(adoption_request_status='rejected')
+    
+    request_list = []
+    for req in adoption_requests:
+        pet = get_object_or_404(PendingPetForAdoption, id=req.pet_id)  # Use get_object_or_404 for safety
+        request_list.append({
+            'id': req.id,
+            'pet_name': pet.name,
+            'pet_animal_type': pet.animal_type,
+            'adoption_request_status': req.adoption_request_status,
+            'request_date':req.request_date,
+        })
+    
+    return render(request, 'admin_view_rejected_list.html', {'requests': request_list})
 
 ###################################   API SECTION    ###################################################################
 from django.middleware.csrf import get_token
@@ -1170,6 +2013,166 @@ class login_react(View):
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_react_adopted_pets(request, user_id=None):
+    """
+    API endpoint to retrieve adopted pets for a specific user
+    URL: /api/react_adopted-pets/<user_id>/
+    """
+    try:
+        # If user_id is provided in URL, use it; otherwise use the authenticated user
+        if user_id:
+            user = get_object_or_404(User, id=user_id)
+        else:
+            user = request.user
+        
+        logger.info(f"Fetching adopted pets for user: {user.id}")
+        
+        # Retrieve approved adoption requests for the specified user
+        approved_requests = PetAdoptionTable.objects.filter(
+            adoption_request_status='approved',
+            user=user
+        )
+        
+        logger.info(f"Found {approved_requests.count()} approved adoption requests")
+        
+        # Debug: Print all approved requests
+        for req in approved_requests:
+            logger.info(f"Approved request - ID: {req.id}, Pet ID: {req.pet.id}, Pet Name: {req.pet.name}, User: {req.user.username}")
+        
+        # Get the pet IDs from the approved requests
+        # Since 'pet' is a ForeignKey, Django creates 'pet_id' automatically
+        pet_ids = list(approved_requests.values_list('pet_id', flat=True))
+        logger.info(f"Pet IDs from approved requests: {pet_ids}")
+        
+        # Alternative way to get pet IDs (just to double-check):
+        # pet_ids_alt = [req.pet.id for req in approved_requests]
+        # logger.info(f"Pet IDs (alternative method): {pet_ids_alt}")
+        
+        # Retrieve the details of the pets from PendingPetForAdoption using the pet IDs
+        adopted_pets = PendingPetForAdoption.objects.filter(id__in=pet_ids)
+        logger.info(f"Found {adopted_pets.count()} pets in PendingPetForAdoption table")
+        
+        # Debug: Print all found pets
+        for pet in adopted_pets:
+            logger.info(f"Pet found - ID: {pet.id}, Name: {pet.name}, Status: {pet.adoption_status}")
+        
+        # Check if any pets are missing
+        missing_pet_ids = set(pet_ids) - set(adopted_pets.values_list('id', flat=True))
+        if missing_pet_ids:
+            logger.warning(f"Missing pets with IDs: {missing_pet_ids}")
+        
+        # Don't automatically update adoption status here
+        # This prevents potential race conditions and data integrity issues
+        
+        # Serialize the data
+        serializer = PendingPetForAdoptionSerializer(adopted_pets, many=True)
+        
+        response_data = {
+            'results': serializer.data,
+            'count': len(serializer.data),
+            'next': None,
+            'previous': None,
+            'debug_info': {
+                'user_id': user.id,
+                'approved_requests_count': approved_requests.count(),
+                'pet_ids_found': pet_ids,
+                'pets_retrieved_count': adopted_pets.count(),
+                'missing_pet_ids': list(missing_pet_ids) if missing_pet_ids else []
+            }
+        }
+        
+        logger.info(f"Returning {len(serializer.data)} pets to client")
+        return Response(response_data, status=status.HTTP_200_OK)
+    
+    except User.DoesNotExist:
+        logger.error(f"User not found: {user_id}")
+        return Response(
+            {'error': 'User not found'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        logger.error(f"Error in api_react_adopted_pets: {str(e)}")
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+@api_view(['GET'])
+def react_adopted_pets_public(request, user_id):
+    """
+    Public API endpoint to retrieve adopted pets for a specific user
+    URL: /api/react_adopted-pets-public/<user_id>/
+    """
+    try:
+        user = get_object_or_404(User, id=user_id)
+        
+        logger.info(f"Public API: Fetching adopted pets for user: {user.id}")
+        
+        # Retrieve approved adoption requests for the specified user
+        approved_requests = PetAdoptionTable.objects.filter(
+            adoption_request_status='approved',
+            user=user
+        )
+        
+        logger.info(f"Public API: Found {approved_requests.count()} approved adoption requests")
+        
+        # Debug: Print all approved requests
+        for req in approved_requests:
+            logger.info(f"Public API: Approved request - ID: {req.id}, Pet ID: {req.pet.id}, Pet Name: {req.pet.name}")
+        
+        # Get the pet IDs from the approved requests
+        pet_ids = list(approved_requests.values_list('pet_id', flat=True))
+        logger.info(f"Public API: Pet IDs: {pet_ids}")
+        
+        # Retrieve the details of the pets from PendingPetForAdoption using the pet IDs
+        adopted_pets = PendingPetForAdoption.objects.filter(id__in=pet_ids)
+        logger.info(f"Public API: Found {adopted_pets.count()} pets")
+        
+        # Debug: Print all found pets
+        for pet in adopted_pets:
+            logger.info(f"Public API: Pet found - ID: {pet.id}, Name: {pet.name}, Status: {pet.adoption_status}")
+        
+        # Check for missing pets
+        missing_pet_ids = set(pet_ids) - set(adopted_pets.values_list('id', flat=True))
+        if missing_pet_ids:
+            logger.warning(f"Public API: Missing pets with IDs: {missing_pet_ids}")
+        
+        # Don't automatically update adoption status
+        
+        # Serialize the data
+        serializer = PendingPetForAdoptionSerializer(adopted_pets, many=True)
+        
+        response_data = {
+            'results': serializer.data,
+            'count': len(serializer.data),
+            'next': None,
+            'previous': None,
+            'debug_info': {
+                'user_id': user.id,
+                'approved_requests_count': approved_requests.count(),
+                'pet_ids_found': pet_ids,
+                'pets_retrieved_count': adopted_pets.count(),
+                'missing_pet_ids': list(missing_pet_ids) if missing_pet_ids else []
+            }
+        }
+        
+        return Response(response_data, status=status.HTTP_200_OK)
+    
+    except User.DoesNotExist:
+        logger.error(f"Public API: User not found: {user_id}")
+        return Response(
+            {'error': 'User not found'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        logger.error(f"Public API Error: {str(e)}")
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
         
 @csrf_exempt  # Use this for testing; consider using CSRF protection in production
 def api_signup(request):
@@ -1597,3 +2600,25 @@ class AdminReactAdminUserView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+# Add this to your Django view for debugging
+class MyAdoptedPetReportReactTrackUpdateList(generics.ListAPIView):
+    serializer_class = TrackUpdateTableSerializer
+    
+    def get_queryset(self):
+        pet_id = self.request.query_params.get('pet_id', None)
+        print(f"Received pet_id: {pet_id}")  # Debug log
+        
+        if pet_id is not None:
+            try:
+                pet_adoption = get_object_or_404(PetAdoptionTable, id=pet_id)
+                print(f"Found pet_adoption: {pet_adoption.id}")  # Debug log
+                
+                queryset = TrackUpdateTable.objects.filter(pet_adoption_request_id=pet_adoption.id)
+                print(f"Queryset count: {queryset.count()}")  # Debug log
+                return queryset
+            except Exception as e:
+                print(f"Error in get_queryset: {e}")  # Debug log
+                raise
+        
+        return TrackUpdateTable.objects.none()

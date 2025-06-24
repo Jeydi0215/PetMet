@@ -1,15 +1,153 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1 style="text-align: center;">Adoption Request</h1>
-  <div class="pet-info" style="margin: 0 auto; text-align: left; background-color: #ffffff; width: 30%;">
-    <img src="{{ pending_pet.img.url }}" alt="Pet Image" style="width: 50%; height: auto; display: block; margin: 0 auto;">
-    <p>Pet Name: {{ pending_pet.name }}</p>
-    <p>Breed: {{ pending_pet.breed }}</p>
-    <p>Color: {{ pending_pet.color }}</p>
-    <p>Gender: {{ pending_pet.gender }}</p>
-    <p>Adoption Status: {{ adoption_request.adoption_request_status }}</p>
-    <input name="submit" type="Submit" onclick="history.back()" value="Back">
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card adoption-detail-card border-0 shadow-sm">
+        <div class="card-header bg-white border-0 pt-4 pb-2">
+          <h1 class="text-center text-primary mb-0">
+            <i class="bi bi-heart-fill text-primary me-2"></i>Adoption Request
+          </h1>
+        </div>
+        <div class="card-body p-4">
+          <div class="text-center mb-4">
+            <div class="position-relative d-inline-block">
+              <img src="{{ pending_pet.img.url }}" alt="{{ pending_pet.name }}" class="pet-image">
+            </div>
+          </div>
+          
+          <div class="pet-details-table">
+            <div class="detail-row">
+              <span class="detail-label">
+                <i class="bi bi-tag-fill text-muted me-2"></i>Pet Name
+              </span>
+              <span class="detail-value">{{ pending_pet.name }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">
+                <i class="bi bi-grid-1x2-fill text-muted me-2"></i>Breed
+              </span>
+              <span class="detail-value">{{ pending_pet.breed }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">
+                <i class="bi bi-palette-fill text-muted me-2"></i>Color
+              </span>
+              <span class="detail-value">{{ pending_pet.color }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">
+                <i class="bi bi-gender-ambiguous text-muted me-2"></i>Gender
+              </span>
+              <span class="detail-value">{{ pending_pet.gender }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">
+                <i class="bi bi-tag-fill text-muted me-2"></i>Adoption Status
+              </span>
+              <span class="status-badge 
+                {% if adoption_request.adoption_request_status == 'approved' %}bg-success
+                {% elif adoption_request.adoption_request_status == 'pending' %}bg-warning
+                {% elif adoption_request.adoption_request_status == 'rejected' %}bg-danger
+                {% else %}bg-secondary{% endif %}">
+                {{ adoption_request.adoption_request_status|title }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer bg-white border-0 pb-4 text-center">
+          <button onclick="history.back()" class="btn btn-outline-primary px-4 py-2">
+            <i class="bi bi-arrow-left me-2"></i> Back
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
-  <!-- Add more details as needed -->
+</div>
+
+<style>
+  .adoption-detail-card {
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+  }
+  
+  .adoption-detail-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+  }
+  
+  .pet-image {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 3px solid white;
+  }
+  
+  .status-badge {
+    position: relative;
+    right: 6px;
+    padding: 0.35em 1em;
+    border-radius: 20px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .pet-details-table {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+  
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+  
+  .detail-row:last-child {
+    border-bottom: none;
+  }
+  
+  .detail-label {
+    font-weight: 500;
+    color: #555;
+    display: flex;
+    align-items: center;
+  }
+  
+  .detail-value {
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-outline-primary:hover {
+    background-color: #0d6efd;
+    color: white;
+  }
+  
+  @media (max-width: 576px) {
+    .pet-image {
+      width: 180px;
+      height: 180px;
+    }
+    
+    .pet-details-table {
+      padding: 1rem;
+    }
+  }
+</style>
 {% endblock %}

@@ -64,10 +64,23 @@ class PetAdoptionForm(forms.ModelForm):
 class PetAdoptionFormRequest(forms.ModelForm):
     class Meta:
         model = PetAdoptionTable
-        fields = ('first_name', 'last_name', 'contact_number', 'address', 'adopter_type', 'living_situation', 'previous_pet_experience', 'owns_other_pets', 'facebook_profile_link')
+        fields = (
+            'first_name', 
+            'last_name', 
+            'contact_number', 
+            'address', 
+            'adopter_type', 
+            'living_situation', 
+            'previous_pet_experience', 
+            'owns_other_pets', 
+            'facebook_profile_link',
+            'id_type',  # Add ID type to the fields
+            'id_number'  # Add ID number to the fields
+        )
         widgets = {
             'previous_pet_experience': forms.Textarea(attrs={'rows': 5, 'cols': 30}),
-            'owns_other_pets' : forms.TextInput(attrs={'rows' : 4,'cols': 30}),
+            'owns_other_pets': forms.TextInput(attrs={'rows': 4, 'cols': 30}),
+            'id_number': forms.TextInput(attrs={'placeholder': 'Enter your ID number'}),  # Optional placeholder
         }
 
     def clean(self):

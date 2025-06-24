@@ -1,44 +1,164 @@
 <style>
-    .pet-item {
+    /* Main container for pet columns */
+    .pets-column-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Individual pet card - column layout */
+    .pet-item-column {
         background-color: #fff;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         overflow: hidden;
-        margin: 20px;
         transition: transform 0.2s;
+        display: flex;
+        flex-direction: column;
     }
 
-    .pet-item:hover {
+    .pet-item-column:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+            /* New styles for the pet detail layout */
+    .pet-detail-container {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .pet-detail-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .pet-detail-header h2 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 1.8em;
+    }
+    
+    .pet-detail-content {
+        display: flex;
+        flex-direction: row;
+        gap: 25px;
+    }
+    
+    .pet-detail-image {
+        flex: 0 0 45%;
+        max-width: 45%;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    .pet-detail-image img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+    }
+    
+    .pet-detail-image img:hover {
+        transform: scale(1.02);
+    }
+    
+    .pet-detail-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .pet-detail-info p {
+        margin: 8px 0;
+        font-size: 1.05em;
+        color: #333;
+    }
+    
+    .pet-detail-info p strong {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+    
+    .pet-detail-description {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+    }
+    
+    .pet-detail-actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+    }
+
+
+
+
+    /* Image section */
+    .pet-image-container-column {
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+    }
+
+    .pet-image-column {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .pet-item-column:hover .pet-image-column {
         transform: scale(1.05);
     }
 
-    .pet-info {
+    /* Info section */
+    .pet-info-column {
         padding: 15px;
-        text-align: center;
-        width:300px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
     }
 
-    .pet-name {
+    .pet-name-column {
         font-size: 1.5em;
-        margin: 10px 0;
+        margin: 0 0 10px 0;
+        color: #2c3e50;
     }
 
-    .pet-info p {
+    .pet-info-column p {
         margin: 5px 0;
         color: #555;
     }
 
+    /* Buttons container */
+    .pet-buttons-column {
+        margin-top: 15px;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
     .btn {
-        margin: 5px;
         padding: 10px 15px;
         border: none;
         border-radius: 5px;
         cursor: pointer;
-        transition: background-color 0.3s;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        flex: 1;
+        text-align: center;
     }
 
     .btn-light {
         background-color: #f0f0f0;
+        color: #333;
     }
 
     .btn-light:hover {
@@ -46,47 +166,100 @@
     }
 
     .btn-primary {
-        background-color: #007bff;
+        background-color: #3498db;
         color: white;
     }
 
     .btn-primary:hover {
-        background-color: #0056b3;
+        background-color: #2980b9;
     }
 
-    .modal-content {
-        padding: 20px;
-        border-radius: 10px;
-        background-color: #fff;
-    }
-
-    .image-container {
-        width: 200px;
-        height: 200px;
-        overflow: hidden;
-        border-radius: 10px;
-    }
-
-    .image-container img {
+    /* Keep your existing modal styles */
+            .modal {
+        display: none;
+        position: fixed;
+        z-index: 10000;
+        left: 0;
+        top: 0;
         width: 100%;
-        height: auto;
-        object-fit: cover;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.6);
+        justify-content: center;
+        align-items: center;
     }
+
+
+    
+        .modal-content {
+        background-color: white;
+        padding: 25px;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 700px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        position: relative;
+    }
+
+
+    
+        .modal .close {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+        color: #666;
+        transition: color 0.2s;
+    }
+
+
+    .modal .close:hover {
+        color: #000;
+    }
+
+
+
+    
+    @media (max-width: 768px) {
+        .modal-content {
+            width: 90%;
+            padding: 20px 15px;
+        }
+        
+        .pet-detail-content {
+            flex-direction: column;
+        }
+        
+        .pet-detail-image {
+            max-width: 100%;
+        }
+    }
+
+
+    
 </style>
 
-<article class="pet-item">
-    <img src="{{ adopt.img.url }}" alt="Pet Image" style="width: 100%; height: 200px; object-fit: cover;">
-    <div class="pet-info">
-        <h3 class="pet-name">{{ adopt.name }}</h3>
-        <p>Animal Type: {{ adopt.animal_type }}</p>
-        <p>Age: {{ adopt.age }}</p>
-        <p>Date: {{ adopt.created_at }}</p>
-        <div class="d-flex justify-content-center mt-5">
-            <button type="button" class="btn btn-light" onclick="document.getElementById('petDetailModal-{{ adopt.pk }}').style.display='block'">View</button>
-            <button type="button" class="btn btn-primary adopt-button" onclick="showAdoptionForm({{ adopt.pk }})">Adopt</button>
+<!-- Updated pet item in column format -->
+<div class="pets-column-container">
+    <article class="pet-item-column">
+        <div class="pet-image-container-column">
+            <img src="{{ adopt.img.url }}" alt="Pet Image" class="pet-image-column">
         </div>
-    </div>
-</article>
+        <div class="pet-info-column">
+            <h3 class="pet-name-column">{{ adopt.name }}</h3>
+            <p>Animal Type: {{ adopt.animal_type }}</p>
+            <p>Age: {{ adopt.age }}</p>
+            <p>Posted On: {{ adopt.created_at }}</p>
+            <p>Posted By:{{adopt.author}}</p>
+            <div class="pet-buttons-column">
+                <button type="button" class="btn btn-light" onclick="document.getElementById('petDetailModal-{{ adopt.pk }}').style.display='block'">View</button>
+                <button type="button" class="btn btn-primary adopt-button" onclick="showAdoptionForm({{ adopt.pk }})">Adopt</button>
+            </div>
+        </div>
+    </article>
+</div>
 
 <!-- Adoption Modal -->
 <div id="adoption-modal" class="modal" style="display: none;">
@@ -98,27 +271,50 @@
     </div>
 </div>
 
-<!-- Modal -->
-<div id="petDetailModal-{{ adopt.pk }}" class="modal" style="display: none; overflow-y: auto;">
+<!-- Updated Modal with better layout -->
+<div id="petDetailModal-{{ adopt.pk }}" class="modal">
     <div class="modal-content">
         <span class="close" onclick="document.getElementById('petDetailModal-{{ adopt.pk }}').style.display='none'">&times;</span>
-        <div style="display: flex; flex-direction: row;">
-            <div class="image-container">
-                <img src="{{ adopt.img.url }}" alt="Pet Image">
+        
+        <div class="pet-detail-container">
+            <div class="pet-detail-header">
+                <h2>{{ adopt.name }}</h2>
             </div>
-            <div class="details-container" style="padding-left: 20px;">
-                <p>Posted by: {{ adopt.author }}</p>
-                <p>Animal Type: {{ adopt.animal_type }}</p>
-                <p>Age: {{ adopt.age }} yr/s. old</p>
-                <p>Breed: {{ adopt.breed }}</p>
-                <p>Description: {{ adopt.additional_details }}</p>
-                <button type="button" class="btn btn-light" onclick="document.getElementById('petDetailModal-{{ adopt.pk }}').style.display='none'">Back</button>
+            
+            <div class="pet-detail-content">
+                <div class="pet-detail-image">
+                    <img src="{{ adopt.img.url }}" alt="{{ adopt.name }}">
+                </div>
+                
+                <div class="pet-detail-info">
+                    <p><strong>Posted by:</strong> {{ adopt.author }}</p>
+                    <p><strong>Animal Type:</strong> {{ adopt.animal_type }}</p>
+                    <p><strong>Breed:</strong> {{ adopt.breed }}</p>
+                    <p><strong>Color:</strong> {{ adopt.color }}</p>
+                    <p><strong>Gender:</strong> {{ adopt.gender }}</p>
+                    <p><strong>Age:</strong> {{ adopt.age }} yr/s. old</p>
+                    <p><strong>From:</strong> {{ adopt.location }}</p>
+                    
+                    
+                    
+                    <div class="pet-detail-description">
+                        <p><strong>Description:</strong> {{ adopt.additional_details }}</p>
+                    </div>
+                    
+                    <div class="pet-detail-actions">
+                        <button type="button" class="btn btn-light" onclick="document.getElementById('petDetailModal-{{ adopt.pk }}').style.display='none'">Back</button>
+                        <button type="button" class="btn btn-primary adopt-button" onclick="adoptFromDetailModal({{ adopt.pk }})">Adopt</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+
+
 <script>
+    // Handle adopt button click from main listing
     function showAdoptionForm(pk) {
         var url = "{% url 'adopt_pet' 12345 %}".replace('12345', pk);
         $.ajax({
@@ -126,15 +322,59 @@
             url: url,
             success: function(data) {
                 var modal = document.getElementById('adoption-modal');
-                modal.style.display = 'block'; /* Show the modal */
+                modal.style.display = 'flex'; // Show the modal
                 var formContainer = document.getElementById('adoption-form-container');
-                formContainer.innerHTML = data; // Load the form into the modal
+                formContainer.innerHTML = data;
             },
             error: function(xhr, status, error) {
                 console.error("Error fetching adoption form:", error);
             }
         });
     }
+// Handle adopt button click from within the detail modal
+    function adoptFromDetailModal(pk) {
+        // First close the detail modal
+        document.getElementById('petDetailModal-' + pk).style.display = 'none';
+        
+        // Then show the adoption form
+        var url = "{% url 'adopt_pet' 12345 %}".replace('12345', pk);
+        $.ajax({
+            type: 'GET',
+            url: url,
+            success: function(data) {
+                var modal = document.getElementById('adoption-modal');
+                modal.style.display = 'flex'; // Show the modal
+                var formContainer = document.getElementById('adoption-form-container');
+                formContainer.innerHTML = data;
+            },
+            error: function(xhr, status, error) {
+                console.error("Error fetching adoption form:", error);
+            }
+        });
+    }
+
+    
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        var modal = document.getElementById('adoption-modal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    };
+    
+    function closeModal() {
+        document.getElementById('adoption-modal').style.display = "none";
+    }
+    
+
+// Close the modal when clicking outside of it
+window.onclick = function(event) {
+    var modal = document.getElementById('adoption-modal');
+    if (event.target === modal) {
+        modal.style.display = "none";
+    }
+};
+
 
     // Add an event listener to close the modal when the user clicks outside
     document.addEventListener('click', function(event) {
@@ -143,4 +383,16 @@
             modal.style.display = 'none'; /* Hide the modal */
         }
     });
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+        var modals = document.getElementsByClassName('modal');
+        for (var i = 0; i < modals.length; i++) {
+            if (event.target === modals[i]) {
+                modals[i].style.display = 'none';
+            }
+        }
+    };
+
+
 </script>

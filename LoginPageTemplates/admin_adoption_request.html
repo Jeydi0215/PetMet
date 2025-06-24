@@ -1,0 +1,160 @@
+{% extends 'base4.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0"><i class="fas fa-paw mr-2"></i> Adoption Management</h2>
+        </div>
+        
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 col-lg-4">
+                    <div class="form-group">
+                        <label for="adoption-options" class="form-label fw-bold">Select an Option:</label>
+                        <div class="input-group">
+                            <select id="adoption-options" class="form-select form-select-lg" onchange="handleSelection(this)">
+                                <option value="" selected disabled>-- Choose an option --</option>
+                                <option value="{% url 'admin_view_all_requests' %}">
+                                    <i class="fas fa-list"></i> All Requests
+                                </option>
+                                <option value="{% url 'admin_view_pending_requests' %}">
+                                    <i class="fas fa-hourglass-half"></i> Pending
+                                </option>
+                                <option value="{% url 'admin_view_review_list' %}">
+                                    <i class="fas fa-search"></i> Review
+                                </option>
+                                <option value="{% url 'admin_view_approved_list' %}">
+                                    <i class="fas fa-check-circle"></i> Approved
+                                </option>
+                                <option value="{% url 'admin_view_rejected_list' %}">
+                                    <i class="fas fa-times-circle"></i> Rejected
+                                </option>
+                            </select>
+                            <button class="btn btn-outline-secondary" type="button" onclick="refreshResults()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="results" class="mt-4">
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-inbox fa-3x mb-3"></i>
+                    <h4>No selection made</h4>
+                    <p class="mb-0">Please choose an option from the dropdown to view adoption records</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom Styles */
+    .card {
+        border-radius: 0.5rem;
+        border: none;
+    }
+    
+    .card-header {
+        border-radius: 0.5rem 0.5rem 0 0 !important;
+    }
+    
+    select.form-select-lg {
+        padding: 0.75rem 1.5rem;
+        font-size: 1.05rem;
+    }
+    
+    #results {
+        min-height: 300px;
+        transition: all 0.3s ease;
+    }
+    
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+    }
+    
+    .loading-spinner i {
+        font-size: 2rem;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
+<script>
+    function handleSelection(select) {
+        const url = select.value;
+        const resultsDiv = document.getElementById('results');
+        
+        if (url) {
+            // Show loading state
+            resultsDiv.innerHTML = `
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner"></i>
+                    <p class="mt-2">Loading adoption records...</p>
+                </div>
+            `;
+            
+            // Make the loading spinner visible
+            resultsDiv.querySelector('.loading-spinner').style.display = 'block';
+            
+            // Fetch data based on the selected URL
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    // Display the fetched HTML content
+                    resultsDiv.innerHTML = data;
+                    
+                    // Add animation to the loaded content
+                    const tables = resultsDiv.querySelectorAll('table');
+                    tables.forEach(table => {
+                        table.style.opacity = '0';
+                        table.style.transform = 'translateY(20px)';
+                        table.style.transition = 'all 0.3s ease';
+                        setTimeout(() => {
+                            table.style.opacity = '1';
+                            table.style.transform = 'translateY(0)';
+                        }, 50);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    resultsDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Error loading data. Please try again.
+                        </div>
+                    `;
+                });
+        } else {
+            // Show initial state if no option is selected
+            resultsDiv.innerHTML = `
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-inbox fa-3x mb-3"></i>
+                    <h4>No selection made</h4>
+                    <p class="mb-0">Please choose an option from the dropdown to view adoption records</p>
+                </div>
+            `;
+        }
+    }
+    
+    function refreshResults() {
+        const select = document.getElementById('adoption-options');
+        if (select.value) {
+            handleSelection(select);
+        }
+    }
+</script>
+{% endblock %}

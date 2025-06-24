@@ -2,26 +2,89 @@
 
 {% block content %}
 <div class="container my-5">
-    <h2 class="text-center mb-4">Approved Pets</h2>
-    <div class="row">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Approved Pets</h2>
+        <div class="d-flex">
+            <input type="text" class="form-control me-2" id="searchInput" placeholder="Search pets..." style="max-width: 250px;">
+            <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </div>
+    
+    {% if admin_approved_pet %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         {% for pet in admin_approved_pet %}
-            <div class="col-md-4 mb-4">
-                <div class="card h-100 shadow-sm">
-                    <img class="card-img-top" src="{{ pet.img.url }}" alt="Pet Image" style="height: 200px; object-fit: cover;">
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="position-relative">
+                        <img class="card-img-top" src="{{ pet.img.url }}" alt="{{ pet.name }}" style="height: 220px; object-fit: cover;">
+                        <span class="position-absolute top-0 end-0 bg-success text-white px-2 py-1 m-2 rounded-pill small">
+                            Approved
+                        </span>
+                    </div>
                     <div class="card-body">
                         <h5 class="card-title">{{ pet.name }}</h5>
-                        <p class="card-text">{{ pet.description }}</p>
-                        <a href="{% url 'admin_approved_pet_detail' pet.id %}" class="btn btn-primary">View</a>
+                        <div class="d-flex mb-2">
+                            <span class="badge bg-light text-dark me-2">{{ pet.breed }}</span>
+                            <span class="badge bg-light text-dark">{{ pet.age }} years</span>
+                        </div>
+                        <p class="card-text text-muted">{{ pet.description|truncatechars:100 }}</p>
                     </div>
-                </div>
-            </div>
-        {% empty %}
-            <div class="col-12 text-center">
-                <div class="alert alert-warning" role="alert">
-                    No approved pets found.
+                    <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">
+                        <a href="{% url 'admin_approved_pet_detail' pet.id %}" class="btn btn-primary stretched-link">
+                            View Details
+                        </a>
+                        <span class="text-muted small">{{ pet.created_at|date:"M d, Y" }}</span>
+                    </div>
                 </div>
             </div>
         {% endfor %}
     </div>
+    {% else %}
+    <div class="text-center py-5">
+        <div class="card border-0">
+            <div class="card-body py-5">
+                <i class="bi bi-heart text-muted" style="font-size: 3rem;"></i>
+                <h4 class="mt-3">No approved pets found</h4>
+                <p class="text-muted">Currently there are no pets that have been approved for listing.</p>
+                <a href="#" class="btn btn-outline-primary mt-2">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
+
+<style>
+    .card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .badge {
+        font-weight: 500;
+    }
+</style>
+
+<script>
+    // Simple search functionality
+    document.getElementById('searchButton').addEventListener('click', function() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const cards = document.querySelectorAll('.col');
+        
+        cards.forEach(card => {
+            const title = card.querySelector('.card-title').textContent.toLowerCase();
+            const description = card.querySelector('.card-text').textContent.toLowerCase();
+            if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+</script>
 {% endblock %}

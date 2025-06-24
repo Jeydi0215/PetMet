@@ -1,45 +1,168 @@
 {% extends 'base2.html' %}
 {% load static %}
 {% block content %}
-<div class="text-center" style="position: relative;">
-  <a href="{% url 'landing' %}">
-      <img src="{% static 'PetMetLogo.jpg' %}" alt="/" class="circular-image" style="width: 175px; height: auto; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 10;" />
-  </a>
-</div>
+<div class="container my-5">
+<div class="auth-container">
+  <div class="auth-header">
+    <a href="{% url 'landing' %}" class="logo-link">
+      <img src="{% static 'PetMetLogo.jpg' %}" alt="PetMet Logo" class="auth-logo">
+    </a>
+    <h1 class="auth-title">Welcome Back</h1>
+    <p class="auth-subtitle">Please login to your account</p>
+  </div>
 
-<div style="position: relative; z-index: 1;">
-<div class="container">
-  <div class="center">
-    <h1>Login</h1>
-    <form action="{% url 'login' %}" method="POST" onsubmit="return myfunction()">
+  <div class="auth-form-container">
+    <form action="{% url 'login' %}" method="POST" class="auth-form" onsubmit="return myfunction()">
       {% csrf_token %}
-      <div class="txt_field">
-        <input type="text" name="username" required>
-        <span></span>
-        <label>Username</label>
+      
+      <div class="form-group">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" id="username" name="username" class="form-input" required>
+        <div class="input-underline"></div>
       </div>
-      <div class="txt_field">
-        <input type="password" name="password" required>
-        <span></span>
-        <label>Password</label>
+      
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" id="password" name="password" class="form-input" required>
+        <div class="input-underline"></div>
       </div>
-      <div class="pass"></div>
-      <input name="submit" type="Submit" value="Login">
-      <div class="signup_link">
-        Not a member? <a href="{% url 'signup' %}">Signup</a><br />
-        Login as <a href="{% url 'admin_login' %}">Admin</a>  <!-- Update this line -->
-    </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="submit-btn">Login</button>
+      </div>
+      
+      <div class="auth-links">
+        <p>Don't have an account? <a href="{% url 'signup' %}" class="link">Sign up</a></p>
+        <p>Are you an admin? <a href="{% url 'admin_login' %}" class="link">Admin login</a></p>
+      </div>
     </form>
   </div>
 </div>
-      <script> 
-        function myfunction(){
-          console.log(message);
-        }
-      </script>
-      {% for message in messages %}
-        <script>
-          alert('{{ message }}');
-        </script>
-      {% endfor %}
+</div>
+<script> 
+  function myfunction(){
+    console.log(message);
+  }
+</script>
+
+{% for message in messages %}
+  <script>
+    alert('{{ message }}');
+  </script>
+{% endfor %}
+
+<style>
+  /* Add this CSS to your stylesheet */
+  .auth-container {
+    max-width: 450px;
+    margin: 40px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  .auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .auth-logo {
+    width: 120px;
+    height: auto;
+    border-radius: 50%;
+    margin-bottom: 20px;
+  }
+  
+  .auth-title {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  
+  .auth-subtitle {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 0;
+  }
+  
+  .form-group {
+    margin-bottom: 25px;
+    position: relative;
+  }
+  
+  .form-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-size: 14px;
+    transition: all 0.3s;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 12px 0;
+    border: none;
+    border-bottom: 1px solid #ddd;
+    font-size: 16px;
+    transition: all 0.3s;
+  }
+  
+  .form-input:focus {
+    outline: none;
+    border-bottom-color: #4a90e2;
+  }
+  
+  .input-underline {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #4a90e2;
+    transition: width 0.3s;
+  }
+  
+  .form-input:focus ~ .input-underline {
+    width: 100%;
+  }
+  
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: #4a90e2;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .submit-btn:hover {
+    background-color: #3a7bc8;
+  }
+  
+  .auth-links {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .auth-links p {
+    margin: 8px 0;
+  }
+  
+  .link {
+    color: #4a90e2;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  
+  .link:hover {
+    color: #3a7bc8;
+    text-decoration: underline;
+  }
+</style>
 {% endblock %}

@@ -1,27 +1,83 @@
-{% extends 'base4.html' %}  <!-- assuming you have a base template -->
+{% extends 'base4.html' %}
 
 {% block content %}
-<div class="container my-5">
-    <h1>Adopted History</h1>
-    <div class="row">
-      {% for adoption in adopted_pets %}
-        <div class="col-md-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Adoption Request for {{ adoption.name }}</h5>
-              <img class="card-img-top" src="{{ adoption.img.url }}" alt="Pet Image" style="height: 150px; width: 100%; object-fit: cover;">
-              <p class="card-text">Status: {{ adoption.adoption_status }}</p>
-              {% for approved_adoption in approved_adoptions %}
-                {% if approved_adoption.pet_id == adoption.id %}
-                  <p class="card-text">Approval Date: {{ approved_adoption.approval_date_time }}</p>
-                {% endif %}
-              {% endfor %}
-              <!-- Add a button to view more details -->
-              <a href="{% url 'admin_adoption_detail_history' adoption.id %}" class="btn btn-info">View Details</a>
-            </div>
-          </div>
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Adoption History</h1>
+        <div class="d-flex">
+            <input type="text" class="form-control me-2" placeholder="Search adoptions..." style="max-width: 250px;">
+            <button class="btn btn-outline-secondary">
+                <i class="bi bi-funnel"></i> Filter
+            </button>
         </div>
-      {% endfor %}
     </div>
+
+    {% if adopted_pets %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for adoption in adopted_pets %}
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="position-relative">
+                    <img src="{{ adoption.img.url }}" class="card-img-top" alt="{{ adoption.name }}" style="height: 180px; object-fit: cover;">
+                    <span class="position-absolute top-0 end-0 bg-{% if adoption.adoption_status == 'Approved' %}success{% else %}warning{% endif %} text-white px-2 py-1 m-2 rounded-pill small">
+                        {{ adoption.adoption_status }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ adoption.name }}</h5>
+                    <div class="d-flex flex-wrap gap-1 mb-3">
+                        <span class="badge bg-light text-dark">{{ adoption.animal_type }}</span>
+                        <span class="badge bg-light text-dark">{{ adoption.breed }}</span>
+                        <span class="badge bg-light text-dark">{{ adoption.age }} years</span>
+                    </div>
+                    
+                    {% for approved_adoption in approved_adoptions %}
+                        {% if approved_adoption.pet_id == adoption.id %}
+                        <div class="alert alert-success p-2 mb-3">
+                            <i class="bi bi-calendar-check me-2"></i>
+                            <small>Approved on {{ approved_adoption.approval_date_time|date:"M d, Y" }}</small>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <a href="{% url 'admin_adoption_detail_history' adoption.id %}" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-eye me-2"></i>View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <div class="card border-0 bg-light">
+            <div class="card-body py-5">
+                <i class="bi bi-archive text-muted" style="font-size: 3rem;"></i>
+                <h4 class="mt-3">No adoption history found</h4>
+                <p class="text-muted">There are no completed adoptions in your records yet.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
+
+<style>
+    .card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .badge {
+        font-weight: 500;
+    }
+    .alert-success {
+        background-color: #e8f5e9;
+        border-color: #c8e6c9;
+    }
+</style>
 {% endblock %}

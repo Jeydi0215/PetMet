@@ -1,36 +1,134 @@
 {% extends 'base4.html' %}
+
 {% block content %}
-<div class="container mt-4 pt-50">
-    <div class="card">
-        <div class="row no-gutters">
-            <div class="col-md-4">
-                <img src="{{ pet.img.url }}" alt="Pet Image" class="card-img" style="object-fit: cover; height: 300px;">
-            </div>
-            <div class="col-md-8">
-                <div class="card-body">
-                    <h5 class="card-title">{{ pet.name }}</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">Posted at: {{ pet.created_at }} | Adoption ID: {{ pet.adoption_id }}</h6>
-                    <p><strong>Animal Type:</strong> {{ pet.animal_type }}</p>
-                    <p><strong>Breed:</strong> {{ pet.breed }}</p>
-                    <p><strong>Color:</strong> {{ pet.color }}</p>
-                    <p><strong>Gender:</strong> {{ pet.gender }}</p>
-                    <p><strong>Age:</strong> {{ pet.age }}</p>
-                    <p><strong>Location:</strong> {{ pet.location }}</p>
-                    <p><strong>Additional Details:</strong> {{ pet.additional_details }}</p>
-                    <p><strong>Posted by:</strong> {{ pet.author }}</p>
-                    <p><strong>User ID:</strong> {{ pet.user_id }}</p>
-                    <form method="post" action="{% url 'approve_pet' pet.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-primary">Submit Approved</button>
-                    </form>
+<div class="container-fluid py-4" style="min-height: 100vh; background-color: #f8f9fa;">
+    <div class="container">
+        <!-- Back Button -->
+        <div class="mb-4 pt-3">
+            <a href="{% url 'pending_pets' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i> Back to Pending Pets
+            </a>
+        </div>
+        
+        <div class="card shadow-sm border-0 overflow-hidden" style="border-radius: 12px;">
+            <div class="row g-0">
+                <div class="col-lg-5">
+                    <div class="position-relative h-100">
+                        <img src="{{ pet.img.url }}" alt="{{ pet.name }}" class="w-100 h-100" style="object-fit: cover; min-height: 400px;">
+                        <span class="position-absolute top-0 start-0 bg-warning text-dark p-2 rounded-br">
+                            <i class="bi bi-hourglass-split"></i> Pending Approval
+                        </span>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="card-body p-4">
+                        <!-- [Rest of your card content remains the same] -->
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h2 class="card-title mb-1" style="font-weight: 700; color: #2c3e50;">{{ pet.name }}</h2>
+                                <div class="d-flex align-items-center text-muted mb-3">
+                                    <small class="me-3"><i class="bi bi-calendar me-1"></i> {{ pet.created_at|date:"M d, Y" }}</small>
+                                    <small><i class="bi bi-tag me-1"></i> ID: {{ pet.adoption_id }}</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-light text-dark fs-6">
+                                <i class="bi bi-{{ pet.animal_type|lower }}"></i> {{ pet.animal_type }}
+                            </span>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="mb-3 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                                    <h6 class="text-muted mb-1" style="font-size: 0.8rem; font-weight: 600;">Breed</h6>
+                                    <p class="mb-0" style="font-size: 1rem; font-weight: 500;">{{ pet.breed }}</p>
+                                </div>
+                                <div class="mb-3 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                                    <h6 class="text-muted mb-1" style="font-size: 0.8rem; font-weight: 600;">Color</h6>
+                                    <p class="mb-0" style="font-size: 1rem; font-weight: 500;">{{ pet.color }}</p>
+                                </div>
+                                <div class="mb-3 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                                    <h6 class="text-muted mb-1" style="font-size: 0.8rem; font-weight: 600;">Gender</h6>
+                                    <p class="mb-0" style="font-size: 1rem; font-weight: 500;">{{ pet.gender }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                                    <h6 class="text-muted mb-1" style="font-size: 0.8rem; font-weight: 600;">Age</h6>
+                                    <p class="mb-0" style="font-size: 1rem; font-weight: 500;">{{ pet.age }}</p>
+                                </div>
+                                <div class="mb-3 p-3" style="background-color: #f8f9fa; border-radius: 8px;">
+                                    <h6 class="text-muted mb-1" style="font-size: 0.8rem; font-weight: 600;">Location</h6>
+                                    <p class="mb-0" style="font-size: 1rem; font-weight: 500;">{{ pet.location }}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h6 class="text-muted mb-2">Additional Details</h6>
+                            <p class="mb-0">{{ pet.additional_details }}</p>
+                        </div>
+
+                        <div class="border-top pt-3">
+                            <h6 class="text-muted mb-2">Posted By</h6>
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="bi bi-person-circle fs-4"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-0 fw-bold">{{ pet.author }}</p>
+                                    <small class="text-muted">User ID: {{ pet.user_id }}</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-2 d-flex justify-content-between align-items-center">
+                            <a href="{% url 'pending_pets' %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i> Back
+                            </a>
+                            <form method="post" action="{% url 'approve_pet' pet.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary px-4 py-2" style="background-color: #3498db; border-color: #3498db; transition: all 0.3s ease;">
+                                    <i class="bi bi-check-circle me-2"></i> Approve Pet
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 <style>
-  .card-body {
-      text-align: left; /* Ensure text is left-aligned */
-  }
+    /* Reset any conflicting styles from base4.html */
+    body {
+        overflow-x: hidden;
+        background-color: #f8f9fa !important;
+    }
+    
+    /* Ensure container doesn't conflict with base4.html */
+    .container-fluid {
+        padding-right: 15px;
+        padding-left: 15px;
+        margin-right: auto;
+        margin-left: auto;
+    }
+    
+    /* Card styling */
+    .card {
+        border: none !important;
+        background-color: white !important;
+    }
+    
+    /* Button hover effects */
+    .btn-primary:hover {
+        background-color: #2980b9 !important;
+        border-color: #2980b9 !important;
+        transform: translateY(-2px);
+    }
+    
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
+    }
 </style>
 {% endblock %}

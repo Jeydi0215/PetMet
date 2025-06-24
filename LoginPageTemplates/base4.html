@@ -5,131 +5,451 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <!-- Add this in the <head> section of your base4.html or directly in your template -->
-<link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css' rel='stylesheet' />
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js'></script>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js'></script>
-    <title>PetMet</title>
+    <link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css' rel='stylesheet' />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js'></script>
+    
+    <title>PetMet Admin Dashboard</title>
     <link rel="stylesheet" type="text/css" href="{% static 'style2.css' %}"/>
     <style>
+        :root {
+            --primary-color: #1d3557;
+            --secondary-color: #457b9d;
+            --accent-color: #f9a03f;
+            --light-bg: #f1faee;
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --sidebar-width: 280px;
+        }
+        
         body {
-            display: flex;
-            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-bg);
             margin: 0;
+            padding: 0;
+            display: flex;
         }
-        #nav-bar {
+        
+        /* Sidebar Styles */
+        #sidebar {
             position: fixed;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+        }
+        
+        #sidebar-header {
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .brand-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent-color);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-link {
+            color: var(--text-light);
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin: 5px 10px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--secondary-color);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .nav-link i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        /* Main Content Styles */
+        #content {
+            margin-left: var(--sidebar-width);
+            width: calc(100% - var(--sidebar-width));
+            transition: all 0.3s ease;
+        }
+        
+        /* Top Navbar Styles */
+        #top-navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
             top: 0;
-            left: 0;
-            width: 250px; /* Set a fixed width for the sidebar */
+            z-index: 900;
+        }
+        
+        .navbar-toggler {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-left: auto; /* Push to the right edge */
+        }
+        
+        /* Notification Dropdown */
+        .notification-dropdown {
+            position: relative;
+        }
+        
+        .notification-toggle {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #e63946;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .notification-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 300px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 10px 0;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .notification-menu.show {
+            display: block;
+        }
+        
+        .notification-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+        }
+        
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        
+        .notification-item i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+        }
+        
+        /* User Dropdown */
+        .user-dropdown {
+            position: relative;
+        }
+        
+        .user-dropdown-toggle {
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            gap: 10px;
+            color: var(--text-dark);
+            padding: 5px 10px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .user-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            min-width: 200px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 10px 0;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .user-dropdown-menu.show {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 10px 15px;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .dropdown-item i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+        }
+        
+        /* Main Content Area */
+        #main {
+            padding: 30px;
+            background-color: var(--light-bg);
+            min-height: calc(100vh - 64px);
+        }
+        
+        .page-title {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        /* Page background decoration */
+        .bg-decoration {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 100%;
             height: 100%;
-            padding-top: 20px;
-            overflow-y: auto; /* Allow scrolling if content overflows */
-            transition: transform 0.3s ease; /* Smooth transition for sidebar */
-            border-radius: 0; /* Set border-radius to 0 for sharp corners */
+            z-index: -1;
+            opacity: 0.1;
+            pointer-events: none;
         }
-        #nav-header {
-            display: flex; /* Use flexbox */
-            justify-content: center; /* Center horizontally */
-            align-items: center; /* Center vertically */
-            padding: 10px; /* Optional padding */
-        }
-        #nav-content {
-            padding: 10px;
-        }
-        main {
-            margin-left: 250px; /* Leave space for the sidebar */
-            padding: 20px;
-            flex-grow: 1; /* Allow main to take the remaining space */
-            overflow-y: auto; /* Allow scrolling if content overflows */
-        }
-        .navbar {
-            position: fixed;
-            top: 0;
-            right: 0; /* Align the navbar to the right */
-            left: 250px; /* Align with the sidebar */
-            z-index: 1000; /* Ensure navbar is above other content */
-        }
-
-        /* Custom scrollbar styles for the sidebar */
-        #nav-bar::-webkit-scrollbar {
-            width: 8px; /* Width of the scrollbar */
-        }
-
-        #nav-bar::-webkit-scrollbar-track {
-            background: transparent; /* Background of the scrollbar track */
-        }
-
-        /* Responsive styles */
-        @media (max-width: 768px) {
-            #nav-bar {
-                transform: translateX(-100%); /* Hide sidebar off-screen */
+        
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            #sidebar {
+                transform: translateX(-100%);
             }
-            #nav-bar.active {
-                transform: translateX(0); /* Show sidebar */
+            
+            #sidebar.active {
+                transform: translateX(0);
             }
-            main {
-                margin-left: 0; /* Remove left margin for main content */
+            
+            #content {
+                margin-left: 0;
+                width: 100%;
             }
-            .navbar {
-                left: 0; /* Align navbar with the left edge */
+            
+            .navbar-toggler {
+                display: block;
+            }
+            
+            #top-navbar {
+                padding: 10px 15px;
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div id="nav-bar">
-            <div id="nav-header">
-                <a id="nav-title" href="{% url 'homepage_admin' %}" class="text-center">
-                    <img src="{% static 'PetMetLogo.jpg' %}" alt="/" class="circular-image" style="display: inline-block;" />
-                </a>
-            </div>
-            <div id="nav-content">
-                <hr />
-                <div class="nav-button"><a href="{% url 'pending_pets' %}" class="text-white">Pending Pets for Adoption</a></div>
-                <hr/>
-                <div class="nav-button"><a href="{% url 'admin_approved_pet' %}" class="text-white">Approved Pets History</a></div>
-                <hr/>
-                <div class="nav-button"><a href="{% url 'adopted_history' %}" class="text-white">Adopted History</a></div>
-            </div>
-        </div>  
-        <nav class="navbar navbar-dark" style="background-color: var(--navbar-dark-primary);">
-            <button class="btn btn-outline-light d-md-none" id="sidebarToggle">Toggle Sidebar</button>
-            <div class="ms-auto me-5"> <!-- Use ms-auto to push the dropdown to the right -->
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{ user.username }}
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <div id="sidebar-header">
+            <a href="{% url 'homepage_admin' %}">
+                <img src="{% static 'PetMetLogo.jpg' %}" alt="PetMet Logo" class="brand-logo">
+            </a>
+            <h4 class="mt-3">PetMet Admin</h4>
+        </div>
+        
+        <div class="mt-4">
+            <a href="{% url 'pending_pets' %}" class="nav-link {% if request.resolver_match.url_name == 'pending_pets' %}active{% endif %}">
+                <i class="bi bi-hourglass-split"></i>
+                <span>Pending Pets</span>
+            </a>
+            
+            <a href="{% url 'admin_approved_pet' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_approved_pet' %}active{% endif %}">
+                <i class="bi bi-check-circle"></i>
+                <span>Approved Pets</span>
+            </a>
+            
+            <a href="{% url 'adopted_history' %}" class="nav-link {% if request.resolver_match.url_name == 'adopted_history' %}active{% endif %}">
+                <i class="bi bi-house-heart"></i>
+                <span>Adopted History</span>
+            </a>
+            
+            <a href="{% url 'admin_adoption_request' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_adoption_request' %}active{% endif %}">
+                <i class="bi bi-clipboard-check"></i>
+                <span>Adoption Management</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="content">
+        <!-- Top Navbar -->
+        <div id="top-navbar">
+            <button id="sidebar-toggle" class="navbar-toggler">
+                <i class="bi bi-list"></i>
+            </button>
+            
+            <div class="navbar-right">
+                <!-- Notifications Dropdown -->
+                <div class="notification-dropdown">
+                    <button class="notification-toggle" id="notification-toggle">
+                        <i class="bi bi-bell"></i>
+                        {% if notifications_count > 0 %}
+                        <span class="notification-badge">{{ notifications_count }}</span>
+                        {% endif %}
                     </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                        <a href="{% url 'edit_profile' %}">
-                            <button class="dropdown-item" type="button">Profile</button>
+                    
+                    <div class="notification-menu" id="notification-menu">
+                        {% for notification in notifications %}
+                        <div class="notification-item">
+                            <i class="bi bi-info-circle"></i>
+                            <span>{{ notification.message }}</span>
+                        </div>
+                        {% empty %}
+                        <div class="notification-item">
+                            <i class="bi bi-check-circle"></i>
+                            <span>No new notifications</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- User Dropdown -->
+                <div class="user-dropdown">
+                    <button class="user-dropdown-toggle" id="user-dropdown-toggle">
+                        <div class="user-avatar">
+                            {{ user.username|first|upper }}
+                        </div>
+                        <span>{{ user.username }}</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    
+                    <div class="user-dropdown-menu" id="user-dropdown-menu">
+                        <a href="{% url 'edit_profile' %}" class="dropdown-item">
+                            <i class="bi bi-person"></i>
+                            <span>Profile</span>
                         </a>
-                        <a href="{% url 'super_admin_signup' %}">
-                            <button class="dropdown-item" type="button">Create User</button>
+                        <a href="{% url 'super_admin_signup' %}" class="dropdown-item">
+                            <i class="bi bi-person-plus"></i>
+                            <span>Create User</span>
                         </a>
-                        <a href="{% url 'logout_admin' %}">
-                            <button class="dropdown-item" type="button">Logout</button>
+                        <a href="{% url 'logout_admin' %}" class="dropdown-item">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Logout</span>
                         </a>
                     </div>
                 </div>
             </div>
-        </nav>
-    </header>
+        </div>
+        
+        <!-- Main Content Area -->
+        <div id="main">
+            {% block content %}
+            <h1 class="page-title">Welcome to PetMet Admin Dashboard</h1>
+            {% endblock %}
+        </div>
+    </div>
     
-    <main>
-        {% block content %}
-        {% endblock %}
-    </main>
-    
+    <!-- Background Decoration -->
+    <div class="bg-decoration">
+        <svg width="100%" height="100%" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+            <path d="M0,500 Q250,400 500,500 T1000,500 L1000,1000 L0,1000 Z" fill="#f9a03f" opacity="0.3"></path>
+            <path d="M0,700 Q250,600 500,700 T1000,700 L1000,1000 L0,1000 Z" fill="#457b9d" opacity="0.3"></path>
+        </svg>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    
     <script>
-        // JavaScript to handle sidebar toggle
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
-            var navBar = document.getElementById('nav-bar');
-            navBar.classList.toggle('active'); // Toggle the active class to show/hide the sidebar
+        // Toggle sidebar on mobile
+        document.getElementById('sidebar-toggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+        
+        // Toggle notification dropdown
+        document.getElementById('notification-toggle').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('notification-menu').classList.toggle('show');
+            document.getElementById('user-dropdown-menu').classList.remove('show');
+            
+            // Make AJAX call to mark notifications as read
+            if (document.getElementById('notification-menu').classList.contains('show')) {
+                $.ajax({
+                    url: '{% url "mark_notifications_read" %}',
+                    type: 'POST',
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        console.log('Notifications marked as read');
+                        // Remove notification badge
+                        const badge = document.querySelector('.notification-badge');
+                        if (badge) badge.remove();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error marking notifications as read:', error);
+                    }
+                });
+            }
+        });
+        
+        // Toggle user dropdown
+        document.getElementById('user-dropdown-toggle').addEventListener('click', function(e) {
+            e.stopPropagation();
+            document.getElementById('user-dropdown-menu').classList.toggle('show');
+            document.getElementById('notification-menu').classList.remove('show');
+        });
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function() {
+            document.getElementById('notification-menu').classList.remove('show');
+            document.getElementById('user-dropdown-menu').classList.remove('show');
         });
     </script>
 </body>

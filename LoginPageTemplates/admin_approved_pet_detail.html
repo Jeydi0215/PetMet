@@ -1,28 +1,102 @@
 {% extends 'base4.html' %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="card" style="max-width: 700px; margin: 0 auto;">
-        <div class="card-body">
-            <h2 class="card-title text-center">{{ admin_approved_pet_detail.name }}</h2>
-            <div class="row">
-                <div class="col-md-4 d-flex justify-content-center">
-                    <img src="{{ admin_approved_pet_detail.img.url }}" alt="Pet Image" class="img-fluid" style="max-width: 100%; height: auto;">
-                </div>
-                <div class="col-md-8">
-                    <p><strong>Animal Type:</strong> {{ admin_approved_pet_detail.animal_type }}</p>
-                    <p><strong>Breed:</strong> {{ admin_approved_pet_detail.breed }}</p>
-                    <p><strong>Color:</strong> {{ admin_approved_pet_detail.color }}</p>
-                    <p><strong>Gender:</strong> {{ admin_approved_pet_detail.gender }}</p>
-                    <p><strong>Age:</strong> {{ admin_approved_pet_detail.age }}</p>
-                    <p><strong>Details:</strong> {{ admin_approved_pet_detail.additional_details }}</p>
-                    <!-- Add more details about the pet here -->
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+                        
+            <!-- Pet Card -->
+            <div class="card shadow-sm border-0 overflow-hidden">
+                <div class="row g-0">
+                    <!-- Pet Image -->
+                    <div class="col-md-5">
+                        <img src="{{ admin_approved_pet_detail.img.url }}" 
+                             class="img-fluid h-100 object-fit-cover"
+                             alt="{{ admin_approved_pet_detail.name }}"
+                             style="min-height: 300px;">
+                    </div>
+                    
+                    <!-- Pet Details -->
+                    <div class="col-md-7">
+                        <div class="card-body">
+                            <!-- Pet Name and Status -->
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h2 class="h4 mb-0">{{ admin_approved_pet_detail.name }}</h2>
+                                <span class="badge bg-success">Approved</span>
+                            </div>
+                            
+                            <!-- Basic Info -->
+                            <div class="mb-4">
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <div class="p-3 bg-light rounded">
+                                            <small class="text-muted d-block">Type</small>
+                                            <strong>{{ admin_approved_pet_detail.animal_type }}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-3 bg-light rounded">
+                                            <small class="text-muted d-block">Breed</small>
+                                            <strong>{{ admin_approved_pet_detail.breed }}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-3 bg-light rounded">
+                                            <small class="text-muted d-block">Age</small>
+                                            <strong>{{ admin_approved_pet_detail.age }} years</strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-3 bg-light rounded">
+                                            <small class="text-muted d-block">Gender</small>
+                                            <strong>{{ admin_approved_pet_detail.gender }}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Color -->
+                            <div class="mb-3">
+                                <h6 class="text-muted mb-2">Color</h6>
+                                <div class="d-flex align-items-center">
+                                    <span class="color-dot me-2" style="background-color: {{ admin_approved_pet_detail.color|lower }};"></span>
+                                    <span>{{ admin_approved_pet_detail.color }}</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Description -->
+                            <div class="mb-4">
+                                <h6 class="text-muted mb-2">About</h6>
+                                <p class="mb-0">{{ admin_approved_pet_detail.additional_details }}</p>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="javascript:history.back()" class="btn btn-outline-secondary mb-4">
+                <i class="bi bi-arrow-left"></i> Back to Pets
+            </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="card-footer">
-            <button type="button" onclick="history.back()" class="btn btn-secondary float-right" style="margin-top: 10px;">Back</button>
-        </div>
     </div>
 </div>
+
+<style>
+    .color-dot {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 1px solid #dee2e6;
+    }
+    .object-fit-cover {
+        object-fit: cover;
+    }
+    .card {
+        border-radius: 0.75rem;
+    }
+</style>
 {% endblock %}

@@ -1,20 +1,165 @@
 {% extends 'base4.html' %}
 
 {% block content %}
-<div class="center1">
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8"> <!-- Adjust the column size as needed -->
-            <div class="card mt-5"> <!-- Card component -->
-                <div class="card-body">
-                    <h1 class="text-center">Welcome to the Home Page</h1>
-                    <p>You have successfully logged in as <strong>{{ user.username }}</strong> ({{ user.role }}).</p>
-                    <p>Your time in is <strong>{{ philippines_time }}</strong> (Philippines Time).</p>
-                    <p>Here you can add any content you want to display on the home page.</p>
+<div class="container-fluid">
+    <!-- Dashboard Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="page-title">Admin Dashboard</h1>
+            <p class="text-muted">Welcome back, <strong>{{ user.username }}</strong>!</p>
+        </div>
+    </div>
+
+    <!-- Dashboard Overview Section -->
+    <div class="row">
+        <!-- Welcome Card -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-box bg-primary-light rounded-circle p-3 me-3">
+                            <i class="bi bi-person-check text-primary fs-4"></i>
+                        </div>
+                        <h4 class="card-title mb-0">Account Information</h4>
+                    </div>
+                    <div class="card-text ps-3 border-start border-3 border-primary">
+                        <p>Logged in as <strong>{{ user.username }}</strong></p>
+                        <p>Role: <span class="badge bg-primary">{{ user.role }}</span></p>
+                        <p>Current Time: <strong>{{ philippines_time }}</strong> (Philippines Time)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats Card -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-box bg-success-light rounded-circle p-3 me-3">
+                            <i class="bi bi-graph-up text-success fs-4"></i>
+                        </div>
+                        <h4 class="card-title mb-0">Platform Overview</h4>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col-4 border-end">
+                            <h3 class="text-primary">{{ pending_count|default:"0" }}</h3>
+                            <p class="text-muted small">Pending Pets</p>
+                        </div>
+                        <div class="col-4 border-end">
+                            <h3 class="text-success">{{ approved_count|default:"0" }}</h3>
+                            <p class="text-muted small">Approved Pets</p>
+                        </div>
+                        <div class="col-4">
+                            <h3 class="text-info">{{ adopted_count|default:"0" }}</h3>
+                            <p class="text-muted small">Adopted Pets</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="card-title mb-0">
+                            <i class="bi bi-activity me-2 text-danger"></i>
+                            Recent Activities
+                        </h4>
+                        <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                    
+                    <!-- If you have recent activities data, you can loop through it here -->
+                    <div class="timeline">
+                        {% if recent_activities %}
+                            {% for activity in recent_activities %}
+                                <div class="timeline-item pb-3">
+                                    <div class="d-flex">
+                                        <div class="timeline-dot me-3 mt-1 bg-{{ activity.color|default:"primary" }}"></div>
+                                        <div>
+                                            <p class="mb-0 fw-bold">{{ activity.title }}</p>
+                                            <p class="text-muted small mb-0">{{ activity.description }}</p>
+                                            <small class="text-muted">{{ activity.timestamp }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <!-- Placeholder content if no activities -->
+                            <div class="timeline-item pb-3">
+                                <div class="d-flex">
+                                    <div class="timeline-dot me-3 mt-1 bg-primary"></div>
+                                    <div>
+                                        <p class="mb-0 fw-bold">System Update</p>
+                                        <p class="text-muted small mb-0">PetMet system has been updated to the latest version.</p>
+                                        <small class="text-muted">2 hours ago</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="timeline-item pb-3">
+                                <div class="d-flex">
+                                    <div class="timeline-dot me-3 mt-1 bg-success"></div>
+                                    <div>
+                                        <p class="mb-0 fw-bold">New Pet Approved</p>
+                                        <p class="text-muted small mb-0">A new pet has been approved for adoption.</p>
+                                        <small class="text-muted">Yesterday</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="d-flex">
+                                    <div class="timeline-dot me-3 mt-1 bg-info"></div>
+                                    <div>
+                                        <p class="mb-0 fw-bold">Successful Adoption</p>
+                                        <p class="text-muted small mb-0">A pet has found their forever home!</p>
+                                        <small class="text-muted">2 days ago</small>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-</div>
+<style>
+    /* Additional styles for the homepage */
+    .bg-primary-light {
+        background-color: rgba(69, 123, 157, 0.15);
+    }
+    
+    .bg-success-light {
+        background-color: rgba(40, 167, 69, 0.15);
+    }
+    
+    .icon-box {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .timeline-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+    
+    .timeline-item {
+        position: relative;
+        border-left: 1px dashed #dee2e6;
+        margin-left: 6px;
+        padding-left: 20px;
+    }
+    
+    .timeline-item:last-child {
+        border-left: none;
+    }
+</style>
 {% endblock %}

@@ -1,0 +1,303 @@
+{% extends 'base2.html' %}
+
+{% block content %}
+<div class="container terms-container">
+    <div class="terms-header">
+        <h1 class="title">Terms and Conditions for Pet Adoption: {{ pet.name }}</h1>
+        <div class="intro-box">
+            <p class="intro">Welcome to SKYLARK Pet Adoption! These Terms and Conditions govern your use of our pet adoption services. By using our platform, you agree to comply with these terms. Please read them carefully before proceeding with any adoption.</p>
+        </div>
+    </div>
+
+    <div class="terms-content">
+        <div class="terms-section card">
+            <h2><i class="fas fa-user-check"></i> 1. Eligibility for Adoption</h2>
+            <p>To adopt a pet through SKYLARK, you must meet the following criteria:</p>
+            <ul class="info-list">
+                <li><i class="fas fa-check-circle"></i> Be at least 18 years old.</li>
+                <li><i class="fas fa-check-circle"></i> Provide valid government-issued identification.</li>
+                <li><i class="fas fa-check-circle"></i> Demonstrate the ability to provide a safe, loving, and stable environment for the pet.</li>
+                <li><i class="fas fa-check-circle"></i> Agree to a home visit or virtual inspection by SKYLARK representatives, if required.</li>
+            </ul>
+        </div>
+
+        <div class="terms-section card">
+            <h2><i class="fas fa-clipboard-list"></i> 2. Adoption Process</h2>
+            <p>The pet adoption process involves the following steps:</p>
+            <ul class="info-list">
+                <li><strong>Application:</strong> Submit a completed adoption application form.</li>
+                <li><strong>Screening:</strong> SKYLARK will review your application and may contact you for additional information.</li>
+                <li><strong>Interview:</strong> Participate in an interview (in-person, phone, or virtual) to discuss your suitability as a pet owner.</li>
+                <li><strong>Approval:</strong> If approved, you will be notified and provided with further instructions.</li>
+                <li><strong>Adoption Fee:</strong> Pay the required adoption fee, which covers vaccinations, spaying/neutering, and other medical expenses.</li>
+                <li><strong>Adoption Agreement:</strong> Sign an adoption agreement outlining your responsibilities as a pet owner.</li>
+            </ul>
+        </div>
+
+        <div class="terms-section card">
+            <h2><i class="fas fa-hands-helping"></i> 3. Responsibilities of the Adopter</h2>
+            <p>By adopting a pet through SKYLARK, you agree to the following responsibilities:</p>
+            <ul class="info-list">
+                <li><i class="fas fa-paw"></i> Provide proper food, water, shelter, and veterinary care for the pet.</li>
+                <li><i class="fas fa-paw"></i> Ensure the pet is treated humanely and with kindness at all times.</li>
+                <li><i class="fas fa-paw"></i> Keep the pet in a safe and secure environment, both indoors and outdoors.</li>
+                <li><i class="fas fa-paw"></i> Comply with all local laws and regulations regarding pet ownership.</li>
+                <li><i class="fas fa-paw"></i> Notify SKYLARK immediately if the pet is lost, stolen, or passes away.</li>
+                <li><i class="fas fa-paw"></i> Do not transfer ownership of the pet to another person or organization without prior written consent from SKYLARK.</li>
+            </ul>
+        </div>
+
+        <div class="terms-section card">
+            <h2><i class="fas fa-money-bill-wave"></i> 4. Adoption Fees</h2>
+            <p>Adoption fees are non-refundable and cover the following expenses:</p>
+            <ul class="info-list">
+                <li><i class="fas fa-syringe"></i> Vaccinations and medical check-ups.</li>
+                <li><i class="fas fa-clinic-medical"></i> Spaying or neutering.</li>
+                <li><i class="fas fa-microchip"></i> Microchipping (if applicable).</li>
+                <li><i class="fas fa-file-alt"></i> Administrative costs.</li>
+            </ul>
+            <div class="note-box">
+                <p><strong>Note:</strong> The Adoption Coordinator reserves the right to adjust adoption fees at any time without prior notice.</p>
+            </div>
+        </div>
+
+        <div class="terms-section card">
+            <h2><i class="fas fa-heartbeat"></i> 5. Health and Behavior of the Pet</h2>
+            <p>While SKYLARK makes every effort to ensure the health and well-being of our animals, we cannot guarantee the following:</p>
+            <ul class="info-list">
+                <li><i class="fas fa-exclamation-triangle"></i> The pet's health, temperament, or behavior after adoption.</li>
+                <li><i class="fas fa-exclamation-triangle"></i> The accuracy of the pet's age, breed, or medical history.</li>
+            </ul>
+            <div class="recommendation-box">
+                <p><i class="fas fa-stethoscope"></i> <strong>Recommendation:</strong> Adopters are encouraged to consult with a veterinarian shortly after adoption to address any health concerns.</p>
+            </div>
+        </div>
+
+        <div class="terms-section card">
+            <h2><i class="fas fa-undo"></i> 6. Return Policy</h2>
+            <p>If you are unable to keep the adopted pet, you must:</p>
+            <ul class="info-list">
+                <li><i class="fas fa-bell"></i> Notify SKYLARK immediately.</li>
+                <li><i class="fas fa-home"></i> Return the pet to SKYLARK or an approved representative.</li>
+                <li><i class="fas fa-ban"></i> Do not abandon the pet or surrender it to another shelter without prior approval.</li>
+            </ul>
+            <div class="warning-box">
+                <p><i class="fas fa-exclamation-circle"></i> The Adoption Coordinator reserves the right to reclaim the pet if the terms of the adoption agreement are violated.</p>
+            </div>
+        </div>
+
+        <div class="terms-section card">
+            <h2><i class="fas fa-balance-scale"></i> 7. Liability</h2>
+            <p>SKYLARK is not responsible for any damages, injuries, or losses resulting from the adoption or ownership of a pet, including but not limited to:</p>
+            <ul class="info-list">
+                <li><i class="fas fa-home"></i> Property damage caused by the pet.</li>
+                <li><i class="fas fa-user-injured"></i> Injuries to the adopter, their family members, or third parties.</li>
+                <li><i class="fas fa-brain"></i> Behavioral issues or health problems that arise after adoption.</li>
+            </ul>
+            <div class="important-note">
+                <p><i class="fas fa-hand-paper"></i> <strong>Important:</strong> Adopters assume full responsibility for the pet's actions and well-being.</p>
+            </div>
+        </div>
+
+        <div class="terms-section card">
+            <h2><i class="fas fa-edit"></i> 8. Changes to These Terms</h2>
+            <p>SKYLARK reserves the right to modify these Terms and Conditions at any time. Any changes will be posted on this page, and your continued use of our services constitutes acceptance of the updated terms.</p>
+        </div>
+
+        <div class="terms-section card contact-section">
+            <h2><i class="fas fa-envelope"></i> 9. Contact Us</h2>
+            <p>If you have any questions about these Terms and Conditions, please contact us:</p>
+            <ul class="contact-info">
+                <li><i class="fas fa-envelope"></i> <strong>Email:</strong> <a href="mailto:petmet.info@gmail.com">petmet.info@gmail.com</a></li>
+            </ul>
+        </div>
+
+        <div class="terms-section card">
+            <h2><i class="fas fa-calendar-alt"></i> 10. Effective Date</h2>
+            <p>These Terms and Conditions are effective as of <strong class="effective-date">January 1, 2024</strong>.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Main Container */
+    .terms-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 0 15px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+        line-height: 1.6;
+    }
+
+    /* Header Section */
+    .terms-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .title {
+        color: #2c3e50;
+        font-size: 2.2rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .intro-box {
+        background-color: #f8f9fa;
+        border-left: 4px solid #3498db;
+        padding: 1.5rem;
+        border-radius: 0 4px 4px 0;
+        margin-bottom: 2rem;
+    }
+
+    .intro {
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    /* Terms Content */
+    .terms-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    /* Card Sections */
+    .terms-section {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem 2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .terms-section:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .terms-section h2 {
+        color: #2c3e50;
+        font-size: 1.5rem;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #f1f1f1;
+    }
+
+    .terms-section h2 i {
+        margin-right: 10px;
+        color: #3498db;
+    }
+
+    /* Lists */
+    .info-list {
+        padding-left: 1.5rem;
+    }
+
+    .info-list li {
+        margin-bottom: 0.5rem;
+        position: relative;
+        list-style-type: none;
+    }
+
+    .info-list li:before {
+        content: "•";
+        color: #3498db;
+        font-weight: bold;
+        display: inline-block;
+        width: 1em;
+        margin-left: -1em;
+    }
+
+    .info-list li i {
+        margin-right: 8px;
+        color: #3498db;
+    }
+
+    /* Special Boxes */
+    .note-box, .warning-box, .recommendation-box, .important-note {
+        padding: 1rem;
+        border-radius: 4px;
+        margin: 1rem 0;
+    }
+
+    .note-box {
+        background-color: #e7f4ff;
+        border-left: 4px solid #3498db;
+    }
+
+    .warning-box {
+        background-color: #fff3e0;
+        border-left: 4px solid #ff9800;
+    }
+
+    .recommendation-box {
+        background-color: #e8f5e9;
+        border-left: 4px solid #4caf50;
+    }
+
+    .important-note {
+        background-color: #ffebee;
+        border-left: 4px solid #f44336;
+    }
+
+    /* Contact Section */
+    .contact-section {
+        background-color: #f0f7ff;
+    }
+
+    .contact-info {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .contact-info li {
+        margin-bottom: 0.5rem;
+    }
+
+    .contact-info i {
+        margin-right: 10px;
+        width: 20px;
+        text-align: center;
+    }
+
+    /* Effective Date */
+    .effective-date {
+        color: #e74c3c;
+        font-weight: bold;
+    }
+
+    /* Links */
+    a {
+        color: #3498db;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    a:hover {
+        color: #2980b9;
+        text-decoration: underline;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .title {
+            font-size: 1.8rem;
+        }
+        
+        .terms-section {
+            padding: 1.2rem;
+        }
+        
+        .terms-section h2 {
+            font-size: 1.3rem;
+        }
+    }
+</style>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+{% endblock %}

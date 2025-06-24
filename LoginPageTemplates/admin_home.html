@@ -1,27 +1,207 @@
 {% extends 'base3.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container">
-  <div class="center">
-    <h1>Login</h1>
-    <form method="POST" action="{% url 'admin_login' %}">
+<div class="admin-login-container">
+  <div class="admin-login-card">
+    <div class="admin-login-header">
+      <h1 class="admin-login-title">Admin Login</h1>
+      <p class="admin-login-subtitle">Access restricted to authorized personnel</p>
+    </div>
+
+    <form method="POST" action="{% url 'admin_login' %}" class="admin-login-form">
       {% csrf_token %}
-      <div class="txt_field">
-        <input type="text" name="username" required aria-label="Username" autofocus>
-        <span></span>
-        <label>Username</label>
+      
+      <div class="admin-input-group">
+        <input type="text" name="username" required aria-label="Username" autofocus class="admin-input-field">
+        <label class="admin-input-label">Username</label>
+        <span class="admin-input-highlight"></span>
       </div>
-      <div class="txt_field">
-        <input type="password" name="password" required aria-label="Password">
-        <span></span>
-        <label>Password</label>
+      
+      <div class="admin-input-group">
+        <input type="password" name="password" required aria-label="Password" class="admin-input-field">
+        <label class="admin-input-label">Password</label>
+        <span class="admin-input-highlight"></span>
       </div>
-      <div class="pass"></div>
-      <input name="submit" type="submit" value="Login">
-      <div class="signup_link">
-        Login as <a href="{% url 'home' %}">User  </a>
+      
+      <button type="submit" class="admin-login-btn">
+        <span class="btn-icon">🔒</span>
+        <span>Login</span>
+      </button>
+      
+      <div class="admin-login-footer">
+        <a href="{% url 'home' %}" class="admin-login-link">
+          <span>← Login as User</span>
+        </a>
       </div>
     </form>
   </div>
 </div>
+
+<style>
+  /* Main Container - Keeping your original background */
+  .admin-login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  /* Card Design */
+  .admin-login-card {
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    padding: 2rem;
+  }
+
+  /* Header Section */
+  .admin-login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .admin-login-title {
+    font-size: 1.8rem;
+    color: #2d3436;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+
+  .admin-login-subtitle {
+    color: #636e72;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+  }
+
+  /* Form Elements */
+  .admin-login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .admin-input-group {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+
+  .admin-input-field {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #dfe6e9;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: transparent;
+    transition: all 0.3s ease;
+  }
+
+  .admin-input-field:focus {
+    outline: none;
+    border-color: #6c5ce7;
+    box-shadow: 0 0 0 2px rgba(108, 92, 231, 0.2);
+  }
+
+  .admin-input-label {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    color: #636e72;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    background: white;
+    padding: 0 5px;
+  }
+
+  .admin-input-field:focus + .admin-input-label,
+  .admin-input-field:not(:placeholder-shown) + .admin-input-label {
+    top: -0.6rem;
+    left: 0.8rem;
+    font-size: 0.8rem;
+    color: #6c5ce7;
+    background: white;
+  }
+
+  .admin-input-highlight {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #6c5ce7;
+    transition: width 0.3s ease;
+  }
+
+  .admin-input-field:focus ~ .admin-input-highlight {
+    width: 100%;
+  }
+
+  /* Button */
+  .admin-login-btn {
+    width: 100%;
+    padding: 1rem;
+    background-color: #6c5ce7;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+
+  .admin-login-btn:hover {
+    background-color: #5649c0;
+    transform: translateY(-2px);
+  }
+
+  .admin-login-btn:active {
+    transform: translateY(0);
+  }
+
+  .btn-icon {
+    font-size: 1.1rem;
+  }
+
+  /* Footer Links */
+  .admin-login-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+  }
+
+  .admin-login-link {
+    color: #636e72;
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: color 0.2s ease;
+  }
+
+  .admin-login-link:hover {
+    color: #6c5ce7;
+    text-decoration: underline;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 480px) {
+    .admin-login-card {
+      padding: 1.5rem;
+    }
+    
+    .admin-login-title {
+      font-size: 1.5rem;
+    }
+  }
+</style>
 {% endblock %}

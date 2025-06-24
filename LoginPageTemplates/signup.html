@@ -1,65 +1,238 @@
 {% extends 'base2.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container">
-  <div class="center">
-    <h1>Register</h1>
-    <form action="signup" method="POST" onsubmit="return myfunction()">
+<div class="container my-5">
+<div class="auth-container">
+  <div class="auth-header">
+    <h1 class="auth-title">Create Your Account</h1>
+    <p class="auth-subtitle">Join our community today</p>
+  </div>
+
+  <div class="auth-form-container">
+    <form action="signup" method="POST" class="auth-form" onsubmit="return myfunction()">
       {% csrf_token %}
-      <div class="txt_field">
-        <input type="text" name="first_name" required>
-        <span></span>
-        <label>First Name</label>
-      </div>
-      <div class="txt_field">
-        <input type="text" name="last_name" required>
-        <span></span>
-        <label>Last Name</label>
-      </div>
-      <div class="txt_field">
-        <input type="text" name="username" required>
-        <span></span>
-        <label>Username</label>
-      </div>
-      <div class="txt_field">
-        <input type="email" name="email" required>
-        <span></span>
-        <label>Email</label>
-      </div>
-      <div class="txt_field">
-        <input type="password" name="password1" required>
-        <span></span>
-        <label>Password</label>
-      </div>
-      <div class="txt_field">
-        <input type="password" name="password2" required>
-        <span></span>
-        <label>Confirm Password</label>
+      
+      <div class="form-row">
+        <div class="form-group half-width">
+          <label for="first_name" class="form-label">First Name</label>
+          <input type="text" id="first_name" name="first_name" class="form-input" required>
+          <div class="input-underline"></div>
+        </div>
+        
+        <div class="form-group half-width">
+          <label for="last_name" class="form-label">Last Name</label>
+          <input type="text" id="last_name" name="last_name" class="form-input" required>
+          <div class="input-underline"></div>
+        </div>
       </div>
       
-      <!-- Terms and Conditions Section -->
-      <div class="txt_field1">
-        <input type="checkbox" name="terms" id="terms" required>
-        <label for="terms">I agree to the <a href="{% url 'terms_conditions' %}" target="_blank">Terms and Conditions</a></label>
+      <div class="form-group">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" id="username" name="username" class="form-input" required>
+        <div class="input-underline"></div>
       </div>
       
-      <div class="pass"></div>
-      <input type="Submit" value="Register">
-      <div class="signup_link">
-        Already had an account? <a href="{% url 'home' %}">Login Here</a>
+      <div class="form-group">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" id="email" name="email" class="form-input" required>
+        <div class="input-underline"></div>
       </div>
+      
+      <div class="form-group">
+        <label for="password1" class="form-label">Password</label>
+        <input type="password" id="password1" name="password1" class="form-input" required>
+        <div class="input-underline"></div>
+      </div>
+      
+      <div class="form-group">
+        <label for="password2" class="form-label">Confirm Password</label>
+        <input type="password" id="password2" name="password2" class="form-input" required>
+        <div class="input-underline"></div>
+      </div>
+      
+      <div class="form-checkbox">
+        <input type="checkbox" id="terms" name="terms" required>
+        <label for="terms">
+          I agree to the <a href="{% url 'terms_conditions' %}" class="link">Terms and Conditions</a>
+        </label>
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="submit-btn">Create Account</button>
+      </div>
+      
+      <div class="auth-links">
+        <p>Already have an account? <a href="{% url 'home' %}" class="link">Sign in</a></p>
       </div>
     </form>
   </div>
 </div>
-      <script> 
-          function myfunction(){
-            console.log(message);
-          }
-      </script>
-      {% for message in messages %}
-      <script>
-        alert('{{message}}') 
-      </script>
-      {% endfor %}
+</div>
+<script> 
+  function myfunction(){
+    console.log(message);
+  }
+</script>
+
+{% for message in messages %}
+  <script>
+    alert('{{message}}') 
+  </script>
+{% endfor %}
+
+<style>
+  /* Main Container */
+  .auth-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2.5rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* Header Section */
+  .auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .auth-title {
+    font-size: 1.75rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  
+  .auth-subtitle {
+    color: #7f8c8d;
+    font-size: 1rem;
+    margin-bottom: 0;
+  }
+  
+  /* Form Layout */
+  .form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .half-width {
+    flex: 1;
+  }
+  
+  /* Form Elements */
+  .form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  
+  .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #34495e;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 0.75rem 0;
+    border: none;
+    border-bottom: 1px solid #ddd;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+  
+  .form-input:focus {
+    outline: none;
+    border-bottom-color: #3498db;
+  }
+  
+  .input-underline {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #3498db;
+    transition: width 0.3s ease;
+  }
+  
+  .form-input:focus ~ .input-underline {
+    width: 100%;
+  }
+  
+  /* Checkbox */
+  .form-checkbox {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+  }
+  
+  .form-checkbox input {
+    margin-right: 0.75rem;
+  }
+  
+  .form-checkbox label {
+    font-size: 0.9rem;
+    color: #34495e;
+  }
+  
+  /* Button */
+  .submit-btn {
+    width: 100%;
+    padding: 0.875rem;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submit-btn:hover {
+    background-color: #2980b9;
+  }
+  
+  /* Links */
+  .auth-links {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+  }
+  
+  .link {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
+  
+  .link:hover {
+    color: #2980b9;
+    text-decoration: underline;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .auth-container {
+      padding: 1.5rem;
+      margin: 1rem;
+    }
+    
+    .form-row {
+      flex-direction: column;
+      gap: 0;
+    }
+    
+    .half-width {
+      width: 100%;
+    }
+  }
+</style>
 {% endblock %}

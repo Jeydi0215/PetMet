@@ -6,169 +6,333 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}"/>
-    <title>PetMet</title>
+    <title>PetMet - Find Your Perfect Pet</title>
     <style>
-        /* Add your custom styles here */
-        .body {
-            background-color: #333;
+        :root {
+            --primary-color: #4e73df;
+            --secondary-color: #f8f9fc;
+            --accent-color: #ff6b6b;
+            --dark-color: #2c3e50;
+            --light-color: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
         }
+        
+        body {
+            background-color: var(--secondary-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
         .header {
-            display: flex;
-            background-color: #333;
-            justify-content: space-between; /* Space between logo and navbar */
-            align-items: center; /* Center items vertically */
-            padding: 10px 20px; /* Padding for the header */
+            background-color: var(--dark-color);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
         }
-        .header a {
-            color: white;
+        
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            color: var(--light-color);
             text-decoration: none;
-            font-size: 24px; /* Adjust font size for the logo */
+            font-weight: 700;
+            font-size: 1.5rem;
+            transition: var(--transition);
         }
-        .navbar {
+        
+        .brand-logo:hover {
+            color: var(--accent-color);
+        }
+        
+        .circular-image {
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            margin-right: 12px;
+            object-fit: cover;
+            border: 2px solid var(--accent-color);
+        }
+        
+        .main-nav {
             display: flex;
-            align-items: center; /* Center items vertically */
-            padding: 0; /* Remove padding */
-            margin: 0; /* Remove margin
-                        /* Remove margin */
-                        justify-content: flex-end; /* Align items to the right */
-                    }
-                    .navbar li {
-                        list-style: none;
-                        margin: 0; /* Space between navbar items */
-                        padding: 0 10px; /* Optional: Add some padding for spacing */
-                    }
-                    .navbar .dropdown-menu {
-                        background-color: #ffffff; /* White background for dropdowns */
-                        padding: 0; /* Remove padding from dropdown menu */
-                        margin: 0; /* Remove margin from dropdown menu */
-                        border: none; /* Optional: Remove border for a cleaner look */
-                        z-index: 1000; /* Ensure it appears above other content */
-                        min-width: 200px; /* Set a minimum width for the dropdown */
-                      }
-                      
-                      @media (min-width: 768px) {
-                        .navbar .dropdown-menu {
-                          min-width: 300px; /* Set a minimum width for the dropdown on larger screens */
-                        }
-                      }
-                    .navbar .dropdown-item {
-                        color: #333; /* Dark text for dropdown items */
-                        padding: 10px 15px; /* Adjust padding for dropdown items */
-                        margin: 0; /* Remove margin from dropdown items */
-                    }
-                    .navbar .dropdown-item:hover {
-                        background-color: #f1f1f1; /* Light hover effect */
-                    }
-                    .nav-item.dropdown {
-                        position: relative; /* Ensure dropdown is positioned correctly */
-                    }
-                    .nav-item.dropdown .dropdown-toggle {
-                        padding-left: 0; /* Remove left padding from the dropdown toggle */
-                    }
-                    .circular-image {
-                        border-radius: 50%; /* Circular logo */
-                        width: 80px; /* Adjust size as needed */
-                        height: 80px; /* Adjust size as needed */
-                        margin-right: 10px; /* Space between logo and text */
-                    }
-                    .notification-icon {
-                        position: relative;
-                        margin-left: 20px; /* Space between the icon and other items */
-                    }
-                    .notification-icon .badge {
-                        position: absolute;
-                        top: -5px;
-                        right: -10px;
-                        background-color: red;
-                        color: white;
-                        border-radius: 50%;
-                        padding: 2px 5px;
-                        font-size: 12px;
-                    }
-                    .notification-icon .dropdown-menu {
-                        right: 20px; /* Move the dropdown menu to the left */
-                        left: auto; /* Remove the default left position */
-                      }
-                </style>
-            </head>
-            <body>
-                <header class="header">
-                    <a href="{% url 'homepage' %}">
-                        <img src="{% static 'PetMetLogo.jpg' %}" alt="homepage" class="circular-image" /> PetMet
-                    </a>
-                    <nav class="navbar">
-                        <ul class="d-flex">
-                            <li><a href="{% url 'homepage' %}">Home</a></li>
-                            <li><a href="{% url 'add_pet' %}">Add Pet for Adoption</a></li>
-                            <li class="nav-item dropdown">
-                                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">Request</a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="{% url 'view_requests' %}" class="dropdown-item">Pet Post Adoption Request</a></li>
-                                    <li><a href="{% url 'adoption_requests' %}" class="dropdown-item">My Adoption Request</a></li>
-                                    <li><a href="{% url 'reportadopted_pets' %}" class="dropdown-item">Adopted Pets</a></li>
-                                </ul>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">History</a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="{% url 'adoption_table' %}" class="dropdown-item">Post History</a></li>
-                                </ul>
-                            </li>
-                            <li class="notification-icon">
-                                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown" style="position: relative;">
-                                    <i class="bi bi-bell" style="font-size: 30px; color: white; background-color: black; border-radius: 50%; padding: 5px;width: 25px;"></i>
-                                    {% if notifications_count > 0 %}
-                                    <span class="badge">{{ notifications_count }}</span>
-                                    {% endif %}
-                                </a>
-                                <ul class="dropdown-menu">
-                                    {% for notification in notifications %}
-                                    <li><a href="#" class="dropdown-item">{{ notification.message }}</a></li>
-                                    {% empty %}
-                                    <li><a href="#" class="dropdown-item">No new notifications</a></li>
-                                    {% endfor %}
-                                </ul>
-                            </li>
-                            {% if user.is_authenticated %}
-                            <li class="nav-item dropdown">
-                                <a href="#" class="dropdown-toggle" data-bs-toggle="dropdown">{{ user.username }}</a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="{% url 'logout' %}" class="dropdown-item">Logout</a></li>
-                                </ul>
-                            </li>
-                            {% else %}
-                            <li><a href="#">Hi</a></li>
-                            {% endif %}
+            align-items: center;
+        }
+        
+        .nav-list {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+        }
+        
+        .nav-item {
+            margin: 0 0.75rem;
+            position: relative;
+        }
+        
+        .nav-link {
+            color: var(--light-color);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+        
+        .nav-link:hover, .nav-link:focus {
+            color: var(--accent-color);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .dropdown-menu {
+            border: none;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 0.5rem 0;
+            min-width: 220px;
+        }
+        
+        .dropdown-item {
+            padding: 0.75rem 1.5rem;
+            transition: var(--transition);
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+        
+        .notification-icon {
+            position: relative;
+            margin-left: 1rem;
+        }
+        
+        .notification-bell {
+            font-size: 1.5rem;
+            color: var(--light-color);
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        
+        .notification-bell:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        .user-dropdown .dropdown-toggle {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 8px;
+            object-fit: cover;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .container-main {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        @media (max-width: 992px) {
+            .navbar-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .main-nav {
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 1rem;
+            }
+            
+            .nav-list {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .nav-item {
+                margin: 0.25rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .brand-logo {
+                font-size: 1.25rem;
+            }
+            
+            .circular-image {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .nav-list {
+                justify-content: flex-end;
+            }
+            
+            .nav-item {
+                margin: 0.25rem;
+            }
+            
+            .nav-link {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="navbar-container">
+            <a href="{% url 'homepage' %}" class="brand-logo">
+                <img src="{% static 'PetMetLogo.jpg' %}" alt="PetMet Logo" class="circular-image">
+                PetMet
+            </a>
+            
+            <nav class="main-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="{% url 'homepage' %}" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'add_pet' %}" class="nav-link">Add Pet</a>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Request</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'adoption_requests' %}" class="dropdown-item">My Adoption Request</a></li>
+                            <li><a href="{% url 'reportadopted_pets' %}" class="dropdown-item">Adopted Pets</a></li>
                         </ul>
-                    </nav>
-                </header>
-                <div class="container">
-                    {% block content %}
-                    {% endblock %}
-                </div>
-                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-                <script src="{% static 'js/jquery.min.js' %}"></script>
-                <script>
-                    $(document).ready(function() {
-                        $('.notification-icon').on('click', function() {
-                            // Make an AJAX call to mark notifications as read
-                            $.ajax({
-                                url: '{% url "mark_notifications_read" %}',  // Create a URL for marking notifications as read
-                                type: 'POST',
-                                data: {
-                                    'csrfmiddlewaretoken': '{{ csrf_token }}'  // Include CSRF token
-                                },
-                                success: function(response) {
-                                    console.log('Notifications marked as read');
-                                },
-                                error: function(xhr, status, error) {
-                                    console.error('Error marking notifications as read:', error);
-                                }
-                            });
-                        });
-                    });
-                </script>
-            </body>
-            </html>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">History</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'adoption_table' %}" class="dropdown-item">Post History</a></li>
+                            <li><a href="{% url 'OwnerReportadopted_pets' %}" class="dropdown-item">Reports</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item notification-icon">
+                        <a href="#" class="nav-link" data-bs-toggle="dropdown">
+                            <i class="bi bi-bell notification-bell"></i>
+                            {% if notifications_count > 0 %}
+                            <span class="badge">{{ notifications_count }}</span>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% for notification in notifications %}
+                            <li><a href="#" class="dropdown-item">{{ notification.message }}</a></li>
+                            {% empty %}
+                            <li><a href="#" class="dropdown-item">No new notifications</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown user-dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                            <span class="user-avatar">{{ user.username|first|upper }}</span>
+                            {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a href="{% url 'logout' %}" class="dropdown-item"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a href="{% url 'login' %}" class="nav-link">Login</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="container-main">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script>
+        $(document).ready(function() {
+            // Notification click handler
+            $('.notification-icon').on('click', function() {
+                $.ajax({
+                    url: '{% url "mark_notifications_read" %}',
+                    type: 'POST',
+                    data: {
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        $('.badge').fadeOut();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+            
+            // Add active class to current page link
+            $('.nav-link').each(function() {
+                if ($(this).attr('href') === window.location.pathname) {
+                    $(this).addClass('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

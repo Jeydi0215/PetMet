@@ -1,19 +1,16 @@
 {% extends 'base4.html' %}
 
 {% block content %}
-<div class="container">
-  <div class="center">
-    <h1>Create User</h1>
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}  <!-- This will render all fields including is_staff -->
-      <div class="pass"></div>
-      <input type="submit" value="Register">
-    </form>
-    <div class="signup_link">
+<div class="container" style="max-width: 600px; margin: 2rem auto;">
+  <div class="card shadow-sm" style="border-radius: 8px; overflow: hidden;">
+    <div class="card-header" style="background-color: #4e73df; color: white; padding: 1.5rem;">
+      <h1 style="margin: 0; text-align: center; font-size: 1.8rem;">Create User</h1>
+    </div>
+    
+    <div class="card-body" style="padding: 2rem;">
       {% if form.errors %}
-        <div class="alert alert-danger">
-          <ul>
+        <div class="alert alert-danger" style="border-radius: 6px; margin-bottom: 1.5rem;">
+          <ul style="margin-bottom: 0; padding-left: 1.2rem;">
             {% for field in form %}
               {% for error in field.errors %}
                 <li>{{ error }}</li>
@@ -25,7 +22,72 @@
           </ul>
         </div>
       {% endif %}
+      
+      <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-fields" style="margin-bottom: 1.5rem;">
+          {% for field in form %}
+            <div class="form-group" style="margin-bottom: 1.2rem;">
+              <label for="{{ field.id_for_label }}" style="display: block; margin-bottom: 0.5rem; font-weight: 500;">
+                {{ field.label }}
+                {% if field.field.required %}<span style="color: #e74a3b;">*</span>{% endif %}
+              </label>
+              {{ field }}
+              {% if field.help_text %}
+                <small class="form-text" style="display: block; margin-top: 0.4rem; color: #5a5c69; font-size: 0.85rem;">
+                  {{ field.help_text }}
+                </small>
+              {% endif %}
+              {% for error in field.errors %}
+                <div class="invalid-feedback" style="display: block; color: #e74a3b; font-size: 0.85rem; margin-top: 0.4rem;">
+                  {{ error }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+        
+        <div class="form-actions" style="margin-top: 1.5rem;">
+          <input type="submit" value="Register" 
+                 style="width: 100%; padding: 0.75rem; background-color: #4e73df; color: white; 
+                        border: none; border-radius: 4px; font-weight: 600; cursor: pointer;
+                        transition: background-color 0.2s;">
+        </div>
+      </form>
     </div>
   </div>
 </div>
+
+<style>
+  input[type="text"], 
+  input[type="password"], 
+  input[type="email"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d3e2;
+    border-radius: 4px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  
+  input[type="text"]:focus, 
+  input[type="password"]:focus, 
+  input[type="email"]:focus,
+  select:focus,
+  textarea:focus {
+    border-color: #bac8f3;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+  }
+  
+  input[type="checkbox"] {
+    margin-right: 0.5rem;
+  }
+  
+  input[type="submit"]:hover {
+    background-color: #2e59d9 !important;
+  }
+</style>
 {% endblock %}

@@ -1,27 +1,144 @@
-{% extends 'base.html' %}  <!-- assuming you have a base.html template -->
+{% extends 'base.html' %}
 
 {% block content %}
-  <h1 class="text-center">My Adoption Requests</h1>
-  <table class="table mx-auto w-75">
-    <thead>
-      <tr>
-        <th>Pet Name</th>
-        <th>Adoption Status</th>
-        <th>View</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for request in adoption_requests %}
-      <tr>
-        <td>{{ request.name }}</td>
-        <td>{{ request.adoption_request_status }}</td>
-        <td><a href="{% url 'view_adoption_request' request.adoption_request_id %}" class="btn btn-primary">View</a></td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="3">No adoption requests found.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0 text-primary">
+            <i class="bi bi-heart-fill me-2"></i>My Adoption Requests
+        </h1>
+        <a href="{% url 'homepage' %}" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Pets
+        </a>
+    </div>
+
+    <div class="card border-0 shadow position-relative">
+        {% if adoption_requests %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4" width="35%">Pet</th>
+                        <th width="20%" class="text-center">Status</th>
+                        <th width="25%">Details</th>
+                        <th class="pe-4" width="20%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in adoption_requests %}
+                    <tr class="border-top">
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                    <i class="bi bi-paw text-primary"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">{{ request.name }}</h6>
+                                    <small class="text-muted">ID: {{ request.id }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <div class="custom-status-wrapper">
+                                <span class="custom-status-pill rounded-pill 
+                                    {% if request.adoption_request_status == 'Approved' %}bg-success
+                                    {% elif request.adoption_request_status == 'Pending' %}bg-warning text-dark
+                                    {% elif request.adoption_request_status == 'Rejected' %}bg-danger
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ request.adoption_request_status|capfirst }}
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <small class="text-muted">
+                                Request #{{ request.adoption_request_id }}
+                            </small>
+                        </td>
+                        <td class="pe-4">
+                            <a href="{% url 'view_adoption_request' request.adoption_request_id %}" 
+                               class="btn btn-sm btn-primary">
+                               <i class="bi bi-eye me-1"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="card-body text-center py-5">
+            <div class="mb-3">
+                <i class="bi bi-inbox text-muted" style="font-size: 3rem;"></i>
+            </div>
+            <h5 class="text-muted mb-2">No adoption requests yet</h5>
+            <p class="text-muted mb-4">You haven't submitted any adoption requests.</p>
+            <a href="{% url 'homepage' %}" class="btn btn-primary">
+                <i class="bi bi-search me-1"></i> Browse Pets
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    /* Table styling */
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .table-responsive {
+        overflow-x: auto;
+        width: 100%;
+    }
+    
+    .table th {
+        font-weight: 600;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .table td {
+        padding: 1rem;
+        vertical-align: middle !important;
+    }
+    
+    /* Custom status pill styling - avoiding badge class completely */
+    .custom-status-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+    
+    .custom-status-pill {
+        color: white;
+        font-weight: 500;
+        min-width: 90px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        text-align: center;
+        white-space: nowrap;
+        display: inline-block;
+    }
+    
+    /* Ensure no conflict with existing styles */
+    .custom-status-pill.bg-success, 
+    .custom-status-pill.bg-danger,
+    .custom-status-pill.bg-warning,
+    .custom-status-pill.bg-secondary {
+        position: static !important;
+        transform: none !important;
+        margin: 0 !important;
+    }
+    
+    @media (max-width: 768px) {
+        .custom-status-pill {
+            font-size: 0.75rem;
+            padding: 0.375rem 0.5rem;
+        }
+    }
+</style>
 {% endblock %}

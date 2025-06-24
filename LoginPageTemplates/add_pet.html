@@ -2,65 +2,630 @@
 
 {% block content %}
 <style>
+    body {
+        background-color: #f8fafc;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.6;
+    }
+
     .container {
-        max-height: 100vh; /* Set the maximum height for the container */
-        overflow-y: auto; /* Enable vertical scrolling */
-        overflow-x: hidden; /* Hide horizontal scrolling if not needed */
-        margin-top: 10px; /* Set a specific top margin */
+        max-width: 700px;
+        margin: 40px auto;
+        padding: 20px;
     }
 
-    /* For Firefox */
-    * {
-        scrollbar-width: thin; /* Makes the scrollbar thinner */
-        scrollbar-color: transparent transparent; /* Thumb and track colors */
+    .form-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
     }
 
-    /* For WebKit browsers (Chrome, Safari) */
-    ::-webkit-scrollbar {
-        width: 8px; /* Width of the scrollbar */
+    .form-header {
+        background: #4f46e5;
+        color: white;
+        padding: 30px;
+        text-align: center;
     }
 
-    ::-webkit-scrollbar-track {
-        background: transparent; /* Track color */
+    .form-title {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
     }
 
-    ::-webkit-scrollbar-thumb {
-        background: transparent; /* Thumb color */
-        border-radius: 10px; /* Rounded corners for the thumb */
+    .form-subtitle {
+        margin: 8px 0 0 0;
+        opacity: 0.9;
+        font-size: 14px;
     }
 
-    /* Optional: Add hover effect for visibility */
-    ::-webkit-scrollbar-thumb:hover {
-        background: rgba(0, 0, 0, 0.5); /* Change thumb color on hover */
+    .form-body {
+        padding: 32px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .form-row.single {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 6px;
+        font-size: 14px;
+    }
+
+    .form-control {
+        padding: 12px 16px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 16px;
+        background: white;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .form-control::placeholder {
+        color: #9ca3af;
+    }
+
+    select.form-control {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 12px center;
+        background-repeat: no-repeat;
+        background-size: 16px;
+        padding-right: 40px;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    textarea.form-control {
+        min-height: 100px;
+        resize: vertical;
+        font-family: inherit;
+    }
+
+    /* Enhanced File Upload Design */
+    .file-upload {
+        position: relative;
+    }
+
+    .file-upload-area {
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 32px 24px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .file-upload-area::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(79, 70, 229, 0.05), transparent);
+        transition: left 0.5s;
+    }
+
+    .file-upload-area:hover {
+        border-color: #4f46e5;
+        background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+        text-decoration: none;
+        color: inherit;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(79, 70, 229, 0.15);
+    }
+
+    .file-upload-area:hover::before {
+        left: 100%;
+    }
+
+    .file-upload-area.has-file {
+        border-color: #10b981;
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border-style: solid;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+    }
+
+    .file-upload-icon {
+        width: 64px;
+        height: 64px;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+    }
+
+    .file-upload-area:hover .file-upload-icon {
+        transform: scale(1.1) rotate(5deg);
+        box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+    }
+
+    .file-upload-area.has-file .file-upload-icon {
+        background: linear-gradient(135deg, #10b981, #059669);
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .file-upload-icon i {
+        font-size: 24px;
+        color: white;
+    }
+
+    .file-upload-text {
+        color: #374151;
+        font-weight: 600;
+        margin-bottom: 6px;
+        font-size: 18px;
+    }
+
+    .file-upload-hint {
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 16px;
+    }
+
+    .file-upload-features {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+    }
+
+    .file-feature {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        color: #6b7280;
+        background: rgba(79, 70, 229, 0.1);
+        padding: 4px 8px;
+        border-radius: 12px;
+    }
+
+    .file-feature i {
+        font-size: 10px;
+        color: #4f46e5;
+    }
+
+    .file-preview {
+        margin-top: 16px;
+        padding: 16px 20px;
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border-radius: 12px;
+        display: none;
+        border: 1px solid #a7f3d0;
+        animation: slideDown 0.3s ease-out;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .file-preview.show {
+        display: block;
+    }
+
+    .file-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 15px;
+        color: #374151;
+        font-weight: 500;
+    }
+
+    .file-info i {
+        color: #10b981;
+        font-size: 18px;
+    }
+
+    /* Submit Button */
+    .submit-section {
+        margin-top: 32px;
+        padding-top: 24px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .btn-submit {
+        width: 100%;
+        background: #4f46e5;
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .btn-submit:hover {
+        background: #4338ca;
+    }
+
+    .btn-submit:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    /* Alert */
+    .alert {
+        background: #10b981;
+        color: white;
+        padding: 16px 20px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .alert-content {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .alert .close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 18px;
+        cursor: pointer;
+        opacity: 0.8;
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .alert .close:hover {
+        opacity: 1;
+    }
+
+    /* Loading State */
+    .btn-submit.loading {
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top: 2px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .container {
+            margin: 20px auto;
+            padding: 16px;
+        }
+
+        .form-header {
+            padding: 24px 20px;
+        }
+
+        .form-body {
+            padding: 24px 20px;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-title {
+            font-size: 20px;
+        }
+
+        .file-upload-area {
+            padding: 24px 16px;
+        }
+
+        .file-upload-icon {
+            width: 56px;
+            height: 56px;
+        }
+
+        .file-upload-icon i {
+            font-size: 20px;
+        }
+
+        .file-upload-text {
+            font-size: 16px;
+        }
+
+        .file-upload-features {
+            gap: 8px;
+        }
+    }
+
+    /* Form Validation */
+    .form-control.is-invalid {
+        border-color: #ef4444;
+    }
+
+    .form-control.is-invalid:focus {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
+    .invalid-feedback {
+        color: #ef4444;
+        font-size: 14px;
+        margin-top: 4px;
+    }
+
+    /* Success States */
+    .form-control.is-valid {
+        border-color: #10b981;
+    }
+
+    .form-control.is-valid:focus {
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
     }
 </style>
 
 <div class="container">
     {% if messages %}
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {% for message in messages %}
-                {{ message }}
-            {% endfor %}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+        <div class="alert" role="alert">
+            <div class="alert-content">
+                <i class="fas fa-check-circle"></i>
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+            <button type="button" class="close" onclick="this.parentElement.style.display='none'">
+                <span>&times;</span>
             </button>
         </div>
-        <script>
-            $(document).ready(function() {
-                $(".alert").fadeIn().delay(3000).fadeOut();
-            });
-        </script>
     {% endif %}
     
-    <div class="card mt-3">  <!-- Added card class -->
-            <h1 class="text-center mb-4">Add Pet for Adoption</h1>
-            <form method="post" enctype="multipart/form-data" id="add-pet-form" class="bg-light p-4 rounded shadow">
+    <div class="form-card">
+        <div class="form-header">
+            <h1 class="form-title">Add Pet for Adoption</h1>
+            <p class="form-subtitle">Help your pet find a loving home</p>
+        </div>
+        
+        <div class="form-body">
+            <form method="post" enctype="multipart/form-data" id="petForm">
                 {% csrf_token %}
-                <div class="form-group">
-                    {{ form.as_p }}
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">Pet Name *</label>
+                        {{ form.name }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.animal_type.id_for_label }}" class="form-label">Animal Type *</label>
+                        {{ form.animal_type }}
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">Add Pet</button>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.breed.id_for_label }}" class="form-label">Breed</label>
+                        {{ form.breed }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.color.id_for_label }}" class="form-label">Color</label>
+                        {{ form.color }}
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="{{ form.gender.id_for_label }}" class="form-label">Gender</label>
+                        {{ form.gender }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.age.id_for_label }}" class="form-label">Age</label>
+                        {{ form.age }}
+                    </div>
+                </div>
+                
+                <div class="form-row single">
+                    <div class="form-group">
+                        <label for="{{ form.location.id_for_label }}" class="form-label">Location *</label>
+                        {{ form.location }}
+                    </div>
+                </div>
+                
+                <div class="form-row single">
+                    <div class="form-group">
+                        <label for="{{ form.additional_details.id_for_label }}" class="form-label">Additional Details</label>
+                        {{ form.additional_details }}
+                    </div>
+                </div>
+                
+                <div class="form-row single">
+                    <div class="form-group">
+                        <label class="form-label">Pet Photo</label>
+                        <div class="file-upload">
+                            <label for="{{ form.img.id_for_label }}" class="file-upload-area" id="fileUploadArea">
+                                <div class="file-upload-icon">
+                                    <i class="fas fa-camera"></i>
+                                </div>
+                                <div class="file-upload-text">Upload your pet's photo</div>
+                                <div class="file-upload-hint">Choose a clear, well-lit photo that shows your pet's personality</div>
+                                <div class="file-upload-features">
+                                    <div class="file-feature">
+                                        <i class="fas fa-check"></i>
+                                        <span>JPG, PNG</span>
+                                    </div>
+                                    <div class="file-feature">
+                                        <i class="fas fa-check"></i>
+                                        <span>Max 10MB</span>
+                                    </div>
+                                    <div class="file-feature">
+                                        <i class="fas fa-check"></i>
+                                        <span>High Quality</span>
+                                    </div>
+                                </div>
+                            </label>
+                            {{ form.img }}
+                            <div class="file-preview" id="filePreview">
+                                <div class="file-info">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span id="fileName"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="submit-section">
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        Add Pet for Adoption
+                    </button>
+                </div>
             </form>
+        </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.querySelector('input[type="file"]');
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    const filePreview = document.getElementById('filePreview');
+    const fileName = document.getElementById('fileName');
+    const form = document.getElementById('petForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // File upload handling
+    if (fileInput && fileUploadArea) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (file) {
+                fileUploadArea.classList.add('has-file');
+                fileName.textContent = file.name;
+                filePreview.classList.add('show');
+                
+                // Update upload text
+                const uploadText = fileUploadArea.querySelector('.file-upload-text');
+                const uploadHint = fileUploadArea.querySelector('.file-upload-hint');
+                uploadText.textContent = 'Perfect! Photo selected';
+                uploadHint.textContent = 'Click to change or select a different photo';
+            } else {
+                resetFileUpload();
+            }
+        });
+    }
+
+    // Form submission
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Show loading state
+            submitBtn.classList.add('loading');
+            submitBtn.innerHTML = '<div class="spinner"></div>Adding Pet...';
+            submitBtn.disabled = true;
+        });
+    }
+
+    // Auto-dismiss alerts
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            if (alert.parentElement) {
+                alert.style.display = 'none';
+            }
+        }, 5000);
+    });
+
+    function resetFileUpload() {
+        if (fileUploadArea) {
+            fileUploadArea.classList.remove('has-file');
+            filePreview.classList.remove('show');
+            
+            const uploadText = fileUploadArea.querySelector('.file-upload-text');
+            const uploadHint = fileUploadArea.querySelector('.file-upload-hint');
+            if (uploadText && uploadHint) {
+                uploadText.textContent = 'Upload your pet\'s photo';
+                uploadHint.textContent = 'Choose a clear, well-lit photo that shows your pet\'s personality';
+            }
+        }
+    }
+
+    // Basic form validation
+    const requiredFields = document.querySelectorAll('input[required], select[required]');
+    requiredFields.forEach(field => {
+        field.addEventListener('blur', function() {
+            if (this.value.trim() === '') {
+                this.classList.add('is-invalid');
+            } else {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            }
+        });
+
+        field.addEventListener('input', function() {
+            if (this.classList.contains('is-invalid') && this.value.trim() !== '') {
+                this.classList.remove('is-invalid');
+                this.classList.add('is-valid');
+            }
+        });
+    });
+});
+</script>
+
 {% endblock %}

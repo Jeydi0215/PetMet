@@ -1,28 +1,156 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1 style="text-align: center;">My Post Adoption Detail</h1>
-  <div class="card" style="margin: 0 auto; width: 50%;">
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-4"> <!-- Adjust the column size as needed -->
-          <img src="{{ adoption.img.url }}" alt="Pet Image" class="img-fluid" style="height: auto; display: block; margin: 0 auto;">
+<div class="container py-5">
+  <div class="text-center mb-4">
+    <h1 class="display-4 text-primary">My Adopted Pet</h1>
+    <p class="lead text-muted">Meet your beloved companion</p>
+  </div>
+
+  <div class="card shadow-lg mx-auto" style="max-width: 800px; overflow: visible;">  <!-- Added overflow: visible -->
+    <div class="card-body p-4">
+      <div class="row g-4">
+        <!-- Pet Image Column -->
+        <div class="col-md-5">
+          <div class="pet-image-container rounded overflow-hidden" style="height: 300px;">
+            <img src="{{ adoption.img.url }}" alt="{{ adoption.name }}" class="img-fluid h-100 w-100 object-fit-cover">
+          </div>
         </div>
-        <div class="col-md-8"> <!-- Adjust the column size as needed -->
-          <h2 class="card-title">{{ adoption.name }}</h2>
-          <p class="card-text">Animal Type: {{ adoption.animal_type }}</p>
-          <p class="card-text">Breed: {{ adoption.breed }}</p>
-          <p class="card-text">Color: {{ adoption.color }}</p>
-          <p class="card-text">Gender: {{ adoption.gender }}</p>
-          <p class="card-text">Age: {{ adoption.age }}</p>
-          <p class="card-text">Location: {{ adoption.location }}</p>
-          <p class="card-text">Details: {{ adoption.additional_details }}</p>
-          <p class="card-text">Status: {{ adoption.adoption_status }}</p>
-        </div>
-      </div>
-      <div class="card-footer">
-        <input name="submit" type="Submit" onclick="history.back()" value="Back" class="btn btn-secondary">
-      </div>
+        
+        <!-- Pet Details Column -->
+        <div class="col-md-7 position-relative" style="overflow: visible;">  <!-- Added overflow: visible -->
+          <!-- Replace the existing badge with this improved version -->
+<!-- Replace the existing badge with this box-style version -->
+<div class="position-absolute top-0 end-0" style="z-index: 1; transform: translateY(-15px);">
+  <div class="bg-success text-white p-3 rounded-3 shadow-sm" style="min-width: 180px;">
+    <div class="d-flex align-items-center justify-content-center">
+      <i class="fas fa-heart me-2"></i>
+      <span class="fw-bold">Status: {{ adoption.adoption_status }}</span>
     </div>
   </div>
+</div>
+          
+          <div style="padding-top: 2.5rem;">  <!-- Added padding to prevent overlap -->
+            <h2 class="card-title text-primary mb-3">{{ adoption.name }}</h2>
+            
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <div class="detail-item">
+                  <span class="detail-label">Animal Type:</span>
+                  <span class="detail-value">{{ adoption.animal_type }}</span>
+                </div>
+              </div>
+              
+              <div class="col-sm-6">
+                <div class="detail-item">
+                  <span class="detail-label">Breed:</span>
+                  <span class="detail-value">{{ adoption.breed }}</span>
+                </div>
+              </div>
+              
+              <div class="col-sm-6">
+                <div class="detail-item">
+                  <span class="detail-label">Color:</span>
+                  <span class="detail-value">{{ adoption.color }}</span>
+                </div>
+              </div>
+              
+              <div class="col-sm-6">
+                <div class="detail-item">
+                  <span class="detail-label">Gender:</span>
+                  <span class="detail-value">{{ adoption.gender }}</span>
+                </div>
+              </div>
+              
+              <div class="col-sm-6">
+                <div class="detail-item">
+                  <span class="detail-label">Age:</span>
+                  <span class="detail-value">{{ adoption.age }}</span>
+                </div>
+              </div>
+              
+              <div class="col-sm-6">
+                <div class="detail-item">
+                  <span class="detail-label">Location:</span>
+                  <span class="detail-value">{{ adoption.location }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="mt-4">
+              <h5 class="text-secondary">Additional Details</h5>
+              <p class="card-text bg-light p-3 rounded">{{ adoption.additional_details }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card-footer bg-transparent border-top-0 py-3 text-end">
+      <button onclick="history.back()" class="btn btn-outline-primary px-4">
+        <i class="fas fa-arrow-left me-2"></i>Back to List
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .pet-image-container {
+    border: 3px solid #f8f9fa;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  .detail-item {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  
+  .detail-label {
+    font-weight: 600;
+    color: #6c757d;
+    display: block;
+    font-size: 0.9rem;
+  }
+  
+  .detail-value {
+    font-size: 1.1rem;
+    color: #212529;
+  }
+  
+  .card {
+    border-radius: 15px;
+    border: none;
+  }
+
+  .badge {
+  min-width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+  
+  @media (max-width: 768px) {
+    .card {
+      width: 95% !important;
+    }
+    
+    /* Mobile adjustments */
+    .position-absolute {
+      position: relative !important;
+      top: auto !important;
+      right: auto !important;
+      transform: none !important;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    
+    /* Remove extra padding on mobile */
+    [style*="padding-top"] {
+      padding-top: 0 !important;
+    }
+  }
+</style>
 {% endblock %}

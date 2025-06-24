@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <!-- Pet Info Card -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-white">
+            <h2 class="mb-0 text-dark">Pet Details</h2>
+        </div>
+        <div class="card-body d-flex">
+            <div class="details" style="flex: 1;">
+                <h3 class="card-title">{{ pet.name }}</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Status:</strong> <span class="adoption-status">{{ pet_adoption.adoption_request_status }}</span></p>
+                        <p><strong>ID Adoption:</strong> {{ pet_adoption.id }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Adopted by:</strong> {{ pet_adoption.first_name }} {{ pet_adoption.last_name }}</p>
+                        <p><strong>Posted on:</strong> {{ pet.created_at|date:"F d, Y" }}</p>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <a href="{% url 'report_details' pet_adoption.id %}" class="btn btn-primary">Report Details</a>
+                    <a href="{% url 'OwnerReportadopted_pets' %}" class="btn btn-secondary">Back to Adopted Pets</a>
+                </div>
+            </div>
+            <div class="pet-image" style="flex: 0 0 200px; margin-left: 20px;">
+                {% if pet.img %}
+                    <img src="{{ pet.img.url }}" alt="Image of {{ pet.name }}" class="img-thumbnail shadow" style="max-width: 100%; max-height: 200px; object-fit: cover;"/>
+                {% else %}
+                    <div class="text-center p-4 bg-light rounded">
+                        <i class="fas fa-paw fa-3x text-muted"></i>
+                        <p class="mt-2">No image available</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <h3 class="mb-0 text-dark">Monitoring Calendar: {{ monthly_reports.month|month_name }} {{ monthly_reports.year }}</h3>
+            <span class="tracking-date-light">Tracking Since: {{ monthly_reports.tracking_start_date|date:"F d, Y" }}</span>
+        </div>
+        <div class="card-body">
+            <!-- Calendar Navigation -->
+            <div class="d-flex justify-content-between mb-3">
+                {% with previous_month=monthly_reports.month|add:-1 %}
+                    {% if previous_month < 1 %}
+                        {% with previous_year=monthly_reports.year|add:-1 %}
+                            <a href="?month=12&year={{ previous_year }}" class="btn btn-primary">
+                                <i class="fas fa-chevron-left"></i> December {{ previous_year }}
+                            </a>
+                        {% endwith %}
+                    {% else %}
+                        <a href="?month={{ previous_month }}&year={{ monthly_reports.year }}" class="btn btn-primary">
+                            <i class="fas fa-chevron-left"></i> {{ previous_month|month_name }}
+                        </a>
+                    {% endif %}
+                {% endwith %}
+                
+                <h4 class="text-center mb-0">{{ monthly_reports.month|month_name }} {{ monthly_reports.year }}</h4>
+                
+                {% with next_month=monthly_reports.month|add:1 %}
+                    {% if next_month > 12 %}
+                        {% with next_year=monthly_reports.year|add:1 %}
+                            <a href="?month=1&year={{ next_year }}" class="btn btn-primary">
+                                January {{ next_year }} <i class="fas fa-chevron-right"></i>
+                            </a>
+                        {% endwith %}
+                    {% else %}
+                        <a href="?month={{ next_month }}&year={{ monthly_reports.year }}" class="btn btn-primary">
+                            {{ next_month|month_name }} <i class="fas fa-chevron-right"></i>
+                        </a>
+                    {% endif %}
+                {% endwith %}
+            </div>
+
+            <!-- Calendar -->
+            <div class="calendar">
+                <div class="calendar-header">
+                    <div class="day-header">Sun</div>
+                    <div class="day-header">Mon</div>
+                    <div class="day-header">Tue</div>
+                    <div class="day-header">Wed</div>
+                    <div class="day-header">Thu</div>
+                    <div class="day-header">Fri</div>
+                    <div class="day-header">Sat</div>
+                </div>
+                <div class="calendar-grid">
+                    {% if monthly_reports.empty_cells_before %}
+                        {% for _ in monthly_reports.empty_cells_before %}
+                            <div class="calendar-day empty-day"></div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    {% for day in monthly_reports.days_list %}
+                        <div class="calendar-day">
+                            <div class="date">{{ day }}</div>
+                            <div class="reports">
+                                {% with reports_for_day=monthly_reports.daily_reports|get_item:day %}
+                                    {% if reports_for_day %}
+                                        {% for report in reports_for_day %}
+                                            <div class="report">
+                                                <small class="text-muted">{{ report.followup_date|date:"Y-m-d" }}</small>
+                                                <p class="report-note mb-1">{{ report.notes|truncatechars:50 }}</p>
+                                                <a href="{% url 'report_detail' report.id %}" class="btn btn-primary btn-sm">View</a>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="no-report">No reports</div>
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    
+                    {% if monthly_reports.empty_cells_after %}
+                        {% for _ in monthly_reports.empty_cells_after %}
+                            <div class="calendar-day empty-day"></div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript to show alert if there is a notification message -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if notification_message %}
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+            
+            Toast.fire({
+                icon: 'info',
+                title: "{{ notification_message|escapejs }}"
+            });
+        {% endif %}
+    });
+</script>
+
+<style>
+    /* Modern calendar styles */
+    .calendar {
+        margin-top: 20px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .calendar-header {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        background-color: #0d6efd; /* Bootstrap primary color */
+        color: white;
+        font-weight: bold;
+        text-align: center;
+    }
+    
+    .day-header {
+        padding: 12px 10px;
+        border-right: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .day-header:last-child {
+        border-right: none;
+    }
+    
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        background-color: #f8f9fa;
+        gap: 1px;
+    }
+    
+    .calendar-day {
+        background-color: white;
+        padding: 10px;
+        min-height: 110px;
+        position: relative;
+        transition: all 0.2s ease;
+        overflow: auto;
+        max-height: 150px;
+    }
+    
+    .calendar-day:hover {
+        background-color: #f0f8ff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+    }
+    
+    .empty-day {
+        background-color: #f8f9fa;
+    }
+    
+    .date {
+        font-weight: bold;
+        margin-bottom: 8px;
+        text-align: center;
+        font-size: 1.1em;
+        padding: 3px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+    }
+    
+    .reports {
+        font-size: 0.85em;
+    }
+    
+    .report {
+        background-color: #fff;
+        border-left: 3px solid #0d6efd;
+        border-radius: 3px;
+        padding: 5px;
+        margin-bottom: 5px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .report-note {
+        font-size: 0.9em;
+        margin: 3px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .no-report {
+        color: #6c757d;
+        font-style: italic;
+        text-align: center;
+        padding: 10px 0;
+    }
+    
+    /* Custom status and tracking date styles */
+    .tracking-date-light {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #f0f8ff;
+        color: #0d6efd;
+        border: 1px solid #d1e7ff;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .tracking-date {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .adoption-status {
+        display: inline-block;
+        padding: 4px 8px;
+        background-color: #28a745;
+        color: white;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .calendar-day {
+            min-height: 80px;
+            padding: 5px;
+        }
+        
+        .date {
+            font-size: 0.9em;
+        }
+        
+        .report {
+            padding: 3px;
+        }
+        
+        .reports {
+            font-size: 0.8em;
+        }
+    }
+</style>
+{% endblock %}

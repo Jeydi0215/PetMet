@@ -1,0 +1,996 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        background-image: url('https://images.unsplash.com/photo-1444212477490-ca407925329e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        min-height: 100vh;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.85);
+        z-index: -1;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 20px;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 40px 20px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 15px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+    }
+
+    .page-header h1 {
+        color: #2c3e50;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .page-header p {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+        margin: 0;
+        font-weight: 400;
+    }
+
+    .form-container {
+        background-color: rgba(255, 255, 255, 0.95);
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        margin-bottom: 20px;
+        backdrop-filter: blur(10px);
+    }
+
+    .form-title {
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 600;
+        font-size: 28px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #2c3e50;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.3s;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        outline: none;
+    }
+
+    .btn-primary {
+        background-color: #3498db;
+        border: none;
+        padding: 12px 20px;
+        font-size: 16px;
+        font-weight: 500;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: #2980b9;
+        transform: translateY(-2px);
+    }
+
+    .controls-row {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: end;
+    }
+
+    .controls-row .form-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .controls-row .btn-primary {
+        white-space: nowrap;
+        width: auto;
+        margin-top: 0;
+    }
+
+    /* Map container */
+    #map {
+        height: 500px;
+        width: 100%;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        border: 3px solid rgba(255, 255, 255, 0.8);
+    }
+
+    /* Pet info popup styling */
+    .pet-popup {
+        text-align: center;
+        min-width: 200px;
+    }
+
+    .pet-popup h4 {
+        margin: 0 0 10px 0;
+        color: #2c3e50;
+    }
+
+    .pet-popup img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 50%;
+        margin-bottom: 10px;
+        border: 3px solid #3498db;
+    }
+
+    .pet-popup .pet-details {
+        font-size: 14px;
+        color: #666;
+    }
+
+    /* Pet Modal Styles - Simplified and Fixed */
+    .pet-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 99999;
+        overflow-y: auto;
+        padding: 10px;
+        box-sizing: border-box;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .pet-modal.show {
+        display: flex;
+    }
+
+    .modal-backdrop {
+        display: none;
+    }
+
+    .modal-container {
+        display: none;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        width: 90vw;
+        height: 90vh;
+        position: relative;
+        animation: modalFadeIn 0.3s ease-out;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    @keyframes modalFadeIn {
+        from { 
+            opacity: 0;
+            transform: scale(0.9) translateY(-20px);
+        }
+        to { 
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 15px 15px 0 0;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 10;
+    }
+
+    .modal-title {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .close-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: white;
+        transition: background 0.3s ease;
+        position: relative;
+        z-index: 20;
+        flex-shrink: 0;
+    }
+
+    .close-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .modal-body {
+        height: 80vh;
+        overflow-y: auto;
+    }
+
+    .pet-image-container {
+        height: 250px;
+        overflow: hidden;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .pet-main-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .pet-type-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(52, 152, 219, 0.9);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    .pet-info-section {
+        padding: 30px;
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .pet-name {
+        color: #2c3e50;
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0 0 20px 0;
+        text-align: center;
+    }
+
+    .pet-quick-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .info-card {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        text-align: center;
+        border: 1px solid #e9ecef;
+    }
+
+    .info-label {
+        font-size: 12px;
+        color: #6c757d;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+    }
+
+    .info-value {
+        font-size: 15px;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .pet-description {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 25px;
+        border-left: 3px solid #3498db;
+    }
+
+    .description-title {
+        color: #2c3e50;
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 10px 0;
+    }
+
+    .description-text {
+        color: #495057;
+        line-height: 1.6;
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .contact-section {
+        background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+        border-radius: 8px;
+        padding: 20px;
+        border: 1px solid #d4edda;
+    }
+
+    .contact-title {
+        color: #2c3e50;
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 15px 0;
+        text-align: center;
+    }
+
+    .contact-info {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: white;
+        border-radius: 6px;
+        border: 1px solid #c3e6cb;
+    }
+
+    .contact-icon {
+        width: 20px;
+        height: 20px;
+        color: #28a745;
+        flex-shrink: 0;
+    }
+
+    .contact-text {
+        color: #495057;
+        font-weight: 500;
+        font-size: 14px;
+    }
+
+    .adopt-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        border: none;
+        padding: 15px 20px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .adopt-btn:hover {
+        background: linear-gradient(135deg, #218838, #1e7e34);
+        transform: translateY(-1px);
+    }
+
+    /* Legend */
+    .map-legend {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-top: 10px;
+        backdrop-filter: blur(10px);
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .container {
+            padding: 15px;
+        }
+        
+        .form-container {
+            padding: 20px;
+        }
+        
+        .form-title {
+            font-size: 24px;
+        }
+
+        .controls-row {
+            flex-direction: column;
+        }
+
+        .controls-row .form-group {
+            min-width: 100%;
+        }
+
+        #map {
+            height: 400px;
+        }
+
+        .modal-content {
+            width: 95%;
+            margin: 20px;
+        }
+
+        .pet-info-section {
+            padding: 20px;
+        }
+
+        .pet-quick-info {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .pet-name {
+            font-size: 24px;
+        }
+    }
+</style>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+
+<div class="container">
+    {% if messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <script>
+            $(document).ready(function() {
+                $(".alert").fadeIn().delay(3000).fadeOut();
+            });
+        </script>
+    {% endif %}
+
+    {% csrf_token %}
+
+    <div class="container">
+        <div class="form-container">
+            <h2 class="form-title">Pet Proximity Finder</h2>
+            
+            <div class="controls-row">
+                <div class="form-group">
+                    <label for="location">Search Location</label>
+                    <input type="text" class="form-control" id="location" placeholder="Enter address or click on map">
+                </div>
+                
+                <div class="form-group">
+                    <label for="radius">Radius (km)</label>
+                    <input type="number" class="form-control" id="radius" value="5" min="0.1" max="50" step="0.1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="petType">Pet Type</label>
+                    <select class="form-control" id="petType">
+                        <option value="all">All Pets</option>
+                        <option value="dog">Dogs</option>
+                        <option value="cat">Cats</option>
+                        <option value="bird">Birds</option>
+                        <option value="rabbit">Rabbits</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <button class="btn-primary" onclick="searchPets()">Search Pets</button>
+            </div>
+        </div>
+
+        <div id="map"></div>
+    </div>
+</div>
+
+<!-- Pet Detail Modal -->
+<div id="petModal" class="pet-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle" class="modal-title">Pet Details</h2>
+            <button class="close-btn" onclick="closePetModal()">&times;</button>
+        </div>
+        
+        <div class="pet-image-container">
+            <img id="modalPetImage" class="pet-main-image" src="" alt="Pet Photo">
+            <div id="modalPetTypeBadge" class="pet-type-badge"></div>
+        </div>
+        
+        <div class="pet-info-section">
+            <h3 id="modalPetName" class="pet-name"></h3>
+            
+            <div class="pet-quick-info">
+                <div class="info-card">
+                    <div class="info-label">Breed</div>
+                    <div id="modalPetBreed" class="info-value"></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Age</div>
+                    <div id="modalPetAge" class="info-value"></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Gender</div>
+                    <div id="modalPetGender" class="info-value"></div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Color</div>
+                    <div id="modalPetColor" class="info-value"></div>
+                </div>
+            </div>
+
+            <div class="pet-description">
+                <h4 class="description-title">About This Pet</h4>
+                <p id="modalPetDescription" class="description-text"></p>
+            </div>
+
+            <div class="contact-section">
+                <h4 class="contact-title">Contact Information</h4>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <svg class="contact-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                            <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="contact-text">Posted by: <span id="modalOwnerContact"></span></span>
+                    </div>
+                    <div class="contact-item">
+                        <svg class="contact-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                        </svg>
+                        <span class="contact-text">Email: <span id="modalOwnerEmail"></span></span>
+                    </div>
+                    <div class="contact-item">
+                        <svg class="contact-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="contact-text">Location: <span id="modalPetLocation"></span></span>
+                    </div>
+                </div>
+                <button class="adopt-btn" onclick="contactOwner()">Contact for Adoption</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Leaflet JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<script>
+    // Initialize the map
+    let map;
+    let currentLocationMarker;
+    let radiusCircle;
+    let petMarkers = [];
+    
+    // Pet data will be loaded from database
+    let allPets = [];
+    
+    // CSRF token for Django AJAX requests
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+
+    // Pet type colors
+    const petColors = {
+        dog: '#e74c3c',
+        cat: '#f39c12',
+        bird: '#3498db',
+        rabbit: '#9b59b6',
+        other: '#2ecc71'
+    };
+
+    function initMap() {
+        // Initialize map centered on Olongapo, Central Luzon, Philippines
+        map = L.map('map').setView([14.6760, 120.9450], 13);
+
+        // Add tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Add click event to map for location selection
+        map.on('click', function(e) {
+            setSearchLocation(e.latlng.lat, e.latlng.lng);
+            reverseGeocode(e.latlng.lat, e.latlng.lng);
+        });
+
+        // Load pets from database instead of sample data
+        loadPetsFromDatabase();
+    }
+
+    async function loadPetsFromDatabase() {
+        try {
+            const response = await fetch('/adoption/api/pets/locations/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
+                },
+            });
+            
+            if (response.ok) {
+                allPets = await response.json();
+                displayAllPets();
+            } else {
+                console.error('Failed to load pets from database');
+                // Fallback to sample data for development
+                loadSampleData();
+            }
+        } catch (error) {
+            console.error('Error loading pets:', error);
+            // Fallback to sample data for development
+            loadSampleData();
+        }
+    }
+
+    function setSearchLocation(lat, lng) {
+        // Remove previous location marker and radius
+        if (currentLocationMarker) {
+            map.removeLayer(currentLocationMarker);
+        }
+        if (radiusCircle) {
+            map.removeLayer(radiusCircle);
+        }
+
+        // Add new location marker
+        currentLocationMarker = L.marker([lat, lng], {
+            icon: L.divIcon({
+                className: 'search-location-marker',
+                html: '<div style="background-color: #e74c3c; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>',
+                iconSize: [26, 26],
+                iconAnchor: [13, 13]
+            })
+        }).addTo(map);
+
+        // Add radius circle
+        const radius = parseFloat(document.getElementById('radius').value) * 1000; // Convert km to meters
+        radiusCircle = L.circle([lat, lng], {
+            radius: radius,
+            fillColor: '#34495e',
+            fillOpacity: 0.1,
+            color: '#34495e',
+            weight: 2,
+            opacity: 0.5
+        }).addTo(map);
+
+        // Store current search location
+        window.currentSearchLocation = { lat, lng };
+    }
+
+    function reverseGeocode(lat, lng) {
+        // Simple reverse geocoding using Nominatim
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.display_name) {
+                    document.getElementById('location').value = data.display_name;
+                }
+            })
+            .catch(error => {
+                console.log('Reverse geocoding failed:', error);
+            });
+    }
+
+    function displayAllPets() {
+        clearPetMarkers();
+        
+        allPets.forEach(pet => {
+            addPetMarker(pet);
+        });
+    }
+
+    function addPetMarker(pet) {
+        const marker = L.marker([pet.lat, pet.lng], {
+            icon: L.divIcon({
+                className: 'pet-marker',
+                html: `<div style="background-color: ${petColors[pet.type] || petColors.other}; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">${pet.type === 'dog' ? '🐕' : pet.type === 'cat' ? '🐱' : pet.type === 'bird' ? '🐦' : pet.type === 'rabbit' ? '🐰' : '🐾'}</div>`,
+                iconSize: [36, 36],
+                iconAnchor: [18, 18]
+            })
+        }).addTo(map);
+
+        // Add click event to marker to directly open modal
+        marker.on('click', function() {
+            showPetModal(pet.id);
+        });
+
+        petMarkers.push(marker);
+    }
+
+    function clearPetMarkers() {
+        petMarkers.forEach(marker => {
+            map.removeLayer(marker);
+        });
+        petMarkers = [];
+    }
+
+    function searchPets() {
+        const location = document.getElementById('location').value;
+        const radius = parseFloat(document.getElementById('radius').value);
+        const petType = document.getElementById('petType').value;
+
+        if (!window.currentSearchLocation && !location) {
+            alert('Please select a location on the map or enter an address');
+            return;
+        }
+
+        // If location text is provided but no coordinates, geocode it
+        if (location && !window.currentSearchLocation) {
+            geocodeLocation(location, radius, petType);
+            return;
+        }
+
+        // Filter pets based on proximity and type
+        filterAndDisplayPets(window.currentSearchLocation, radius, petType);
+    }
+
+    function geocodeLocation(address, radius, petType) {
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lng = parseFloat(data[0].lon);
+                    
+                    // Set map view and search location
+                    map.setView([lat, lng], 14);
+                    setSearchLocation(lat, lng);
+                    
+                    // Filter and display pets
+                    filterAndDisplayPets({ lat, lng }, radius, petType);
+                } else {
+                    alert('Location not found. Please try a different address or click on the map.');
+                }
+            })
+            .catch(error => {
+                console.error('Geocoding failed:', error);
+                alert('Failed to find location. Please try again.');
+            });
+    }
+
+    function filterAndDisplayPets(centerLocation, radiusKm, petType) {
+        clearPetMarkers();
+        
+        const filteredPets = allPets.filter(pet => {
+            // Filter by pet type
+            if (petType !== 'all' && pet.type !== petType) {
+                return false;
+            }
+            
+            // Calculate distance
+            const distance = calculateDistance(
+                centerLocation.lat, centerLocation.lng,
+                pet.lat, pet.lng
+            );
+            
+            return distance <= radiusKm;
+        });
+
+        // Display filtered pets
+        filteredPets.forEach(pet => {
+            addPetMarker(pet);
+        });
+
+        // Show results count
+        const resultText = filteredPets.length === 1 ? 'pet' : 'pets';
+        const typeText = petType === 'all' ? 'pets' : petType + 's';
+        alert(`Found ${filteredPets.length} ${typeText} within ${radiusKm}km radius`);
+    }
+
+    function showPetModal(petId) {
+        const pet = allPets.find(p => p.id === petId);
+        if (!pet) {
+            alert('Pet details not found');
+            return;
+        }
+
+        // Populate modal with pet data
+        document.getElementById('modalTitle').textContent = `${pet.name} - ${pet.type.charAt(0).toUpperCase() + pet.type.slice(1)}`;
+        document.getElementById('modalPetName').textContent = pet.name;
+        document.getElementById('modalPetImage').src = pet.image_url || '/static/images/default-pet.png';
+        document.getElementById('modalPetImage').alt = pet.name;
+        document.getElementById('modalPetTypeBadge').textContent = pet.type.charAt(0).toUpperCase() + pet.type.slice(1);
+        document.getElementById('modalPetBreed').textContent = pet.breed || 'Mixed';
+        document.getElementById('modalPetAge').textContent = pet.age || 'Unknown';
+        document.getElementById('modalPetGender').textContent = pet.gender || 'Unknown';
+        document.getElementById('modalPetColor').textContent = pet.color || 'Unknown';
+        document.getElementById('modalPetDescription').textContent = pet.description || 'No description available for this pet.';
+        document.getElementById('modalOwnerContact').textContent = pet.owner_contact || 'Not specified';
+        document.getElementById('modalOwnerEmail').textContent = pet.owner_email || 'Not specified';
+        document.getElementById('modalPetLocation').textContent = pet.location_name || 'Location not specified';
+
+        // Store current pet data for contact function
+        window.currentModalPet = pet;
+
+        // Show modal with class toggle
+        const modal = document.getElementById('petModal');
+        modal.style.display = 'block';
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    function closePetModal() {
+        const modal = document.getElementById('petModal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
+        document.body.style.overflow = 'auto'; // Restore scrolling
+        window.currentModalPet = null;
+    }
+
+    function contactOwner() {
+        const pet = window.currentModalPet;
+        if (!pet) return;
+
+        if (pet.owner_email) {
+            const subject = encodeURIComponent(`Interested in adopting ${pet.name}`);
+            const body = encodeURIComponent(`Hello,\n\nI am interested in adopting ${pet.name} (${pet.type}). Could you please provide more information about the adoption process?\n\nThank you!`);
+            window.open(`mailto:${pet.owner_email}?subject=${subject}&body=${body}`);
+        } else {
+            alert('Contact information not available for this pet. Please try contacting through the posted contact details.');
+        }
+    }
+
+    // Close modal when clicking on modal background
+    window.onclick = function(event) {
+        const modal = document.getElementById('petModal');
+        if (event.target === modal) {
+            closePetModal();
+        }
+    }
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closePetModal();
+        }
+    });
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Radius of the Earth in kilometers
+        const dLat = deg2rad(lat2 - lat1);
+        const dLon = deg2rad(lon2 - lon1);
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const distance = R * c; // Distance in kilometers
+        return distance;
+    }
+
+    function deg2rad(deg) {
+        return deg * (Math.PI/180);
+    }
+
+    // Initialize map when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        initMap();
+    });
+
+    // Handle enter key in location input
+    document.getElementById('location').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            searchPets();
+        }
+    });
+
+    // Handle radius change
+    document.getElementById('radius').addEventListener('change', function() {
+        if (window.currentSearchLocation) {
+            const radius = parseFloat(this.value) * 1000;
+            if (radiusCircle) {
+                radiusCircle.setRadius(radius);
+            }
+        }
+    });
+
+    // Sample data fallback function (for development)
+    function loadSampleData() {
+        allPets = [
+            {
+                id: 1,
+                name: "Buddy",
+                type: "dog",
+                breed: "Golden Retriever",
+                age: "2 years",
+                gender: "Male",
+                color: "Golden",
+                lat: 14.6760,
+                lng: 120.9450,
+                image_url: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400",
+                description: "Friendly and energetic dog looking for a loving home. Great with kids and other pets.",
+                location_name: "Olongapo City",
+                owner_contact: "Pet Shelter",
+                owner_email: "contact@petshelter.com"
+            },
+            {
+                id: 2,
+                name: "Whiskers",
+                type: "cat",
+                breed: "Persian",
+                age: "1 year",
+                gender: "Female",
+                color: "White",
+                lat: 14.6800,
+                lng: 120.9500,
+                image_url: "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400",
+                description: "Calm and affectionate cat. Perfect for apartment living.",
+                location_name: "Subic Bay",
+                owner_contact: "Maria Santos",
+                owner_email: "maria@email.com"
+            }
+        ];
+        displayAllPets();
+    }
+</script>
+
+{% endblock %}

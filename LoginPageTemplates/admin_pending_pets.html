@@ -2,26 +2,53 @@
 
 {% block content %}
 <div class="container my-5">
-    <h2 class="text-center mb-4">Pending Pets for Adoption</h2>
-    <div class="row">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Pending Pets for Adoption</h2>
+        <span class="badge bg-primary">{{ pending_pets.count }} Pending</span>
+    </div>
+    
+    {% if pending_pets %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         {% for pet in pending_pets %}
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <img class="card-img-top" src="{{ pet.img.url }}" alt="Pet Image" style="height: 200px; object-fit: cover;">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ pet.name }}</h5>
-                        <p class="card-text">{{ pet.description }}</p>
-                        <a href="{% url 'pet_detail_view' pet.pk %}" class="btn btn-primary">Approve</a>
+        <div class="col">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="position-relative">
+                    <img class="card-img-top" src="{{ pet.img.url }}" alt="{{ pet.name }}" style="height: 220px; object-fit: cover;">
+                    <span class="position-absolute top-0 end-0 bg-warning text-dark p-2 rounded-bl">
+                        <i class="bi bi-hourglass-split"></i> Pending
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0">{{ pet.name }}</h5>
+                        <span class="badge bg-light text-dark">
+                            <i class="bi bi-{{ pet.get_pet_type_display|lower }}"></i> {{ pet.get_pet_type_display }}
+                        </span>
+                    </div>
+                    <p class="card-text text-muted mb-3">{{ pet.description|truncatechars:100 }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted small">
+                            <i class="bi bi-calendar"></i> {{ pet.created_at|date:"M d, Y" }}
+                        </span>
+                        <a href="{% url 'pet_detail_view' pet.pk %}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-eye-fill"></i> Review
+                        </a>
                     </div>
                 </div>
             </div>
-        {% empty %}
-            <div class="col-12 text-center">
-                <div class="alert alert-warning" role="alert">
-                    No pending pets found.
-                </div>
-            </div>
+        </div>
         {% endfor %}
     </div>
+    {% else %}
+    <div class="text-center py-5 my-5">
+        <div class="alert alert-info d-inline-block">
+            <div class="d-flex flex-column align-items-center">
+                <i class="bi bi-inbox display-4 text-primary mb-3"></i>
+                <h4 class="alert-heading">No Pending Pets</h4>
+                <p class="mb-0">All pet submissions have been processed.</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

@@ -1,168 +1,833 @@
 {% extends 'base2.html' %}
 {% load static %}
+
 {% block content %}
-<div class="container my-5">
-<div class="auth-container">
-  <div class="auth-header">
-    <a href="{% url 'landing' %}" class="logo-link">
-      <img src="{% static 'PetMetLogo.jpg' %}" alt="PetMet Logo" class="auth-logo">
-    </a>
-    <h1 class="auth-title">Welcome Back</h1>
-    <p class="auth-subtitle">Please login to your account</p>
-  </div>
-
-  <div class="auth-form-container">
-    <form action="{% url 'login' %}" method="POST" class="auth-form" onsubmit="return myfunction()">
-      {% csrf_token %}
-      
-      <div class="form-group">
-        <label for="username" class="form-label">Username</label>
-        <input type="text" id="username" name="username" class="form-input" required>
-        <div class="input-underline"></div>
-      </div>
-      
-      <div class="form-group">
-        <label for="password" class="form-label">Password</label>
-        <input type="password" id="password" name="password" class="form-input" required>
-        <div class="input-underline"></div>
-      </div>
-      
-      <div class="form-actions">
-        <button type="submit" class="submit-btn">Login</button>
-      </div>
-      
-      <div class="auth-links">
-        <p>Don't have an account? <a href="{% url 'signup' %}" class="link">Sign up</a></p>
-        <p>Are you an admin? <a href="{% url 'admin_login' %}" class="link">Admin login</a></p>
-      </div>
-    </form>
-  </div>
+<div class="login-wrapper">
+    <!-- Background decoration -->
+    <div class="bg-decoration">
+        <div class="paw-pattern"></div>
+        <div class="floating-paws">
+            <i class="fas fa-paw paw-1"></i>
+            <i class="fas fa-paw paw-2"></i>
+            <i class="fas fa-paw paw-3"></i>
+            <i class="fas fa-paw paw-4"></i>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="login-container">
+            <!-- Welcome Back Section -->
+            <div class="welcome-section">
+                <a href="{% url 'landing' %}" class="logo-wrapper">
+                    <img src="{% static 'PetMetLogo.jpg' %}" alt="PetMet Logo" class="logo-img">
+                    <div class="logo-shine"></div>
+                </a>
+                <h1 class="welcome-title">Welcome Back!</h1>
+                <p class="welcome-subtitle">Sign in to continue your pet adoption journey</p>
+            </div>
+            
+            <!-- Login Form -->
+            <form action="{% url 'login' %}" method="POST" class="login-form" id="userLoginForm">
+                {% csrf_token %}
+                
+                <!-- Username Field -->
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="username" name="username" class="form-input" placeholder=" " required autocomplete="username">
+                        <label for="username" class="form-label">Username</label>
+                        <div class="input-highlight"></div>
+                    </div>
+                </div>
+                
+                <!-- Password Field -->
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="password" name="password" class="form-input" placeholder=" " required autocomplete="current-password">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-highlight"></div>
+                        <button type="button" class="toggle-password" onclick="togglePassword()">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Remember & Forgot -->
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" name="remember" id="remember">
+                        <span class="checkbox-custom"></span>
+                        <span>Remember me</span>
+                    </label>
+                    <a href="#" class="forgot-link">Forgot password?</a>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="submit" class="submit-btn">
+                    <span class="btn-text">Sign In</span>
+                    <i class="fas fa-arrow-right btn-icon"></i>
+                </button>
+                
+                <!-- Divider -->
+                <div class="divider">
+                    <span class="divider-text">or continue with</span>
+                </div>
+                
+                <!-- Social Login -->
+                <div class="social-login">
+                    <button type="button" class="social-btn google">
+                        <i class="fab fa-google"></i>
+                        <span>Google</span>
+                    </button>
+                    <button type="button" class="social-btn facebook">
+                        <i class="fab fa-facebook-f"></i>
+                        <span>Facebook</span>
+                    </button>
+                </div>
+                
+                <!-- Sign Up Link -->
+                <div class="auth-footer">
+                    <p>New to PetMet? <a href="{% url 'signup' %}" class="auth-link">Create an account</a></p>
+                    <p class="admin-link-wrapper">
+                        <i class="fas fa-shield-alt"></i>
+                        <a href="{% url 'admin_login' %}" class="admin-link">Admin Portal</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
-</div>
-<script> 
-  function myfunction(){
-    console.log(message);
-  }
-</script>
 
+<!-- Alert Messages -->
 {% for message in messages %}
-  <script>
-    alert('{{ message }}');
-  </script>
+<div class="custom-alert {{ message.tags }}">
+    <div class="alert-icon">
+        {% if message.tags == 'success' %}
+            <i class="fas fa-check-circle"></i>
+        {% else %}
+            <i class="fas fa-exclamation-circle"></i>
+        {% endif %}
+    </div>
+    <div class="alert-content">
+        <p>{{ message }}</p>
+    </div>
+    <button class="alert-close" onclick="this.parentElement.remove()">
+        <i class="fas fa-times"></i>
+    </button>
+</div>
 {% endfor %}
 
 <style>
-  /* Add this CSS to your stylesheet */
-  .auth-container {
-    max-width: 450px;
-    margin: 40px auto;
-    padding: 30px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  }
-  
-  .auth-header {
-    text-align: center;
-    margin-bottom: 30px;
-  }
-  
-  .auth-logo {
-    width: 120px;
-    height: auto;
-    border-radius: 50%;
-    margin-bottom: 20px;
-  }
-  
-  .auth-title {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 8px;
-  }
-  
-  .auth-subtitle {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 0;
-  }
-  
-  .form-group {
-    margin-bottom: 25px;
+@import url('https://fonts.googleapis.com/css2?family=Chewy&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* CSS Variables */
+:root {
+    --primary-color: #ff6b6b;
+    --secondary-color: #4ecdc4;
+    --accent-color: #ffe66d;
+    --text-dark: #2d3436;
+    --text-light: #636e72;
+    --bg-light: #f8f9fa;
+    --bg-white: #ffffff;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.15);
+    --border-radius: 16px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Background */
+.login-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
     position: relative;
-  }
-  
-  .form-label {
-    display: block;
-    margin-bottom: 8px;
-    color: #555;
-    font-size: 14px;
-    transition: all 0.3s;
-  }
-  
-  .form-input {
+    overflow: hidden;
+    padding: 2rem 0;
+}
+
+.bg-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.paw-pattern {
     width: 100%;
-    padding: 12px 0;
-    border: none;
-    border-bottom: 1px solid #ddd;
-    font-size: 16px;
-    transition: all 0.3s;
-  }
-  
-  .form-input:focus {
+    height: 100%;
+    opacity: 0.05;
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+}
+
+.floating-paws {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.floating-paws i {
+    position: absolute;
+    color: rgba(255, 255, 255, 0.1);
+    font-size: 2rem;
+    animation: float-paw 20s infinite linear;
+}
+
+.paw-1 { top: 10%; left: 10%; animation-delay: 0s; }
+.paw-2 { top: 30%; right: 15%; animation-delay: 5s; }
+.paw-3 { bottom: 20%; left: 20%; animation-delay: 10s; }
+.paw-4 { bottom: 40%; right: 10%; animation-delay: 15s; }
+
+@keyframes float-paw {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-20px) rotate(90deg); }
+    50% { transform: translateY(0) rotate(180deg); }
+    75% { transform: translateY(20px) rotate(270deg); }
+}
+
+/* Container */
+.login-container {
+    max-width: 450px;
+    margin: 0 auto;
+    background: var(--bg-white);
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Welcome Section */
+.welcome-section {
+    text-align: center;
+    padding: 2.5rem 2rem 1.5rem;
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.05), rgba(255, 82, 82, 0.05));
+    position: relative;
+}
+
+.logo-wrapper {
+    display: inline-block;
+    position: relative;
+    margin-bottom: 1.5rem;
+    text-decoration: none;
+}
+
+.logo-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.2);
+    transition: var(--transition);
+    position: relative;
+    z-index: 2;
+}
+
+.logo-wrapper:hover .logo-img {
+    transform: scale(1.1) rotate(-5deg);
+}
+
+.logo-shine {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
+    border-radius: 50%;
+    transform: rotate(0deg);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.welcome-title {
+    font-family: 'Chewy', cursive;
+    font-size: 2.2rem;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    animation: bounce 0.6s ease-out 0.3s;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.welcome-subtitle {
+    color: var(--text-light);
+    font-size: 0.95rem;
+}
+
+/* Form */
+.login-form {
+    padding: 1.5rem 2.5rem 2rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    font-size: 1rem;
+    transition: var(--transition);
+    z-index: 1;
+}
+
+.form-input {
+    width: 100%;
+    padding: 0.875rem 2.5rem 0.875rem 2rem;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background: var(--bg-light);
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    transition: var(--transition);
+    color: var(--text-dark);
+}
+
+.form-label {
+    position: absolute;
+    left: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    font-size: 0.95rem;
+    transition: var(--transition);
+    pointer-events: none;
+    background: var(--bg-white);
+    padding: 0 0.5rem;
+}
+
+.form-input:focus,
+.form-input:not(:placeholder-shown) {
     outline: none;
-    border-bottom-color: #4a90e2;
-  }
-  
-  .input-underline {
+    border-color: var(--primary-color);
+    background: var(--bg-white);
+}
+
+.form-input:focus ~ .form-label,
+.form-input:not(:placeholder-shown) ~ .form-label {
+    top: 0;
+    font-size: 0.8rem;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+.form-input:focus ~ .input-icon {
+    color: var(--primary-color);
+}
+
+.input-highlight {
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 0;
-    height: 2px;
-    background-color: #4a90e2;
-    transition: width 0.3s;
-  }
-  
-  .form-input:focus ~ .input-underline {
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    border-radius: 0 0 12px 12px;
+}
+
+.form-input:focus ~ .input-highlight {
+    transform: scaleX(1);
+}
+
+/* Password Toggle */
+.toggle-password {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: var(--transition);
+}
+
+.toggle-password:hover {
+    color: var(--primary-color);
+}
+
+/* Form Options */
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+
+.remember-me input {
+    display: none;
+}
+
+.checkbox-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--text-light);
+    border-radius: 6px;
+    margin-right: 0.5rem;
+    position: relative;
+    transition: var(--transition);
+}
+
+.remember-me input:checked ~ .checkbox-custom {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.checkbox-custom::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.remember-me input:checked ~ .checkbox-custom::after {
+    opacity: 1;
+}
+
+.forgot-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+/* Submit Button */
+.submit-btn {
     width: 100%;
-  }
-  
-  .submit-btn {
-    width: 100%;
-    padding: 14px;
-    background-color: #4a90e2;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--primary-color), #ff5252);
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 16px;
+    border-radius: 12px;
+    font-size: 1.05rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  .submit-btn:hover {
-    background-color: #3a7bc8;
-  }
-  
-  .auth-links {
-    margin-top: 20px;
+    transition: var(--transition);
+    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 1.5rem;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(255, 107, 107, 0.4);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+.btn-icon {
+    transition: transform 0.3s ease;
+}
+
+.submit-btn:hover .btn-icon {
+    transform: translateX(5px);
+}
+
+/* Divider */
+.divider {
     text-align: center;
-    font-size: 14px;
-    color: #666;
-  }
-  
-  .auth-links p {
-    margin: 8px 0;
-  }
-  
-  .link {
-    color: #4a90e2;
+    margin: 1.5rem 0;
+    position: relative;
+}
+
+.divider-text {
+    background: var(--bg-white);
+    padding: 0 1rem;
+    color: var(--text-light);
+    font-size: 0.85rem;
+    position: relative;
+    z-index: 1;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: var(--bg-light);
+}
+
+/* Social Login */
+.social-login {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.social-btn {
+    padding: 0.75rem;
+    border: 1px solid var(--bg-light);
+    background: var(--bg-white);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-dark);
+}
+
+.social-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.social-btn.google:hover {
+    border-color: #db4437;
+    color: #db4437;
+}
+
+.social-btn.facebook:hover {
+    border-color: #1877f2;
+    color: #1877f2;
+}
+
+/* Auth Footer */
+.auth-footer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.auth-footer p {
+    margin-bottom: 0.75rem;
+}
+
+.auth-link {
+    color: var(--primary-color);
     text-decoration: none;
-    transition: color 0.2s;
-  }
-  
-  .link:hover {
-    color: #3a7bc8;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.auth-link:hover {
     text-decoration: underline;
-  }
+}
+
+.admin-link-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--bg-light);
+}
+
+.admin-link-wrapper i {
+    color: #6c5ce7;
+    font-size: 0.85rem;
+}
+
+.admin-link {
+    color: #6c5ce7;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.85rem;
+    transition: var(--transition);
+}
+
+.admin-link:hover {
+    text-decoration: underline;
+}
+
+/* Features Preview */
+.features-preview {
+    background: var(--bg-light);
+    padding: 1.5rem;
+    display: grid;
+    gap: 1rem;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-dark);
+    font-size: 0.9rem;
+}
+
+.feature-item i {
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(69, 183, 170, 0.1));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--secondary-color);
+    font-size: 0.9rem;
+}
+
+/* Custom Alert */
+.custom-alert {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    background: var(--bg-white);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    max-width: 400px;
+    animation: slideInRight 0.3s ease-out;
+    z-index: 1000;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.alert-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.custom-alert.success .alert-icon {
+    background: rgba(78, 205, 196, 0.1);
+    color: var(--secondary-color);
+}
+
+.custom-alert.error .alert-icon,
+.custom-alert.danger .alert-icon {
+    background: rgba(255, 107, 107, 0.1);
+    color: var(--primary-color);
+}
+
+.alert-content {
+    flex: 1;
+}
+
+.alert-content p {
+    margin: 0;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+}
+
+.alert-close {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 0.25rem;
+    transition: var(--transition);
+    flex-shrink: 0;
+}
+
+.alert-close:hover {
+    color: var(--text-dark);
+}
+
+/* Fix base template logo positioning */
+.circular-image {
+    display: none !important; /* Hide the misplaced logo from base template */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .login-container {
+        margin: 1rem;
+    }
+    
+    .login-form {
+        padding: 1.5rem;
+    }
+    
+    .social-login {
+        grid-template-columns: 1fr;
+    }
+    
+    .features-preview {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .welcome-title {
+        font-size: 1.8rem;
+    }
+    
+    .custom-alert {
+        right: 1rem;
+        left: 1rem;
+        max-width: none;
+    }
+    
+    .feature-item {
+        font-size: 0.85rem;
+    }
+}
 </style>
+
+<script>
+// Password visibility toggle
+function togglePassword() {
+    const passwordField = document.getElementById('password');
+    const toggleBtn = passwordField.nextElementSibling.nextElementSibling;
+    const icon = toggleBtn.querySelector('i');
+    
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        passwordField.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+
+// Form validation
+document.getElementById('userLoginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    // Basic validation
+    if (username.length < 3) {
+        showAlert('Username must be at least 3 characters long', 'error');
+        return false;
+    }
+    
+    if (password.length < 6) {
+        showAlert('Password must be at least 6 characters long', 'error');
+        return false;
+    }
+    
+    // If validation passes, submit the form
+    this.submit();
+});
+
+// Custom alert function
+function showAlert(message, type = 'info') {
+    const alert = document.createElement('div');
+    alert.className = `custom-alert ${type}`;
+    
+    let iconClass = 'fa-info-circle';
+    if (type === 'success') iconClass = 'fa-check-circle';
+    else if (type === 'error' || type === 'danger') iconClass = 'fa-exclamation-circle';
+    else if (type === 'warning') iconClass = 'fa-exclamation-triangle';
+    
+    alert.innerHTML = `
+        <div class="alert-icon">
+            <i class="fas ${iconClass}"></i>
+        </div>
+        <div class="alert-content">
+            <p>${message}</p>
+        </div>
+        <button class="alert-close" onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    document.body.appendChild(alert);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        alert.remove();
+    }, 5000);
+}
+
+// Add entrance animations to form elements
+document.addEventListener('DOMContentLoaded', function() {
+    const formElements = document.querySelectorAll('.form-group, .form-options, .submit-btn, .divider, .social-login, .auth-footer');
+    formElements.forEach((element, index) => {
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            element.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        }, 100 + (index * 50));
+    });
+});
+</script>
+
 {% endblock %}

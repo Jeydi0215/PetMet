@@ -483,7 +483,7 @@ class ReactAdoptedPetsView(generics.ListAPIView):
 
         queryset = PendingPetForAdoption.objects.filter(
             user_id=user_id,  # Filter by user_id
-            adoption_status__in=['Pet_is_already_adopt', 'Pet is already adopt']
+            adoption_status__in=['Pet_is_already_adopt', 'Pet is already adopted']
         )
 
         logger.debug(f"Queryset for user ID {user_id}: {queryset}")

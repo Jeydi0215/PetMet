@@ -2,354 +2,1081 @@
 {% load custom_filters %}
 
 {% block content %}
-<div class="container my-5">
-    <!-- Messages Section -->
-    {% if messages %}
-    <div class="row mb-4">
-        <div class="col-md-12">
+<div class="admin-tracking-page">
+    <div class="container">
+        <!-- Messages -->
+        {% if messages %}
+        <div class="messages">
             {% for message in messages %}
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+            <div class="alert">
+                <span class="alert-icon">⚠️</span>
+                <span class="alert-text">{{ message }}</span>
+                <button class="alert-close">×</button>
             </div>
             {% endfor %}
         </div>
-    </div>
-    {% endif %}
+        {% endif %}
 
-    <div class="row">
-        <!-- Left Column - Pet Details -->
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="card-title mb-0">Adoption Details</h5>
-                </div>
-                <div class="card-body">
-                    <h4 class="text-center mb-3">{{ adoption.pet.name }}</h4>
-                    <div class="info-group mb-3">
-                        <p class="mb-2"><i class="fas fa-tag mr-2"></i> <strong>Status:</strong> 
-                            <span class="badge badge-success">{{ adoption.adoption_status }}</span>
-                        </p>
-                        <p class="mb-2"><i class="far fa-calendar-alt mr-2"></i> <strong>Request Date:</strong> {{ adopter.request_date }}</p>
-                        <p class="mb-2"><i class="fas fa-user mr-2"></i> <strong>Adopted by:</strong> {{ adopter.first_name }} {{ adopter.last_name }}</p>
+        <!-- Header -->
+        <div class="page-header">
+            <h1>Pet Tracking Dashboard</h1>
+            <p>Monitoring adoption progress for {{ adoption.pet.name }}</p>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="dashboard-layout">
+            <!-- Pet Info Sidebar -->
+            <div class="pet-sidebar">
+                <div class="pet-card">
+                    <div class="card-header">
+                        <h2>Adoption Details</h2>
                     </div>
-                    <div class="info-group">
-                        <p class="mb-2"><strong>Additional Details:</strong></p>
-                        <p class="text-muted">{{ adoption.additional_details|default:"No additional details provided." }}</p>
+                    
+                    <div class="card-content">
+                        <div class="pet-name">{{ adoption.pet.name }}</div>
+                        
+                        <div class="info-list">
+                            <div class="info-item">
+                                <span class="icon">📋</span>
+                                <div class="content">
+                                    <span class="label">Status</span>
+                                    <span class="value status-{{ adoption.adoption_status|lower }}">{{ adoption.adoption_status }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="icon">📅</span>
+                                <div class="content">
+                                    <span class="label">Request Date</span>
+                                    <span class="value">{{ adopter.request_date }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="info-item">
+                                <span class="icon">👤</span>
+                                <div class="content">
+                                    <span class="label">Adopted by</span>
+                                    <span class="value">{{ adopter.first_name }} {{ adopter.last_name }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="additional-details">
+                            <h3>Additional Details</h3>
+                            <p>{{ adoption.additional_details|default:"No additional details provided." }}</p>
+                        </div>
                     </div>
-                </div>
-                <div class="card-footer bg-light">
-                    <div class="d-flex justify-content-between">
-                        <a href="{% url 'adopted_history' %}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left mr-1"></i> Back
-                        </a>
-                        <button class="btn btn-primary view-reports" data-toggle="modal" data-target="#composeModal">
-                            <i class="fas fa-paper-plane mr-1"></i> Request Reports
-                        </button>
+                    
+                    <div class="card-actions">
+                        <a href="{% url 'adopted_history' %}" class="btn secondary">← Back</a>
+                        <button class="btn primary" onclick="openRequestModal()">Request Reports</button>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Right Column - Tracking Information -->
-        <div class="col-md-8">
-            <!-- Tracking Period Card -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-info text-white">
-                    <h5 class="card-title mb-0">Tracking Period</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Tracking Period -->
+                <div class="tracking-period-card">
+                    <div class="card-header">
+                        <h2>Tracking Period</h2>
+                    </div>
+                    
+                    <div class="card-content">
                         {% if tracking_period %}
-                        <div class="col-md-6">
-                            <div class="tracking-date">
-                                <h6><i class="fas fa-play mr-2"></i> Start Date</h6>
-                                <p class="lead">{{ tracking_period.0 }}</p>
+                        <div class="period-timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-icon start">🎯</div>
+                                <div class="timeline-content">
+                                    <span class="timeline-label">Start Date</span>
+                                    <span class="timeline-date">{{ tracking_period.0 }}</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="tracking-date">
-                                <h6><i class="fas fa-flag-checkered mr-2"></i> End Date</h6>
-                                <p class="lead">{{ tracking_period.1 }}</p>
+                            
+                            <div class="timeline-connector"></div>
+                            
+                            <div class="timeline-item">
+                                <div class="timeline-icon end">🏁</div>
+                                <div class="timeline-content">
+                                    <span class="timeline-label">End Date</span>
+                                    <span class="timeline-date">{{ tracking_period.1 }}</span>
+                                </div>
                             </div>
                         </div>
                         {% else %}
-                        <div class="col-12 text-center py-3">
-                            <p class="text-muted mb-0">No tracking period available.</p>
+                        <div class="no-data">
+                            <span class="no-data-icon">📭</span>
+                            <span class="no-data-text">No tracking period available</span>
                         </div>
                         {% endif %}
                     </div>
                 </div>
-            </div>
 
-            <!-- Calendar Card -->
-            <div class="card shadow-sm">
-                <div class="card-header bg-success text-white">
-                    <h5 class="card-title mb-0">Track Updates</h5>
-                </div>
-                <div class="card-body">
-                    <div id="calendar"></div>
+                <!-- Calendar -->
+                <div class="calendar-card">
+                    <div class="card-header">
+                        <h2>Track Updates</h2>
+                    </div>
+                    
+                    <div class="card-content">
+                        <div id="calendar-container">
+                            <div class="calendar-wrapper">
+                                <div class="calendar-header">
+                                    <button class="nav-btn" onclick="previousMonth()">‹</button>
+                                    <span class="current-month" id="currentMonth">June 2025</span>
+                                    <button class="nav-btn" onclick="nextMonth()">›</button>
+                                </div>
+                                
+                                <div class="calendar-grid">
+                                    <div class="weekdays">
+                                        <div>Sun</div>
+                                        <div>Mon</div>
+                                        <div>Tue</div>
+                                        <div>Wed</div>
+                                        <div>Thu</div>
+                                        <div>Fri</div>
+                                        <div>Sat</div>
+                                    </div>
+                                    
+                                    <div class="days" id="calendarDays">
+                                        <!-- Days will be generated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal for Report Details -->
-<div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-info text-white">
-                <h5 class="modal-title" id="reportModalLabel">Report Details</h5>
-                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body p-4" id="reportModalBody">
-                <!-- Report details will be loaded here with proper structure -->
-                <div class="report-content">
-                    <!-- Content will be inserted here by AJAX -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <a href="{% url 'adopted_history' %}" class="btn btn-secondary mr-2">
-                    <i class="fas fa-arrow-left mr-1"></i> Back to Adopted History
-                </a>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-            </div>
+<!-- Event Details Modal -->
+<div class="modal" id="eventModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📅 Event Details</h3>
+            <button class="modal-close" onclick="closeEventModal()">×</button>
+        </div>
+        <div class="modal-body" id="eventModalBody">
+            <!-- Event details will be loaded here -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn secondary" onclick="closeEventModal()">Close</button>
         </div>
     </div>
 </div>
 
-<!-- Modal for Compose Message -->
-<div class="modal fade" id="composeModal" tabindex="-1" role="dialog" aria-labelledby="composeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="composeModalLabel">Request for Reports</h5>
-                
-            </div>
-        
-                <form id="messageForm">
-                    <div class="form-group">
-                        <label for="recipient_id"><i class="fas fa-id-badge mr-1"></i> Recipient ID:</label>
-                        <input type="text" class="form-control bg-light" id="recipient_id" value="{{ adoper.user_id }}" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="recipient"><i class="fas fa-user mr-1"></i> Recipient Name:</label>
-                        <input type="text" class="form-control bg-light" id="recipient" value="{{ adopter.first_name }} {{ adopter.last_name }}" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="message"><i class="fas fa-envelope mr-1"></i> Message:</label>
-                        <textarea class="form-control" id="message" rows="4" placeholder="Type your message here..."></textarea>
-                    </div>
-                </form>
-         
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary" id="sendMessageBtn">
-                    <i class="fas fa-paper-plane mr-1"></i> Send Message
-                </button>
-            </div>
+<!-- Request Modal -->
+<div class="modal" id="requestModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Request Reports</h3>
+            <button class="modal-close" onclick="closeRequestModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <form id="requestForm">
+                <div class="form-group">
+                    <label>Recipient ID</label>
+                    <input type="text" id="recipient_id" value="{{ adopter.user_id }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Recipient Name</label>
+                    <input type="text" id="recipient" value="{{ adopter.first_name }} {{ adopter.last_name }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="message" rows="4" placeholder="Type your message here..."></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn secondary" onclick="closeRequestModal()">Cancel</button>
+            <button class="btn primary" onclick="sendMessage()">Send Message</button>
         </div>
     </div>
 </div>
 
 <style>
-    /* General Styles */
-    body {
-        background-color: #f8f9fa;
+    .admin-tracking-page {
+        background: #f8fafc;
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
-    
-    .card {
-        border: none;
-        border-radius: 0.5rem;
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    }
-    
-    .card-header {
-        border-radius: 0.5rem 0.5rem 0 0;
-    }
-    
-    /* Calendar Styles */
-    #calendar {
+
+    .container {
+        max-width: 1200px;
         margin: 0 auto;
-        background-color: #fff;
-        border-radius: 0.25rem;
+        padding: 32px 20px;
     }
-    
-    .fc-event {
-        font-size: 0.875rem;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
+
+    /* Messages */
+    .messages {
+        margin-bottom: 24px;
+    }
+
+    .alert {
+        background: #fee2e2;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 8px;
+        color: #dc2626;
+    }
+
+    .alert-close {
+        background: none;
         border: none;
-        margin-bottom: 2px;
-    }
-    
-    .fc-day-grid-event {
+        font-size: 18px;
         cursor: pointer;
+        margin-left: auto;
+        opacity: 0.7;
     }
-    
-    .event-color-1 {
-        background-color: #28a745;
-        color: #fff;
+
+    .alert-close:hover {
+        opacity: 1;
     }
-    
-    .event-color-2 {
-        background-color: #17a2b8;
-        color: #fff;
+
+    /* Header */
+    .page-header {
+        text-align: center;
+        margin-bottom: 32px;
     }
-    
-    .event-color-3 {
-        background-color: #fd7e14;
-        color: #fff;
+
+    .page-header h1 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 8px 0;
     }
-    
-    /* Modal Styles */
-    .modal-backdrop {
-        z-index: 1040;
+
+    .page-header p {
+        font-size: 16px;
+        color: #6b7280;
+        margin: 0;
     }
-    
-    .modal {
-        z-index: 1050;
+
+    /* Dashboard Layout */
+    .dashboard-layout {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 24px;
+        align-items: start;
     }
-    
-    .modal-content {
+
+    /* Pet Sidebar */
+    .pet-sidebar {
+        position: sticky;
+        top: 20px;
+    }
+
+    .pet-card,
+    .tracking-period-card,
+    .calendar-card {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .card-header {
+        background: #f9fafb;
+        padding: 20px 24px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .card-header h2 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1f2937;
+        margin: 0;
+    }
+
+    .card-content {
+        padding: 24px;
+    }
+
+    .pet-name {
+        font-size: 24px;
+        font-weight: 700;
+        color: #1f2937;
+        text-align: center;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    /* Info List */
+    .info-list {
+        margin-bottom: 24px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+    }
+
+    .info-item .icon {
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+        margin-top: 2px;
+    }
+
+    .info-item .content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .info-item .label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .info-item .value {
+        font-size: 14px;
+        color: #1f2937;
+        font-weight: 500;
+    }
+
+    .value.status-approved {
+        color: #10b981;
+    }
+
+    .value.status-pending {
+        color: #f59e0b;
+    }
+
+    .value.status-rejected {
+        color: #ef4444;
+    }
+
+    /* Additional Details */
+    .additional-details {
+        padding: 16px;
+        background: #f9fafb;
+        border-radius: 8px;
+        margin-bottom: 24px;
+    }
+
+    .additional-details h3 {
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+        margin: 0 0 8px 0;
+    }
+
+    .additional-details p {
+        font-size: 14px;
+        color: #6b7280;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* Card Actions */
+    .card-actions {
+        padding: 20px 24px;
+        background: #f9fafb;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        gap: 12px;
+    }
+
+    /* Main Content */
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    /* Timeline */
+    .period-timeline {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        position: relative;
+    }
+
+    .timeline-item {
+        flex: 1;
+        text-align: center;
+    }
+
+    .timeline-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #3b82f6;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 12px;
+        font-size: 16px;
+    }
+
+    .timeline-connector {
+        position: absolute;
+        top: 20px;
+        left: 25%;
+        right: 25%;
+        height: 2px;
+        background: #e5e7eb;
+        z-index: -1;
+    }
+
+    .timeline-content {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .timeline-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #6b7280;
+        text-transform: uppercase;
+    }
+
+    .timeline-date {
+        font-size: 14px;
+        color: #1f2937;
+        font-weight: 500;
+    }
+
+    .no-data {
+        text-align: center;
+        color: #6b7280;
+        padding: 40px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .no-data-icon {
+        font-size: 48px;
+        opacity: 0.5;
+    }
+
+    /* Calendar */
+    .calendar-wrapper {
+        background: white;
+        border-radius: 8px;
+    }
+
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .nav-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        background: #f3f4f6;
+        border: 1px solid #d1d5db;
+        color: #374151;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+        background: #e5e7eb;
+        border-color: #9ca3af;
+    }
+
+    .current-month {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .calendar-grid {
+        padding: 16px;
+    }
+
+    .weekdays {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 1px;
+        margin-bottom: 8px;
+    }
+
+    .weekdays > div {
+        text-align: center;
+        font-size: 12px;
+        font-weight: 600;
+        color: #6b7280;
+        padding: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .days {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 1px;
+        background: #f3f4f6;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    .day {
+        background: white;
+        aspect-ratio: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 8px 4px;
+        font-size: 14px;
+        position: relative;
+        min-height: 60px;
+    }
+
+    .day.other-month {
+        background: #f9fafb;
+        color: #9ca3af;
+    }
+
+    .day.today {
+        background: #dbeafe;
+        color: #1d4ed8;
+        font-weight: 600;
+    }
+
+    .day.has-event {
+        background: #fef3c7;
+    }
+
+    .day.has-event.today {
+        background: #bfdbfe;
+    }
+
+    .event-dot {
+        width: 6px;
+        height: 6px;
+        background: #3b82f6;
+        border-radius: 50%;
+        margin-top: 2px;
+    }
+
+    .event-dots {
+        display: flex;
+        gap: 2px;
+        margin-top: 4px;
+    }
+
+    .calendar-placeholder {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6b7280;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .calendar-icon {
+        font-size: 48px;
+        opacity: 0.5;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 10px 20px;
+        border-radius: 8px;
         border: none;
-        border-radius: 0.5rem;
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        flex: 1;
     }
-    
-    .modal-header {
-        border-radius: 0.5rem 0.5rem 0 0;
+
+    .btn.primary {
+        background: #3b82f6;
+        color: white;
     }
-    
-    .tracking-date {
-        padding: 0.75rem;
-        border-radius: 0.25rem;
-        background-color: #f8f9fa;
+
+    .btn.primary:hover {
+        background: #2563eb;
+        color: white;
+        text-decoration: none;
     }
-    
-    /* Responsive adjustments */
-    @media (max-width: 767.98px) {
-        .card {
-            margin-bottom: 1.5rem;
+
+    .btn.secondary {
+        background: #f3f4f6;
+        color: #374151;
+        border: 1px solid #d1d5db;
+    }
+
+    .btn.secondary:hover {
+        background: #e5e7eb;
+        color: #1f2937;
+        text-decoration: none;
+    }
+
+    /* Modal */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        backdrop-filter: blur(4px);
+    }
+
+    .modal.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 450px;
+        max-height: 80vh;
+        overflow: hidden;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        animation: modalSlideIn 0.3s ease-out;
+        position: relative;
+        z-index: 1001;
+    }
+
+    @keyframes modalSlideIn {
+        0% {
+            opacity: 0;
+            transform: scale(0.9) translateY(-20px);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
         }
     }
-    
+
+    .modal-header {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: white;
+        padding: 24px;
+        border-bottom: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header h3 {
+        font-size: 20px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .modal-close {
+        background: rgba(255,255,255,0.2);
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+        background: rgba(255,255,255,0.3);
+        transform: scale(1.1);
+    }
+
+    .modal-body {
+        padding: 28px 24px;
+        max-height: 50vh;
+        overflow-y: auto;
+        margin-top:50%;
+        background: white;
+        position: relative;
+    }
+
+    .modal-footer {
+        padding: 20px 24px;
+        background: #f8fafc;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    /* Event Details Styling */
+    .event-details {
+        padding: 0;
+    }
+
+    .event-details h4 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1f2937;
+        margin: 0 0 20px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 20px;
+        background: #f8fafc;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+    }
+
+    .event-details h4::before {
+        content: "📅";
+        font-size: 20px;
+    }
+
+    .event-details ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .event-details li {
+        background: #f0f9ff;
+        border: 1px solid #e0f2fe;
+        border-radius: 8px;
+        padding: 16px;
+        color: #0c4a6e;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 15px;
+    }
+
+    .event-details li::before {
+        content: "📋";
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    /* Loading State */
+    .loading {
+        text-align: center;
+        padding: 40px 20px;
+        color: #6b7280;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .loading::before {
+        content: "⏳";
+        font-size: 32px;
+        animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Form */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 14px;
+        font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-group input[readonly] {
+        background: #f9fafb;
+        color: #6b7280;
+    }
+
+    .form-group textarea {
+        resize: vertical;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px 16px;
+        }
+
+        .dashboard-layout {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .pet-sidebar {
+            position: static;
+        }
+
+        .card-actions {
+            flex-direction: column;
+        }
+
+        .period-timeline {
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .timeline-connector {
+            display: none;
+        }
+
+        .modal-content {
+            width: 95%;
+            margin: 20px;
+        }
+
+        .modal-footer {
+            flex-direction: column;
+        }
+    }
 </style>
 
 <script>
-    $(document).ready(function() {
-        // Initialize the calendar
-        $('#calendar').fullCalendar({
-            header: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'month,agendaWeek,agendaDay'
-            },
-            height: 500,
-            themeSystem: 'bootstrap4',
-            events: [
-            {% if track_updates %}
-            {% for update in track_updates %}
-                {
-                    title: '{{ update.notes }}',
-                    start: '{{ update.followup_date }}',
-                    url: "{% url 'admin_report_detail' update.id %}",
-                    className: 'event-color-{{ forloop.counter0|divisibleby:3|yesno:"3,1,2" }}'
-                },
-            {% endfor %}
-            {% endif %}
-            ],
-            eventClick: function(event) {
-                if (event.url) {
-                    $.ajax({
-                        url: event.url,
-                        type: 'GET',
-                        beforeSend: function() {
-                            $('#reportModalBody').html('Loading report details...');
-                            $('#reportModal').modal('show');
-                        },
-                        success: function(data) {
-                            if (data) {
-                                $('#reportModalBody').html(data);
-                            } else {
-                                $('#reportModalBody').html('<div class="alert alert-info">No details available for this report.</div>');
-                            }
-                        },
-                        error: function() {
-                            $('#reportModalBody').html('<div class="alert alert-danger">Error fetching report details. Please try again.</div>');
-                        }
-                    });
-                    return false;
-                }
-            }
-        });
+    // Modal functions
+    function openRequestModal() {
+        document.getElementById('requestModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
 
-        // Handle the modal show event
-        $('.view-reports').on('click', function() {
-            $('#composeModal').modal('show');
-        });
+    function closeRequestModal() {
+        document.getElementById('requestModal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+        document.getElementById('message').value = '';
+    }
 
-        // Handle the form submission
-        $('#sendMessageBtn').on('click', function() {
-            var recipientId = $('#recipient_id').val();
-            var message = $('#message').val();
+    function closeEventModal() {
+        document.getElementById('eventModal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+
+    function sendMessage() {
+        const message = document.getElementById('message').value;
+        
+        if (!message.trim()) {
+            alert('Please enter a message before sending.');
+            return;
+        }
+
+        // Simulate sending - replace with actual AJAX
+        alert('Message sent successfully!');
+        closeRequestModal();
+    }
+
+    // Close modals when clicking outside
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('modal')) {
+            if (e.target.id === 'requestModal') {
+                closeRequestModal();
+            } else if (e.target.id === 'eventModal') {
+                closeEventModal();
+            }
+        }
+    });
+
+    // Close alerts
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('alert-close')) {
+            e.target.closest('.alert').remove();
+        }
+    });
+
+    // Calendar functionality
+    let currentDate = new Date();
+    let currentMonth = currentDate.getMonth();
+    let currentYear = currentDate.getFullYear();
+
+    const months = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    // Sample events - replace with actual data from your backend
+    const events = {
+        '2025-06-15': ['Report submitted'],
+        '2025-06-20': ['Vet checkup'],
+        '2025-06-28': ['Monthly update']
+    };
+
+    function generateCalendar(month, year) {
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const daysInPrevMonth = new Date(year, month, 0).getDate();
+        
+        const calendarDays = document.getElementById('calendarDays');
+        const currentMonthEl = document.getElementById('currentMonth');
+        
+        currentMonthEl.textContent = `${months[month]} ${year}`;
+        calendarDays.innerHTML = '';
+
+        // Previous month's trailing days
+        for (let i = firstDay - 1; i >= 0; i--) {
+            const day = daysInPrevMonth - i;
+            const dayEl = createDayElement(day, true);
+            calendarDays.appendChild(dayEl);
+        }
+
+        // Current month's days
+        const today = new Date();
+        const isCurrentMonth = today.getMonth() === month && today.getFullYear() === year;
+        
+        for (let day = 1; day <= daysInMonth; day++) {
+            const dayEl = createDayElement(day, false);
             
-            if (!message.trim()) {
-                alert('Please enter a message before sending.');
-                return;
+            if (isCurrentMonth && day === today.getDate()) {
+                dayEl.classList.add('today');
             }
             
-            $.ajax({
-                url: '{% url "send_notification" %}',
-                type: 'POST',
-                data: {
-                    recipient_id: recipientId,
-                    message: message
-                },
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                beforeSend: function() {
-                    $('#sendMessageBtn').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...');
-                },
-                success: function(data) {
-                    if (data.success) {
-                        $('#composeModal').modal('hide');
-                        
-                        // Show success message
-                        $('<div class="alert alert-success alert-dismissible fade show" role="alert">' +
-                          'Message sent successfully!' +
-                          '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
-                          '<span aria-hidden="true">&times;</span></button></div>')
-                          .insertAfter('nav.breadcrumb')
-                          .delay(3000)
-                          .fadeOut(function() {
-                              $(this).remove();
-                          });
-                        
-                        // Reset the form
-                        $('#message').val('');
-                    } else {
-                        alert('Error sending message: ' + (data.error || 'Unknown error'));
-                    }
-                },
-                error: function(xhr) {
-                    var errorMsg = 'Error sending message. Please try again.';
-                    if (xhr.responseJSON && xhr.responseJSON.error) {
-                        errorMsg = xhr.responseJSON.error;
-                    }
-                    alert(errorMsg);
-                },
-                complete: function() {
-                    $('#sendMessageBtn').prop('disabled', false).html('<i class="fas fa-paper-plane mr-1"></i> Send Message');
-                }
-            });
+            // Check for events
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            if (events[dateStr]) {
+                dayEl.classList.add('has-event');
+                const eventDots = document.createElement('div');
+                eventDots.className = 'event-dots';
+                events[dateStr].forEach(() => {
+                    const dot = document.createElement('div');
+                    dot.className = 'event-dot';
+                    eventDots.appendChild(dot);
+                });
+                dayEl.appendChild(eventDots);
+                
+                // Add click handler for events
+                dayEl.style.cursor = 'pointer';
+                dayEl.onclick = () => showEventDetails(dateStr, events[dateStr]);
+            }
+            
+            calendarDays.appendChild(dayEl);
+        }
+
+        // Next month's leading days
+        const totalCells = calendarDays.children.length;
+        const remainingCells = 42 - totalCells; // 6 rows x 7 days
+        
+        for (let day = 1; day <= remainingCells; day++) {
+            const dayEl = createDayElement(day, true);
+            calendarDays.appendChild(dayEl);
+        }
+    }
+
+    function createDayElement(day, isOtherMonth) {
+        const dayEl = document.createElement('div');
+        dayEl.className = 'day';
+        if (isOtherMonth) {
+            dayEl.classList.add('other-month');
+        }
+        dayEl.textContent = day;
+        return dayEl;
+    }
+
+    function previousMonth() {
+        currentMonth--;
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+        generateCalendar(currentMonth, currentYear);
+    }
+
+    function nextMonth() {
+        currentMonth++;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        }
+        generateCalendar(currentMonth, currentYear);
+    }
+
+    function showEventDetails(date, eventList) {
+        const modal = document.getElementById('eventModal');
+        const modalBody = document.getElementById('eventModalBody');
+        
+        // Format the date nicely
+        const dateObj = new Date(date);
+        const formattedDate = dateObj.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
         });
+        
+        modalBody.innerHTML = `
+            <div class="event-details">
+                <h4>${formattedDate}</h4>
+                <ul>
+                    ${eventList.map(event => `<li>${event}</li>`).join('')}
+                </ul>
+            </div>
+        `;
+        
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Initialize calendar when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        generateCalendar(currentMonth, currentYear);
     });
 </script>
 {% endblock %}

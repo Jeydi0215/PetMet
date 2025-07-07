@@ -1,54 +1,375 @@
 {% extends 'base4.html' %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Pending Pets for Adoption</h2>
-        <span class="badge bg-primary">{{ pending_pets.count }} Pending</span>
-    </div>
-    
-    {% if pending_pets %}
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        {% for pet in pending_pets %}
-        <div class="col">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="position-relative">
-                    <img class="card-img-top" src="{{ pet.img.url }}" alt="{{ pet.name }}" style="height: 220px; object-fit: cover;">
-                    <span class="position-absolute top-0 end-0 bg-warning text-dark p-2 rounded-bl">
-                        <i class="bi bi-hourglass-split"></i> Pending
-                    </span>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h5 class="card-title mb-0">{{ pet.name }}</h5>
-                        <span class="badge bg-light text-dark">
-                            <i class="bi bi-{{ pet.get_pet_type_display|lower }}"></i> {{ pet.get_pet_type_display }}
-                        </span>
+<div class="pending-pets-page">
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <h1>Pending Pets for Adoption</h1>
+                <p>Review and approve pets waiting for adoption listing</p>
+            </div>
+            <div class="pets-counter">
+                <span class="counter-number">{{ pending_pets.count }}</span>
+                <span class="counter-label">Pending</span>
+            </div>
+        </div>
+
+        {% if pending_pets %}
+        <!-- Pets Grid -->
+        <div class="pets-grid">
+            {% for pet in pending_pets %}
+            <div class="pet-card">
+                <div class="pet-image-container">
+                    <img src="{{ pet.img.url }}" alt="{{ pet.name }}" class="pet-image" />
+                    <div class="status-badge">
+                        <span class="status-icon">⏳</span>
+                        <span class="status-text">Pending</span>
                     </div>
-                    <p class="card-text text-muted mb-3">{{ pet.description|truncatechars:100 }}</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-muted small">
-                            <i class="bi bi-calendar"></i> {{ pet.created_at|date:"M d, Y" }}
-                        </span>
-                        <a href="{% url 'pet_detail_view' pet.pk %}" class="btn btn-primary btn-sm">
-                            <i class="bi bi-eye-fill"></i> Review
+                </div>
+                
+                <div class="pet-info">
+                    <div class="pet-header">
+                        <h3 class="pet-name">{{ pet.name }}</h3>
+                        <span class="pet-type">🐕 {{ pet.get_pet_type_display }}</span>
+                    </div>
+                    
+                    <p class="pet-description">{{ pet.description|truncatechars:100 }}</p>
+                    
+                    <div class="pet-footer">
+                        <div class="pet-date">
+                            <span class="date-icon"></span>
+                            <span class="date-text">{{ pet.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        <a href="{% url 'pet_detail_view' pet.pk %}" class="review-btn">
+                             Review
                         </a>
                     </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="text-center py-5 my-5">
-        <div class="alert alert-info d-inline-block">
-            <div class="d-flex flex-column align-items-center">
-                <i class="bi bi-inbox display-4 text-primary mb-3"></i>
-                <h4 class="alert-heading">No Pending Pets</h4>
-                <p class="mb-0">All pet submissions have been processed.</p>
+        {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-content">
+                <div class="empty-icon">📭</div>
+                <h3>All Caught Up!</h3>
+                <p>There are no pending pets to review at this time. All submissions have been processed.</p>
             </div>
         </div>
+        {% endif %}
     </div>
-    {% endif %}
 </div>
+
+<style>
+    .pending-pets-page {
+        background: #f8fafc;
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px 20px;
+    }
+
+    /* Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 32px;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .header-content h1 {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 8px 0;
+    }
+
+    .header-content p {
+        font-size: 16px;
+        color: #6b7280;
+        margin: 0;
+    }
+
+    .pets-counter {
+        background: #3b82f6;
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .counter-number {
+        display: block;
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .counter-label {
+        display: block;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        opacity: 0.9;
+        margin-top: 4px;
+    }
+
+    /* Pets Grid */
+    .pets-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 24px;
+    }
+
+    .pet-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .pet-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        border-color: #3b82f6;
+    }
+
+    @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Pet Image */
+    .pet-image-container {
+        position: relative;
+        height: 220px;
+        overflow: hidden;
+    }
+
+    .pet-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .pet-card:hover .pet-image {
+        transform: scale(1.05);
+    }
+
+    .status-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: #f59e0b;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+
+    /* Pet Info */
+    .pet-info {
+        padding: 20px;
+    }
+
+    .pet-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+        gap: 12px;
+    }
+
+    .pet-name {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0;
+        flex: 1;
+    }
+
+    .pet-type {
+        background: #f3f4f6;
+        color: #374151;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+        border: 1px solid #d1d5db;
+    }
+
+    .pet-description {
+        color: #6b7280;
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0 0 16px 0;
+    }
+
+    /* Pet Footer */
+    .pet-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .pet-date {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    .date-icon {
+        font-size: 14px;
+    }
+
+    .review-btn {
+        background: #3b82f6;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+        border: 1px solid #3b82f6;
+        white-space: nowrap;
+    }
+
+    .review-btn:hover {
+        background: #2563eb;
+        border-color: #2563eb;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Empty State */
+    .empty-state {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 400px;
+        padding: 40px 20px;
+    }
+
+    .empty-content {
+        text-align: center;
+        max-width: 400px;
+    }
+
+    .empty-icon {
+        font-size: 80px;
+        margin-bottom: 24px;
+        opacity: 0.6;
+        display: block;
+    }
+
+    .empty-content h3 {
+        font-size: 24px;
+        font-weight: 600;
+        color: #1f2937;
+        margin: 0 0 12px 0;
+    }
+
+    .empty-content p {
+        font-size: 16px;
+        color: #6b7280;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px 16px;
+        }
+
+        .page-header {
+            flex-direction: column;
+            text-align: center;
+            align-items: center;
+        }
+
+        .header-content h1 {
+            font-size: 24px;
+        }
+
+        .pets-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .pet-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .pet-type {
+            align-self: flex-start;
+        }
+
+        .pet-footer {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+        }
+
+        .review-btn {
+            justify-content: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .header-content h1 {
+            font-size: 20px;
+        }
+
+        .pet-image-container {
+            height: 200px;
+        }
+
+        .pet-info {
+            padding: 16px;
+        }
+
+        .pet-name {
+            font-size: 18px;
+        }
+
+        .empty-icon {
+            font-size: 60px;
+        }
+
+        .empty-content h3 {
+            font-size: 20px;
+        }
+    }
+</style>
 {% endblock %}

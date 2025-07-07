@@ -1,49 +1,41 @@
 {% extends 'base4.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h2 class="mb-0"><i class="fas fa-paw mr-2"></i> Adoption Management</h2>
+<div class="management-page">
+    <div class="container">
+        <!-- Header -->
+        <div class="page-header">
+            <h1> Adoption Management</h1>
+            <p>Manage and review all pet adoption requests</p>
         </div>
-        
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6 col-lg-4">
-                    <div class="form-group">
-                        <label for="adoption-options" class="form-label fw-bold">Select an Option:</label>
-                        <div class="input-group">
-                            <select id="adoption-options" class="form-select form-select-lg" onchange="handleSelection(this)">
-                                <option value="" selected disabled>-- Choose an option --</option>
-                                <option value="{% url 'admin_view_all_requests' %}">
-                                    <i class="fas fa-list"></i> All Requests
-                                </option>
-                                <option value="{% url 'admin_view_pending_requests' %}">
-                                    <i class="fas fa-hourglass-half"></i> Pending
-                                </option>
-                                <option value="{% url 'admin_view_review_list' %}">
-                                    <i class="fas fa-search"></i> Review
-                                </option>
-                                <option value="{% url 'admin_view_approved_list' %}">
-                                    <i class="fas fa-check-circle"></i> Approved
-                                </option>
-                                <option value="{% url 'admin_view_rejected_list' %}">
-                                    <i class="fas fa-times-circle"></i> Rejected
-                                </option>
-                            </select>
-                            <button class="btn btn-outline-secondary" type="button" onclick="refreshResults()">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                    </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="filter-section">
+                <label for="adoption-filter">Filter Requests</label>
+                <div class="filter-controls">
+                    <select id="adoption-filter" onchange="handleFilter(this)">
+                        <option value="" disabled selected>Choose a filter...</option>
+                        <option value="{% url 'admin_view_all_requests' %}"> All Requests</option>
+                        <option value="{% url 'admin_view_pending_requests' %}"> Pending</option>
+                        <option value="{% url 'admin_view_review_list' %}">Under Review</option>
+                        <option value="{% url 'admin_view_approved_list' %}"> Approved</option>
+                        <option value="{% url 'admin_view_rejected_list' %}"> Rejected</option>
+                    </select>
+                    <button class="refresh-btn" onclick="refreshData()">
+                        <span class="refresh-icon">🔄</span>
+                    </button>
                 </div>
             </div>
+        </div>
 
-            <div id="results" class="mt-4">
-                <div class="text-center text-muted py-5">
-                    <i class="fas fa-inbox fa-3x mb-3"></i>
-                    <h4>No selection made</h4>
-                    <p class="mb-0">Please choose an option from the dropdown to view adoption records</p>
+        <!-- Results Area -->
+        <div class="results-container">
+            <div id="results-content" class="results-area">
+                <div class="empty-state">
+                    <div class="empty-icon">📥</div>
+                    <h3>Select a Filter</h3>
+                    <p>Choose an option from the dropdown above to view adoption requests</p>
                 </div>
             </div>
         </div>
@@ -51,61 +43,359 @@
 </div>
 
 <style>
-    /* Custom Styles */
-    .card {
-        border-radius: 0.5rem;
-        border: none;
+    .management-page {
+        background: #f8fafc;
+        min-height: 100vh;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
-    
-    .card-header {
-        border-radius: 0.5rem 0.5rem 0 0 !important;
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px 20px;
     }
-    
-    select.form-select-lg {
-        padding: 0.75rem 1.5rem;
-        font-size: 1.05rem;
-    }
-    
-    #results {
-        min-height: 300px;
-        transition: all 0.3s ease;
-    }
-    
-    .loading-spinner {
-        display: none;
+
+    /* Header */
+    .page-header {
         text-align: center;
-        padding: 2rem;
+        margin-bottom: 40px;
     }
-    
-    .loading-spinner i {
-        font-size: 2rem;
+
+    .page-header h1 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 8px 0;
+    }
+
+    .page-header p {
+        font-size: 16px;
+        color: #6b7280;
+        margin: 0;
+    }
+
+    /* Control Panel */
+    .control-panel {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .filter-section {
+        max-width: 400px;
+    }
+
+    .filter-section label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 8px;
+    }
+
+    .filter-controls {
+        display: flex;
+        gap: 8px;
+    }
+
+    #adoption-filter {
+        flex: 1;
+        padding: 12px 16px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 14px;
+        background: white;
+        color: #1f2937;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    #adoption-filter:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    #adoption-filter:hover {
+        border-color: #9ca3af;
+    }
+
+    .refresh-btn {
+        background: #f3f4f6;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .refresh-btn:hover {
+        background: #e5e7eb;
+        border-color: #9ca3af;
+    }
+
+    .refresh-btn:active {
+        transform: scale(0.95);
+    }
+
+    .refresh-icon {
+        font-size: 16px;
+        transition: transform 0.3s;
+    }
+
+    .refresh-btn.spinning .refresh-icon {
         animation: spin 1s linear infinite;
     }
-    
+
     @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
+
+    /* Results Container */
+    .results-container {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .results-area {
+        min-height: 400px;
+        position: relative;
+    }
+
+    /* Empty State */
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 400px;
+        color: #6b7280;
+        text-align: center;
+        padding: 40px;
+    }
+
+    .empty-icon {
+        font-size: 64px;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+
+    .empty-state h3 {
+        font-size: 20px;
+        font-weight: 600;
+        color: #374151;
+        margin: 0 0 8px 0;
+    }
+
+    .empty-state p {
+        font-size: 14px;
+        margin: 0;
+        max-width: 300px;
+    }
+
+    /* Loading State */
+    .loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 400px;
+        color: #6b7280;
+        text-align: center;
+    }
+
+    .loading-spinner {
+        font-size: 32px;
+        margin-bottom: 16px;
+        animation: spin 1s linear infinite;
+    }
+
+    .loading-state h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #374151;
+        margin: 0 0 8px 0;
+    }
+
+    .loading-state p {
+        font-size: 14px;
+        margin: 0;
+    }
+
+    /* Error State */
+    .error-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 400px;
+        text-align: center;
+        padding: 40px;
+    }
+
+    .error-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        color: #dc2626;
+    }
+
+    .error-state h3 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #dc2626;
+        margin: 0 0 8px 0;
+    }
+
+    .error-state p {
+        font-size: 14px;
+        color: #6b7280;
+        margin: 0 0 16px 0;
+    }
+
+    .retry-btn {
+        background: #dc2626;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .retry-btn:hover {
+        background: #b91c1c;
+    }
+
+    /* Content Styling */
+    .results-area table {
+        width: 100%;
+        border-collapse: collapse;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .results-area th,
+    .results-area td {
+        padding: 12px 16px;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .results-area th {
+        background: #f9fafb;
+        font-weight: 600;
+        color: #374151;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .results-area td {
+        color: #1f2937;
+        font-size: 14px;
+    }
+
+    .results-area tr:hover {
+        background: #f9fafb;
+    }
+
+    @keyframes fadeIn {
+        0% { 
+            opacity: 0; 
+            transform: translateY(10px); 
+        }
+        100% { 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px 16px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+        }
+
+        .control-panel {
+            padding: 20px;
+        }
+
+        .filter-section {
+            max-width: 100%;
+        }
+
+        .filter-controls {
+            flex-direction: column;
+        }
+
+        .refresh-btn {
+            width: 100%;
+            height: 40px;
+        }
+
+        .empty-state,
+        .loading-state,
+        .error-state {
+            height: 300px;
+            padding: 20px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+        }
+
+        .results-area {
+            min-height: 300px;
+        }
+
+        /* Make tables responsive */
+        .results-area table {
+            font-size: 13px;
+        }
+
+        .results-area th,
+        .results-area td {
+            padding: 8px 12px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header h1 {
+            font-size: 24px;
+        }
+
+        .results-area th,
+        .results-area td {
+            padding: 6px 8px;
+            font-size: 12px;
+        }
+    }
 </style>
 
 <script>
-    function handleSelection(select) {
+    function handleFilter(select) {
         const url = select.value;
-        const resultsDiv = document.getElementById('results');
+        const resultsContent = document.getElementById('results-content');
         
         if (url) {
-            // Show loading state
-            resultsDiv.innerHTML = `
-                <div class="loading-spinner">
-                    <i class="fas fa-spinner"></i>
-                    <p class="mt-2">Loading adoption records...</p>
-                </div>
-            `;
+            showLoadingState();
             
-            // Make the loading spinner visible
-            resultsDiv.querySelector('.loading-spinner').style.display = 'block';
-            
-            // Fetch data based on the selected URL
             fetch(url)
                 .then(response => {
                     if (!response.ok) {
@@ -114,47 +404,79 @@
                     return response.text();
                 })
                 .then(data => {
-                    // Display the fetched HTML content
-                    resultsDiv.innerHTML = data;
-                    
-                    // Add animation to the loaded content
-                    const tables = resultsDiv.querySelectorAll('table');
-                    tables.forEach(table => {
-                        table.style.opacity = '0';
-                        table.style.transform = 'translateY(20px)';
-                        table.style.transition = 'all 0.3s ease';
-                        setTimeout(() => {
-                            table.style.opacity = '1';
-                            table.style.transform = 'translateY(0)';
-                        }, 50);
-                    });
+                    showResults(data);
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
-                    resultsDiv.innerHTML = `
-                        <div class="alert alert-danger">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
-                            Error loading data. Please try again.
-                        </div>
-                    `;
+                    showErrorState();
                 });
         } else {
-            // Show initial state if no option is selected
-            resultsDiv.innerHTML = `
-                <div class="text-center text-muted py-5">
-                    <i class="fas fa-inbox fa-3x mb-3"></i>
-                    <h4>No selection made</h4>
-                    <p class="mb-0">Please choose an option from the dropdown to view adoption records</p>
-                </div>
-            `;
+            showEmptyState();
         }
     }
-    
-    function refreshResults() {
-        const select = document.getElementById('adoption-options');
+
+    function refreshData() {
+        const select = document.getElementById('adoption-filter');
+        const refreshBtn = document.querySelector('.refresh-btn');
+        
+        // Add spinning animation
+        refreshBtn.classList.add('spinning');
+        
         if (select.value) {
-            handleSelection(select);
+            handleFilter(select);
         }
+        
+        // Remove spinning animation after a delay
+        setTimeout(() => {
+            refreshBtn.classList.remove('spinning');
+        }, 1000);
     }
+
+    function showEmptyState() {
+        document.getElementById('results-content').innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">📥</div>
+                <h3>Select a Filter</h3>
+                <p>Choose an option from the dropdown above to view adoption requests</p>
+            </div>
+        `;
+    }
+
+    function showLoadingState() {
+        document.getElementById('results-content').innerHTML = `
+            <div class="loading-state">
+                <div class="loading-spinner">⏳</div>
+                <h3>Loading Records</h3>
+                <p>Fetching adoption data...</p>
+            </div>
+        `;
+    }
+
+    function showErrorState() {
+        document.getElementById('results-content').innerHTML = `
+            <div class="error-state">
+                <div class="error-icon">⚠️</div>
+                <h3>Failed to Load Data</h3>
+                <p>There was an error loading the adoption records. Please try again.</p>
+                <button class="retry-btn" onclick="refreshData()">Try Again</button>
+            </div>
+        `;
+    }
+
+    function showResults(data) {
+        const resultsContent = document.getElementById('results-content');
+        resultsContent.innerHTML = data;
+        
+        // Add fade-in animation to tables
+        const tables = resultsContent.querySelectorAll('table');
+        tables.forEach(table => {
+            table.style.animation = 'fadeIn 0.3s ease-out';
+        });
+    }
+
+    // Reset selection when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('adoption-filter').selectedIndex = 0;
+    });
 </script>
 {% endblock %}

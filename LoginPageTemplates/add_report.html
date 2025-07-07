@@ -1,64 +1,559 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="h4 mb-0">
-                        <i class="fas fa-file-alt me-2"></i>Add New Report
-                    </h2>
-                </div>
-                <div class="card-body">
-                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
-                        {% csrf_token %}
-                        
-                        {% for field in form %}
-                        <div class="mb-3">
-                            <label for="{{ field.id_for_label }}" class="form-label">
-                                {{ field.label }}
-                                {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
-                            </label>
-                            
-                            {{ field }}
-                            
-                            {% if field.help_text %}
-                            <div class="form-text">{{ field.help_text }}</div>
-                            {% endif %}
-                            
-                            {% for error in field.errors %}
-                            <div class="invalid-feedback d-block">
-                                {{ error }}
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% endfor %}
-                        
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                            <a href="{% url 'reportadopted_pets' %}" class="btn btn-outline-secondary me-md-2">
-                                <i class="fas fa-times me-1"></i> Cancel
-                            </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-1"></i> Submit Report
-                            </button>
-                        </div>
-                    </form>
-                </div>
+<div class="report-page">
+    <!-- Floating elements background -->
+    <div class="floating-bg">
+        <div class="float-item heart-1">💝</div>
+        <div class="float-item heart-2">💖</div>
+        <div class="float-item paw-1">🐾</div>
+        <div class="float-item paw-2">🐾</div>
+        <div class="float-item star-1">⭐</div>
+        <div class="float-item star-2">✨</div>
+    </div>
+
+    <div class="container">
+        <!-- Fun Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <h1 class="share"> Share Your Pet's Story!</h1>
+                <p class="subtitle">How has your furry friend been doing? We'd love to hear about their adventures! </p>
+            </div>
+            <div class="header-decoration">
+                <div class="decoration-circle circle-1"></div>
+                <div class="decoration-circle circle-2"></div>
+                <div class="decoration-circle circle-3"></div>
             </div>
         </div>
+
+        <!-- Form Card -->
+        <div class="form-card">
+            <div class="form-header">
+                <div class="form-icon">🐕</div>
+                <h2>New Report</h2>
+                <p>Tell us all about your pet's latest happenings!</p>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="report-form">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                <div class="field-group">
+                    <label for="{{ field.id_for_label }}" class="field-label">
+                        <span class="label-text">{{ field.label }}</span>
+                        {% if field.field.required %}
+                            <span class="required-indicator">✨</span>
+                        {% endif %}
+                    </label>
+                    
+                    <div class="field-wrapper">
+                        {{ field }}
+                        {% if field.help_text %}
+                            <div class="help-text">
+                                <i class="icon">💡</i>
+                                {{ field.help_text }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if field.errors %}
+                        <div class="field-errors">
+                            {% for error in field.errors %}
+                                <div class="error-message">
+                                    <i class="icon">⚠️</i>
+                                    {{ error }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                
+                <!-- Action Buttons -->
+                <div class="form-actions">
+                    <a href="{% url 'reportadopted_pets' %}" class="btn btn-cancel">
+                        <span class="btn-icon">❌</span>
+                        <span class="btn-text">Cancel</span>
+                    </a>
+                    <button type="submit" class="btn btn-submit">
+                        <span class="btn-icon">🎉</span>
+                        <span class="btn-text">Submit Report</span>
+                        <span class="btn-sparkle">✨</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Encouragement Box -->
+        
     </div>
 </div>
 
 <style>
-    /* Custom styling for form elements */
-    textarea.form-control {
-        min-height: 120px;
+    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+    .report-page {
+        font-family: 'Quicksand', sans-serif;
+        position: relative;
+        padding: 0;
     }
-    
-    .form-control:focus, .form-select:focus {
-        border-color: #86b7fe;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+
+    /* Floating Background Elements */
+    .floating-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .float-item {
+        position: absolute;
+        font-size: 20px;
+        opacity: 0.15;
+        animation: gentle-float 8s ease-in-out infinite;
+    }
+
+    .heart-1 { top: 15%; left: 10%; animation-delay: 0s; }
+    .heart-2 { top: 70%; right: 15%; animation-delay: 3s; }
+    .paw-1 { top: 40%; left: 5%; animation-delay: 1s; }
+    .paw-2 { top: 80%; right: 25%; animation-delay: 4s; }
+    .star-1 { top: 25%; right: 10%; animation-delay: 2s; }
+    .star-2 { top: 60%; left: 15%; animation-delay: 5s; }
+
+    @keyframes gentle-float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.15; }
+        50% { transform: translateY(-15px) rotate(3deg); opacity: 0.25; }
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Page Header */
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+        position: relative;
+        color:black;
+    }
+
+    .header-content h1 {
+        font-size: 42px;
+        font-weight: 700;
+        color:black;
+        margin: 0 0 15px 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        animation: bounce-in 1s ease-out;
+    }
+
+    .subtitle {
+        font-size: 18px;
+             color:black;
+        margin: 0;
+        font-weight: 500;
+    }
+
+    .header-decoration {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100px;
+        height: 100px;
+        pointer-events: none;
+    }
+
+    .decoration-circle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.1);
+        animation: float-circles 6s ease-in-out infinite;
+    }
+
+    .circle-1 { width: 60px; height: 60px; top: 0; right: 0; animation-delay: 0s; }
+    .circle-2 { width: 40px; height: 40px; top: 20px; right: 30px; animation-delay: 1s; }
+    .circle-3 { width: 25px; height: 25px; top: 40px; right: 10px; animation-delay: 2s; }
+
+    @keyframes float-circles {
+        0%, 100% { transform: translateY(0px); opacity: 0.3; }
+        50% { transform: translateY(-10px); opacity: 0.6; }
+    }
+
+    @keyframes bounce-in {
+        0% { transform: scale(0.3); opacity: 0; }
+        50% { transform: scale(1.05); }
+        70% { transform: scale(0.9); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Form Card */
+    .form-card {
+        background: white;
+        border-radius: 30px;
+        padding: 0;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+        overflow: hidden;
+        border: 4px solid #ff6b9d;
+        margin-bottom: 30px;
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, #ff6b9d, #c44569);
+        color: white;
+        padding: 40px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent 10px,
+            rgba(255,255,255,0.05) 10px,
+            rgba(255,255,255,0.05) 20px
+        );
+        animation: slide 20s linear infinite;
+    }
+
+    @keyframes slide {
+        0% { transform: translateX(-50px) translateY(-50px); }
+        100% { transform: translateX(50px) translateY(50px); }
+    }
+
+    .form-icon {
+        font-size: 60px;
+        margin-bottom: 15px;
+        animation: wiggle 2s ease-in-out infinite;
+    }
+
+    @keyframes wiggle {
+        0%, 100% { transform: rotate(0deg); }
+        25% { transform: rotate(-5deg); }
+        75% { transform: rotate(5deg); }
+    }
+
+    .form-header h2 {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0 0 10px 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .form-header p {
+        font-size: 16px;
+        margin: 0;
+        opacity: 0.9;
+    }
+
+    /* Form Styling */
+    .report-form {
+        padding: 40px;
+    }
+
+    .field-group {
+        margin-bottom: 30px;
+    }
+
+    .field-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: #444;
+        font-size: 16px;
+    }
+
+    .label-text {
+        display: flex;
+        align-items: center;
+    }
+
+    .required-indicator {
+        font-size: 14px;
+        animation: sparkle 2s ease-in-out infinite;
+    }
+
+    @keyframes sparkle {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.6; transform: scale(1.2); }
+    }
+
+    .field-wrapper {
+        position: relative;
+    }
+
+    /* Style all form inputs */
+    .report-form input[type="text"],
+    .report-form input[type="email"],
+    .report-form input[type="date"],
+    .report-form input[type="datetime-local"],
+    .report-form input[type="file"],
+    .report-form textarea,
+    .report-form select {
+        width: 100%;
+        padding: 15px 20px;
+        border: 3px solid #e1e8ed;
+        border-radius: 15px;
+        font-size: 16px;
+        font-family: 'Quicksand', sans-serif;
+        background: #fafbfc;
+        transition: all 0.3s ease;
+        color: #444;
+    }
+  
+
+    .report-form input:focus,
+    .report-form textarea:focus,
+    .report-form select:focus {
+        outline: none;
+        border-color: #ff6b9d;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(255, 107, 157, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .report-form textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .help-text {
+        background: #f8f9ff;
+        border: 1px solid #e1e8ed;
+        border-radius: 10px;
+        padding: 12px 15px;
+        margin-top: 8px;
+        font-size: 14px;
+        color: #666;
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .help-text .icon {
+        font-size: 16px;
+        margin-top: 1px;
+        flex-shrink: 0;
+    }
+
+    .field-errors {
+        margin-top: 8px;
+    }
+
+    .error-message {
+        background: #ffe6e6;
+        border: 1px solid #ffcccc;
+        border-radius: 10px;
+        padding: 10px 15px;
+        color: #cc0000;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 5px;
+    }
+
+    .error-message .icon {
+        font-size: 16px;
+        flex-shrink: 0;
+    }
+
+    /* Form Actions */
+    .form-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 40px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 25px;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-family: 'Quicksand', sans-serif;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .btn:hover::before {
+        left: 100%;
+    }
+
+    .btn-cancel {
+        background: #f8f9fa;
+        color: #666;
+        border: 2px solid #e1e8ed;
+    }
+
+    .btn-cancel:hover {
+        background: #e9ecef;
+        color: #495057;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #ff6b9d, #c44569);
+        color: white;
+        border: 2px solid #ff6b9d;
+        position: relative;
+    }
+
+    .btn-submit:hover {
+        background: linear-gradient(135deg, #ff5a8a, #b13655);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4);
+    }
+
+    .btn-sparkle {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        font-size: 12px;
+        animation: sparkle 1.5s ease-in-out infinite;
+    }
+
+    .btn-icon {
+        font-size: 18px;
+    }
+
+    /* Encouragement Box */
+    .encouragement-box {
+        background: rgba(255,255,255,0.95);
+        border-radius: 20px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255,255,255,0.3);
+        margin-bottom: 40px;
+    }
+
+    .encouragement-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .encouragement-icon {
+        font-size: 32px;
+        animation: gentle-bounce 3s ease-in-out infinite;
+    }
+
+    @keyframes gentle-bounce {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-5px); }
+    }
+
+    .encouragement-content p {
+        margin: 0;
+        font-size: 16px;
+        color: #555;
+        font-weight: 500;
+        max-width: 500px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px 15px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+        }
+
+        .form-header {
+            padding: 30px 20px;
+        }
+
+        .form-icon {
+            font-size: 48px;
+        }
+
+        .form-header h2 {
+            font-size: 28px;
+        }
+
+        .report-form {
+            padding: 30px 20px;
+        }
+
+        .form-actions {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .btn {
+            width: 100%;
+            max-width: 250px;
+            justify-content: center;
+        }
+
+        .encouragement-content {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .header-decoration {
+            display: none;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header h1 {
+            font-size: 28px;
+        }
+
+        .form-header h2 {
+            font-size: 24px;
+        }
+
+        .encouragement-content p {
+            font-size: 14px;
+        }
     }
 </style>
 

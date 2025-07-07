@@ -1,145 +1,561 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container py-4">
-    <div class="text-center mb-5">
-        <h1 class="display-5 text-primary">
-            <i class="bi bi-heart-pulse me-2"></i>Adopted Pets
-        </h1>
-        <p class="text-muted">These pets have found their forever homes</p>
-    </div>
+<div class="main-container">
+    <!-- Top Section -->
+    <section class="top-banner">
+        <div class="container">
+            <div class="banner-grid">
+                <div class="banner-text">
+                    <span class="badge-pill">🎉 Success Stories</span>
+                    <h1 class="main-title">My Adopted Pets</h1>
+                    <p class="main-description">Your personal collection of adopted pets and their stories. Each one represents a successful adoption and a happy ending.</p>
+                </div>
 
-    {% if adopted_pets %}
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            {% for pet in adopted_pets %}
-            <div class="col">
-                <div class="card h-100 border-0 shadow-sm adopted-pet-card">
-                    <div class="card-header bg-white border-0 pb-0 pt-3 px-3">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap">
-                            <span class="adoption-status-badge">
-                                <i class="bi bi-check-circle-fill me-1"></i> Adopted
-                            </span>
-                            <small class="text-muted">{{ pet.created_at|date:"M d, Y" }}</small>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="text-center mb-3">
-                            {% if pet.img %}
-                            <img src="{{ pet.img.url }}" alt="{{ pet.name }}" class="pet-thumbnail rounded-circle">
-                            {% else %}
-                            <div class="pet-thumbnail rounded-circle bg-light d-flex align-items-center justify-content-center">
-                                <i class="bi bi-heart-fill text-primary fs-3"></i>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        {% if adopted_pets %}
+            <!-- Summary Bar -->
+            <div class="summary-bar">
+                <div class="summary-item">
+                    <span class="summary-number">{{ adopted_pets|length }}</span>
+                    <span class="summary-text">My Pet{{ adopted_pets|length|pluralize }}</span>
+                </div>
+                <div class="summary-divider"></div>
+                <div class="summary-item">
+                    <span class="summary-number">{{ adopted_pets|length }}</span>
+                    <span class="summary-text">Adoption{{ adopted_pets|length|pluralize }}</span>
+                </div>
+                <div class="summary-divider"></div>
+                <div class="summary-item">
+                    <span class="summary-number">∞</span>
+                    <span class="summary-text">Happy Memories</span>
+                </div>
+            </div>
+
+            <!-- Pets Masonry Layout -->
+            <div class="pets-masonry">
+                {% for pet in adopted_pets %}
+                <article class="pet-tile {% cycle 'tile-small' 'tile-medium' 'tile-large' %}">
+                    <div class="tile-content">
+                        <div class="tile-header">
+                            <div class="pet-avatar">
+                                {% if pet.img %}
+                                    <img src="{{ pet.img.url }}" alt="{{ pet.name }}">
+                                {% else %}
+                                    <div class="avatar-placeholder">
+                                        <span>{{ pet.name|first|upper }}</span>
+                                    </div>
+                                {% endif %}
                             </div>
+                            <div class="adoption-stamp">
+                                <span>✓ ADOPTED</span>
+                            </div>
+                        </div>
+                        
+                        <div class="tile-body">
+                            <h3 class="pet-title">{{ pet.name }}</h3>
+                            <div class="pet-meta">
+                                <time class="adoption-date">Adopted {{ pet.created_at|date:"M d, Y" }}</time>
+                            </div>
+                            
+                            {% if pet.additional_details %}
+                                <p class="pet-story">{{ pet.additional_details|truncatewords:25 }}</p>
+                            {% else %}
+                                <p class="pet-story">This beloved pet is now part of your family, bringing daily joy and companionship to your home.</p>
                             {% endif %}
                         </div>
                         
-                        <h3 class="h5 text-center mb-3">{{ pet.name }}</h3>
-                        
-                        
-                            <div class="detail-item">
-                                <i class="bi bi-card-text text-primary me-2"></i>
-                                <span>{{ pet.additional_details|default:"No description provided" }}</span>
-                            </div>
-                        
+                        <div class="tile-footer">
+                            <a href="{% url 'reportRequestpet_detail' pet.id %}" class="read-more-btn">
+                                Read Full Story
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                                </svg>
+                            </a>
+                        </div>
                     </div>
-                    <div class="card-footer bg-white border-0 pt-0 text-center">
-                        <a href="{% url 'reportRequestpet_detail' pet.id %}" class="btn btn-outline-primary">
-                            <i class="bi bi-eye-fill me-2"></i> View Details
-                        </a>
+                </article>
+                {% endfor %}
+            </div>
+
+        {% else %}
+            <!-- Alternative Empty State -->
+            <div class="empty-grid">
+                <div class="empty-card">
+                    <div class="empty-illustration">
+                        <div class="illustration-shape"></div>
+                        <div class="illustration-text">🏡</div>
                     </div>
+                    <h3>Start Your Adoption Journey</h3>
+                    <p>You haven't adopted any pets yet, but there are many wonderful animals waiting for loving homes. Browse available pets to begin your story.</p>
+                    <a href="{% url 'homepage' %}" class="cta-button">
+                        Browse Available Pets
+                        <span class="button-arrow">→</span>
+                    </a>
                 </div>
             </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="text-center py-5">
-            <div class="mb-4">
-                <i class="bi bi-emoji-frown text-muted" style="font-size: 3rem;"></i>
-            </div>
-            <h3 class="h4 text-muted">No adopted pets found</h3>
-            <p class="text-muted">Check back later to see pets who have found homes</p>
-            <a href="{% url 'homepage' %}" class="btn btn-primary mt-3">
-                <i class="bi bi-house-door me-2"></i> Back to Home
-            </a>
-        </div>
-    {% endif %}
+        {% endif %}
+    </div>
 </div>
 
 <style>
-    .adopted-pet-card {
-        border-radius: 12px;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* Reset and Base */
+* {
+    box-sizing: border-box;
+}
+
+.main-container {
+    background: #fafbfc;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Top Banner */
+.top-banner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 3rem 0 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.top-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -20%;
+    width: 40%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: skewX(-15deg);
+}
+
+.banner-grid {
+    display: block;
+    text-align: left;
+    position: relative;
+    z-index: 2;
+}
+
+.badge-pill {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: inline-block;
+    margin-bottom: 1.5rem;
+}
+
+.main-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: white;
+    margin: 0 0 1rem 0;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+}
+
+.main-description {
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 0;
+    line-height: 1.6;
+}
+
+.banner-visual {
+    display: flex;
+    justify-content: center;
+}
+
+.visual-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    color: white;
+    max-width: 200px;
+}
+
+.card-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.visual-card h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem 0;
+}
+
+.visual-card p {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+/* Container */
+.container {   
+      max-width: 1200px;   
+      margin: 0 auto;    
+      max-height: 299px;    
+      padding: 0 2rem; }
+
+
+/* Summary Bar */
+.summary-bar {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    margin: -2rem 0 3rem 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    position: relative;
+    z-index: 3;
+}
+
+.summary-item {
+    text-align: center;
+    flex: 1;
+}
+
+.summary-number {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #2d3748;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.summary-text {
+    font-size: 0.9rem;
+    color: #718096;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.summary-divider {
+    width: 1px;
+    height: 40px;
+    background: #e2e8f0;
+    margin: 0 2rem;
+}
+
+/* Pets Masonry */
+.pets-masonry {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.pet-tile {
+    background: white;
+    border-radius: 16px;
+    padding: 0;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #f1f5f9;
+    overflow: hidden;
+}
+
+.pet-tile:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    border-color: #e2e8f0;
+}
+
+.tile-small { grid-row: span 1; }
+.tile-medium { grid-row: span 1; }
+.tile-large { grid-row: span 1; }
+
+.tile-content {
+    padding: 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.tile-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.pet-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pet-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.adoption-stamp {
+    background: #f0fff4;
+    color: #22c55e;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border: 1px solid #22c55e;
+    transform: rotate(5deg);
+}
+
+.tile-body {
+    flex: 1;
+    margin-bottom: 1.5rem;
+}
+
+.pet-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.3;
+}
+
+.pet-meta {
+    margin-bottom: 1rem;
+}
+
+.adoption-date {
+    font-size: 0.85rem;
+    color: #718096;
+    font-weight: 500;
+}
+
+.pet-story {
+    color: #4a5568;
+    line-height: 1.6;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.tile-footer {
+    margin-top: auto;
+}
+
+.read-more-btn {
+    background: #f8fafc;
+    color: #4a5568;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+    border: 1px solid #e2e8f0;
+}
+
+.read-more-btn:hover {
+    background: #667eea;
+    color: white;
+    text-decoration: none;
+    border-color: #667eea;
+}
+
+.read-more-btn svg {
+    transition: transform 0.2s ease;
+}
+
+.read-more-btn:hover svg {
+    transform: translateX(4px);
+}
+
+/* Bottom Message */
+/* Removed - no longer needed */
+
+/* Empty State */
+.empty-grid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+}
+
+.empty-card {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    text-align: center;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.empty-illustration {
+    position: relative;
+    margin-bottom: 2rem;
+    display: inline-block;
+}
+
+.illustration-shape {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    border-radius: 20px;
+    position: relative;
+}
+
+.illustration-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.5rem;
+}
+
+.empty-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 0 0 1rem 0;
+}
+
+.empty-card p {
+    color: #718096;
+    line-height: 1.6;
+    margin: 0 0 2rem 0;
+}
+
+.cta-button {
+    background: #667eea;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.cta-button:hover {
+    background: #5a67d8;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.button-arrow {
+    transition: transform 0.2s ease;
+}
+
+.cta-button:hover .button-arrow {
+    transform: translateX(4px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .banner-grid {
+        text-align: center;
     }
     
-    .adopted-pet-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    .main-title {
+        font-size: 2.5rem;
     }
     
-    .pet-thumbnail {
-        width: 120px;
-        height: 120px;
-        object-fit: cover;
-        border: 3px solid white;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    .summary-bar {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 1.5rem;
     }
     
-    .pet-details {
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 1rem;
+    .summary-divider {
+        width: 40px;
+        height: 1px;
+        margin: 0;
     }
     
-    .detail-item {
-        display: flex;
-        align-items: flex-start;
-        margin-bottom: 0.5rem;
+    .pet-cards {
+        grid-template-columns: repeat(auto-fill, 260px);
+        gap: 1rem;
     }
     
-    /* Custom adoption status badge - isolated from base.html styles */
-    .adoption-status-badge {
-        display: inline-flex;
-        align-items: center;
-        background-color: #198754;
-        color: white;
-        font-weight: 500;
-        font-size: 0.875rem;
-        padding: 0.35em 0.85em;
-        border-radius: 50rem;
-        line-height: 1.5;
-        white-space: nowrap;
-        margin-right: 0.5rem;
+    .pet-card {
+        width: 260px;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 0 1rem;
     }
     
-    .adoption-status-badge i {
-        font-size: 0.9em;
+    .top-banner {
+        padding: 2rem 0 1.5rem;
     }
     
-    @media (max-width: 768px) {
-        .pet-thumbnail {
-            width: 100px;
-            height: 100px;
-        }
-        
-        .card-header {
-            padding: 1rem 0.75rem 0 0.75rem !important;
-        }
-        
-        .adoption-status-badge {
-            font-size: 0.8rem;
-            padding: 0.3em 0.7em;
-        }
+    .main-title {
+        font-size: 2rem;
     }
     
-    @media (max-width: 576px) {
-        .d-flex.justify-content-between {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        
-        .adoption-status-badge, .text-muted {
-            margin-bottom: 0.5rem;
-        }
+    .main-description {
+        font-size: 1rem;
     }
+    
+    .visual-card {
+        padding: 1.5rem;
+        max-width: 160px;
+    }
+    
+    .summary-bar {
+        margin: -1rem 0 2rem 0;
+    }
+    
+    .summary-number {
+        font-size: 2rem;
+    }
+    
+    .pet-image-container {
+        height: 160px;
+    }
+    
+    .pet-info {
+        padding: 0.8rem;
+    }
+    
+    .empty-card {
+        padding: 2rem 1.5rem;
+    }
+}
 </style>
 {% endblock %}

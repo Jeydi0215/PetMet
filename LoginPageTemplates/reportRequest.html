@@ -3,266 +3,662 @@
 {% load static %}
 
 {% block content %}
-<div class="container py-4">
-<div class="container-fluid pet-details-page">
-    <div class="row">
-        <div class="col-12">
-            <div class="pet-header d-flex align-items-center mb-4">
-                <div class="pet-image mr-4">
-                    {% if pet.img %}
-                        <img src="{{ pet.img.url }}" alt="Image of {{ pet.name }}" class="img-fluid rounded-lg shadow-sm"/>
-                    {% else %}
-                        <div class="no-image-placeholder rounded-lg">
-                            <i class="fas fa-paw"></i>
+<div class="pet-dashboard">
+    <!-- Floating paw prints background -->
+    <div class="paw-background">
+        <div class="paw-print paw-1">🐾</div>
+        <div class="paw-print paw-2">🐾</div>
+        <div class="paw-print paw-3">🐾</div>
+        <div class="paw-print paw-4">🐾</div>
+        <div class="paw-print paw-5">🐾</div>
+    </div>
+
+    <div class="container">
+        <!-- Pet Card with Polaroid Style -->
+        <div class="pet-polaroid">
+            <div class="polaroid-photo">
+                {% if pet.img %}
+                    <img src="{{ pet.img.url }}" alt="{{ pet.name }}" />
+                {% else %}
+                    <div class="photo-placeholder">
+                        <div class="placeholder-content">
+                            <span class="camera-emoji">📷</span>
+                            <span class="text">No photo yet!</span>
                         </div>
-                    {% endif %}
-                </div>
-                <div class="pet-basic-info flex-grow-1">
-                    <h2 class="pet-name mb-3">{{ pet.name }}</h2>
-                
-                        <div class="detail-item">
-                            <span class="detail-label">Status:</span>
-                            <span class="detail-value">{{ pet_adoption.adoption_request_status }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Adoption ID:</span>
-                            <span class="detail-value">{{ pet_adoption.id }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Adopted by:</span>
-                            <span class="detail-value">{{ pet_adoption.first_name }} {{ pet_adoption.last_name }}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Posted on:</span>
-                            <span class="detail-value">{{ pet.created_at|date:"F d, Y" }}</span>
-                        </div>
-                    
-                </div>
+                    </div>
+                {% endif %}
             </div>
-
-            <div class="monitoring-calendar card shadow-sm">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0">Monitoring Calendar</h4>
-                    <div class="calendar-navigation">
-                        {% with previous_month=monthly_reports.month|add:-1 %}
-                            {% if previous_month < 1 %}
-                                {% with previous_year=monthly_reports.year|add:-1 %}
-                                    <a href="?month=12&year={{ previous_year }}" class="btn btn-sm btn-outline-secondary mr-2">
-                                        <i class="fas fa-chevron-left"></i>
-                                    </a>
-                                {% endwith %}
-                            {% else %}
-                                <a href="?month={{ previous_month }}&year={{ monthly_reports.year }}" class="btn btn-sm btn-outline-secondary mr-2">
-                                    <i class="fas fa-chevron-left"></i>
-                                </a>
-                            {% endif %}
-                        {% endwith %}
-
-                        <span class="current-month-year">
-                            {{ monthly_reports.year }} - {{ monthly_reports.month|month_name }}
-                        </span>
-
-                        {% with next_month=monthly_reports.month|add:1 %}
-                            {% if next_month > 12 %}
-                                {% with next_year=monthly_reports.year|add:1 %}
-                                    <a href="?month=1&year={{ next_year }}" class="btn btn-sm btn-outline-secondary ml-2">
-                                        <i class="fas fa-chevron-right"></i>
-                                    </a>
-                                {% endwith %}
-                            {% else %}
-                                <a href="?month={{ next_month }}&year={{ monthly_reports.year }}" class="btn btn-sm btn-outline-secondary ml-2">
-                                    <i class="fas fa-chevron-right"></i>
-                                </a>
-                            {% endif %}
-                        {% endwith %}
-                    </div>
+            
+            <div class="polaroid-caption">
+                <h1 class="pet-name">{{ pet.name }} 🐕</h1>
+                <div class="pet-tags">
+                    <span class="tag status-{{ pet_adoption.adoption_request_status|lower }}">
+                        {% if pet_adoption.adoption_request_status == 'approved' %}✅{% elif pet_adoption.adoption_request_status == 'pending' %}⏳{% else %}❌{% endif %}
+                        {{ pet_adoption.adoption_request_status }}
+                    </span>
+                    <span class="tag">🏠 {{ pet_adoption.first_name }} {{ pet_adoption.last_name }}</span>
+                    <span class="tag">📅 {{ pet.created_at|date:"M d, Y" }}</span>
+                    <span class="tag">🆔 #{{ pet_adoption.id }}</span>
                 </div>
-                <div class="card-body">
-                    <div class="calendar-details mb-3">
-                        <div class="tracking-start">
-                            <strong>Tracking Start Date:</strong> 
-                            {{ monthly_reports.tracking_start_date|date:"Y-m-d" }}
-                        </div>
-                    </div>
-                    <div class="calendar-grid">
-                        <div class="calendar-header">
-                            <div>Sun</div>
-                            <div>Mon</div>
-                            <div>Tue</div>
-                            <div>Wed</div>
-                            <div>Thu</div>
-                            <div>Fri</div>
-                            <div>Sat</div>
-                        </div>
-                        <div class="calendar-days">
-                            {% if monthly_reports.empty_cells_before %}
-                                {% for _ in monthly_reports.empty_cells_before %}
-                                    <div class="calendar-day empty"></div>
-                                {% endfor %}
-                            {% endif %}
-
-                            {% for day in monthly_reports.days_list %}
-                                <div class="calendar-day">
-                                    <div class="day-number">{{ day }}</div>
-                                    <div class="day-reports">
-                                        {% with reports_for_day=monthly_reports.daily_reports|get_item:day %}
-                                            {% if reports_for_day %}
-                                                {% for report in reports_for_day %}
-                                                    <div class="report-badge">
-                                                        <a href="{% url 'report_detail' report.id %}" class="text-primary">
-                                                            <i class="fas fa-file-alt mr-1"></i>
-                                                            {{ report.followup_date|date:"Y-m-d" }}
-                                                        </a>
-                                                    </div>
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% endwith %}
-                                    </div>
-                                </div>
-                            {% endfor %}
-
-                            {% if monthly_reports.empty_cells_after %}
-                                {% for _ in monthly_reports.empty_cells_after %}
-                                    <div class="calendar-day empty"></div>
-                                {% endfor %}
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="action-buttons mt-4">
-                <a href="{% url 'add_report' pet_adoption.id %}" class="btn btn-primary mr-2">
-                    <i class="fas fa-plus mr-1"></i>Add Report
-                </a>
-                <a href="{% url 'report_details' pet_adoption.id %}" class="btn btn-info mr-2">
-                    <i class="fas fa-list mr-1"></i>Report Details
-                </a>
-                <a href="{% url 'reportadopted_pets' %}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left mr-1"></i>Back to Adopted Pets
-                </a>
             </div>
         </div>
+
+        <!-- Calendar with Pet Theme -->
+        <div class="calendar-card">
+            <div class="card-header">
+                <div class="header-content">
+                    <h2>🗓️ {{ pet.name }}'s Checkup Calendar</h2>
+                    <p class="subtitle">💝 Tracking love since {{ monthly_reports.tracking_start_date|date:"M d, Y" }}</p>
+                </div>
+                
+                <div class="month-controls">
+                    {% with previous_month=monthly_reports.month|add:-1 %}
+                        {% if previous_month < 1 %}
+                            {% with previous_year=monthly_reports.year|add:-1 %}
+                                <a href="?month=12&year={{ previous_year }}" class="control-btn prev">🡸</a>
+                            {% endwith %}
+                        {% else %}
+                            <a href="?month={{ previous_month }}&year={{ monthly_reports.year }}" class="control-btn prev">🡸</a>
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <div class="current-month">
+                        <span class="month-name">{{ monthly_reports.month|month_name }}</span>
+                        <span class="year">{{ monthly_reports.year }}</span>
+                    </div>
+                    
+                    {% with next_month=monthly_reports.month|add:1 %}
+                        {% if next_month > 12 %}
+                            {% with next_year=monthly_reports.year|add:1 %}
+                                <a href="?month=1&year={{ next_year }}" class="control-btn next">🡺</a>
+                            {% endwith %}
+                        {% else %}
+                            <a href="?month={{ next_month }}&year={{ monthly_reports.year }}" class="control-btn next">🡺</a>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+
+            <div class="calendar-grid">
+                <div class="weekdays">
+                    <div>🌅 S</div>
+                    <div>🌄 M</div>
+                    <div>🌇 T</div>
+                    <div>🌆 W</div>
+                    <div>🌃 T</div>
+                    <div>🌌 F</div>
+                    <div>🌠 S</div>
+                </div>
+                
+                <div class="calendar-days">
+                    {% if monthly_reports.empty_cells_before %}
+                        {% for _ in monthly_reports.empty_cells_before %}
+                            <div class="day empty"></div>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% for day in monthly_reports.days_list %}
+                        <div class="day{% with reports_for_day=monthly_reports.daily_reports|get_item:day %}{% if reports_for_day %} has-report{% endif %}{% endwith %}">
+                            <span class="day-number">{{ day }}</span>
+                            {% with reports_for_day=monthly_reports.daily_reports|get_item:day %}
+                                {% if reports_for_day %}
+                                    <div class="report-indicators">
+                                        {% for report in reports_for_day %}
+                                            <a href="{% url 'report_detail' report.id %}" class="report-heart" title="Checkup on {{ report.followup_date|date:'M d' }}">
+                                                💖
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    {% endfor %}
+
+                    {% if monthly_reports.empty_cells_after %}
+                        {% for _ in monthly_reports.empty_cells_after %}
+                            <div class="day empty"></div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Fun Action Buttons -->
+        <div class="action-zone">
+            <a href="{% url 'add_report' pet_adoption.id %}" class="fun-btn primary">
+                <span class="btn-icon">📝</span>
+                <span class="btn-text">Add New Report</span>
+                <span class="btn-subtitle">Share {{ pet.name }}'s latest adventure!</span>
+            </a>
+            
+            <a href="{% url 'report_details' pet_adoption.id %}" class="fun-btn secondary">
+                <span class="btn-icon">📚</span>
+                <span class="btn-text">View All Reports</span>
+                <span class="btn-subtitle">{{ pet.name }}'s complete story</span>
+            </a>
+            
+            <a href="{% url 'reportadopted_pets' %}" class="fun-btn tertiary">
+                <span class="btn-icon">🏠</span>
+                <span class="btn-text">Back Home</span>
+                <span class="btn-subtitle">Return to all pets</span>
+            </a>
+        </div>
+
+        <!-- Cute Footer -->
+        
     </div>
-</div>
 </div>
 
 <style>
-    .pet-details-page {
-        background-color: #f8f9fa;
+    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+    .pet-dashboard {
+        font-family: 'Quicksand', sans-serif;
+        background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 50%, #66a6ff 100%);
+
         min-height: 100vh;
-        padding: 30px 15px;
+        position: relative;
+        overflow-x: hidden;
     }
 
-    .pet-header {
-        background-color: white;
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    /* Floating Paw Prints */
+    .paw-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
     }
 
-    .pet-image {
-        width: 250px;
-        height: 250px;
+    .paw-print {
+        position: absolute;
+        font-size: 24px;
+        opacity: 0.1;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .paw-1 { top: 10%; left: 10%; animation-delay: 0s; }
+    .paw-2 { top: 20%; right: 15%; animation-delay: 1s; }
+    .paw-3 { top: 60%; left: 5%; animation-delay: 2s; }
+    .paw-4 { top: 70%; right: 10%; animation-delay: 3s; }
+    .paw-5 { top: 40%; right: 20%; animation-delay: 4s; }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(5deg); }
+    }
+
+    .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Polaroid Pet Card */
+    .pet-polaroid {
+        background: white;
+        border-radius: 20px;
+        padding: 20px 20px 30px;
+        margin-bottom: 40px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        transform: rotate(-2deg);
+        transition: transform 0.3s ease;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .pet-polaroid:hover {
+        transform: rotate(0deg) scale(1.02);
+    }
+
+    .polaroid-photo {
+        width: 100%;
+        height: 300px;
+        border-radius: 10px;
         overflow: hidden;
-        border-radius: 12px;
+        background: #f0f0f0;
+        margin-bottom: 20px;
+        position: relative;
     }
 
-    .pet-image img {
+    .polaroid-photo img {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
 
-    .no-image-placeholder {
-        background-color: #e9ecef;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    .photo-placeholder {
         width: 100%;
         height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(45deg, #ffd89b, #19547b);
     }
 
-    .pet-name {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #343a40;
+    .placeholder-content {
+        text-align: center;
+        color: white;
     }
 
-    .detail-item {
+    .camera-emoji {
+        display: block;
+        font-size: 48px;
         margin-bottom: 10px;
     }
 
-    .detail-label {
+    .placeholder-content .text {
+        font-size: 18px;
         font-weight: 600;
-        color: #6c757d;
-        margin-right: 10px;
     }
 
-    .detail-value {
-        color: #343a40;
+    .polaroid-caption {
+        text-align: center;
     }
 
-    .monitoring-calendar {
-        background-color: white;
-        border: none;
-        border-radius: 12px;
+    .pet-name {
+        font-size: 32px;
+        font-weight: 700;
+        color: #333;
+        margin: 0 0 15px 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     }
 
-    .calendar-header {
+    .pet-tags {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .tag {
+        background: #fff3cd;
+        color: #856404;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+        border: 2px solid #ffeaa7;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .tag.status-approved {
+        background: #d4edda;
+        color: #155724;
+        border-color: #c3e6cb;
+    }
+
+    .tag.status-pending {
+        background: #fff3cd;
+        color: #856404;
+        border-color: #ffeaa7;
+    }
+
+    .tag.status-rejected {
+        background: #f8d7da;
+        color: #721c24;
+        border-color: #f5c6cb;
+    }
+
+    /* Calendar Card */
+    .calendar-card {
+        background: white;
+        border-radius: 25px;
+        padding: 0;
+        margin-bottom: 40px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        overflow: hidden;
+        border: 5px solid #ff6b6b;
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);
+
+
+        padding: 30px;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .header-content h2 {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0 0 5px 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .subtitle {
+        font-size: 16px;
+        margin: 0;
+        opacity: 0.9;
+    }
+
+    .month-controls {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: rgba(255,255,255,0.2);
+        padding: 10px 20px;
+        border-radius: 25px;
+        backdrop-filter: blur(10px);
+    }
+
+    .control-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: white;
+        color: #ff6b6b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 18px;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .control-btn:hover {
+        transform: scale(1.1);
+        background: #ff6b6b;
+        color: white;
+        text-decoration: none;
+    }
+
+    .current-month {
+        text-align: center;
+        color: white;
+        font-weight: 600;
+        min-width: 120px;
+    }
+
+    .month-name {
+        display: block;
+        font-size: 18px;
+    }
+
+    .year {
+        display: block;
+        font-size: 14px;
+        opacity: 0.8;
+    }
+
+    /* Calendar Grid */
+    .calendar-grid {
+        padding: 30px;
+    }
+
+    .weekdays {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        background-color: #f1f3f5;
-        color: #495057;
-        font-weight: 600;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .weekdays div {
         text-align: center;
-        padding: 10px 0;
+        font-weight: 600;
+        color: #666;
+        font-size: 14px;
+        padding: 10px;
+        background: #f8f9fa;
+        border-radius: 10px;
     }
 
     .calendar-days {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 5px;
-        padding: 10px;
+        gap: 10px;
     }
 
-    .calendar-day {
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        min-height: 100px;
-        padding: 10px;
-        background-color: #ffffff;
-        transition: all 0.3s ease;
+    .day {
+        aspect-ratio: 1;
+        border-radius: 15px;
+        background: #fafafa;
+        border: 2px solid #e9ecef;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        transition: all 0.2s ease;
+        min-height: 80px;
+        cursor: pointer;
     }
 
-    .calendar-day.empty {
-        background-color: #f8f9fa;
-        border: 1px solid transparent;
+    .day:not(.empty):hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        border-color: #ff6b6b;
     }
 
-    .calendar-day:hover {
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        transform: translateY(-5px);
+    .day.has-report {
+        background: linear-gradient(135deg, #ff9a9e, #fecfef);
+        border-color: #ff6b6b;
+        color: white;
+    }
+
+    .day.has-report .day-number {
+        color: white;
+        font-weight: 700;
+    }
+
+    .day.empty {
+        background: transparent;
+        border: none;
     }
 
     .day-number {
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 10px;
-        color: #343a40;
-    }
-
-    .report-badge {
-        background-color: #e9ecef;
-        border-radius: 6px;
-        padding: 5px 10px;
+        font-size: 16px;
+        font-weight: 600;
         margin-bottom: 5px;
-        font-size: 0.8rem;
     }
 
-    .action-buttons {
+    .report-indicators {
         display: flex;
-        justify-content: flex-start;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2px;
+    }
+
+    .report-heart {
+        font-size: 16px;
+        text-decoration: none;
+        transition: transform 0.2s ease;
+    }
+
+    .report-heart:hover {
+        transform: scale(1.3);
+        text-decoration: none;
+    }
+
+    /* Fun Action Buttons */
+    .action-zone {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .fun-btn {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        text-decoration: none;
+        color: #333;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border: 3px solid transparent;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .fun-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .fun-btn:hover::before {
+        left: 100%;
+    }
+
+    .fun-btn:hover {
+        transform: translateY(-5px);
+        text-decoration: none;
+        color: #333;
+    }
+
+    .fun-btn.primary {
+        border-color: #ff6b6b;
+    }
+
+    .fun-btn.primary:hover {
+        background: #ff6b6b;
+        color: white;
+    }
+
+    .fun-btn.secondary {
+        border-color: #4ecdc4;
+    }
+
+    .fun-btn.secondary:hover {
+        background: #4ecdc4;
+        color: white;
+    }
+
+    .fun-btn.tertiary {
+        border-color: #feca57;
+    }
+
+    .fun-btn.tertiary:hover {
+        background: #feca57;
+        color: white;
+    }
+
+    .btn-icon {
+        display: block;
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+
+    .btn-text {
+        display: block;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .btn-subtitle {
+        display: block;
+        font-size: 14px;
+        opacity: 0.7;
+    }
+
+    /* Cute Footer */
+    .cute-footer {
+        text-align: center;
+        padding: 20px;
+        background: rgba(255,255,255,0.8);
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+    }
+
+    .cute-footer p {
+        margin: 0;
+        font-size: 16px;
+        color: #666;
+        font-weight: 500;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px 15px;
+        }
+
+        .pet-polaroid {
+            transform: rotate(0deg);
+            max-width: 100%;
+        }
+
+        .polaroid-photo {
+            height: 250px;
+        }
+
+        .pet-name {
+            font-size: 28px;
+        }
+
+        .card-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .header-content h2 {
+            font-size: 24px;
+        }
+
+        .month-controls {
+            order: -1;
+        }
+
+        .calendar-grid {
+            padding: 20px;
+        }
+
+        .day {
+            min-height: 60px;
+        }
+
+        .weekdays div {
+            font-size: 12px;
+            padding: 5px;
+        }
+
+        .action-zone {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .pet-tags {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .calendar-days {
+            gap: 5px;
+        }
+
+        .day {
+            min-height: 50px;
+        }
+
+        .day-number {
+            font-size: 14px;
+        }
+
+        .weekdays div {
+            font-size: 10px;
+            padding: 3px;
+        }
     }
 </style>
 
@@ -273,7 +669,10 @@
             icon: 'info',
             title: 'Notification',
             text: "{{ notification_message|escapejs }}",
-            confirmButtonText: 'OK'
+            confirmButtonText: 'OK',
+            background: '#fff',
+            color: '#333',
+            confirmButtonColor: '#ff6b6b'
         });
     });
 </script>

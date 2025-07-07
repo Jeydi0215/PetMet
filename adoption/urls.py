@@ -1,5 +1,5 @@
 # adoption/urls.py
-# Add this to your existing URLs
+# Updated URLs with cache management for fixing disappearing pets
 
 from django.urls import path
 from . import views
@@ -13,13 +13,16 @@ urlpatterns = [
     path('api/analyze-query/', views.analyze_query_api, name='analyze_query_api'),
     path('api/smart-search/', views.smart_search_api, name='smart_search_api'),
     
-    # ===== NEW WEB SEARCH URL =====
+    # ===== EXISTING WEB SEARCH URL =====
     path('api/search/web/', views.search_pets_web, name='search_pets_web'),
     
     # ===== EXISTING MAP URLS =====
     path('api/pets/locations/', views.get_pets_locations, name='get_pets_locations'),
     path('api/search/location/', views.search_pets_by_location, name='search_pets_by_location'),
     path('api/debug/model/', views.debug_model_fields, name='debug_model_fields'),
+    
+    # ===== NEW CACHE MANAGEMENT URL (to fix disappearing pets) =====
+    path('api/cache/clear-pets/', views.clear_pets_cache, name='clear_pets_cache'),
 ]
 
 # If you don't have these existing URLs, here's the complete set:
@@ -36,12 +39,15 @@ urlpatterns = [
     path('api/analyze-query/', views.analyze_query_api, name='analyze_query_api'),
     path('api/smart-search/', views.smart_search_api, name='smart_search_api'),
     
-    # Web Search API (NEW!)
+    # Web Search API
     path('api/search/web/', views.search_pets_web, name='search_pets_web'),
     
-    # Map APIs
+    # Map APIs (Enhanced with caching)
     path('api/pets/locations/', views.get_pets_locations, name='get_pets_locations'),
     path('api/search/location/', views.search_pets_by_location, name='search_pets_by_location'),
+    
+    # Cache Management (NEW - fixes disappearing pets)
+    path('api/cache/clear-pets/', views.clear_pets_cache, name='clear_pets_cache'),
     
     # Debug
     path('api/debug/model/', views.debug_model_fields, name='debug_model_fields'),

@@ -1,783 +1,1345 @@
 {%load static%}
 <!DOCTYPE html>
 <html lang="en">
-   <head>
-      <meta charset="utf-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <title>PetMet - Find Your Perfect Pet Match</title>
-      <meta name="description" content="PetMet helps you find your perfect pet match using AI and natural language processing. Adopt from shelters, rescuers, and private owners.">
-      <meta name="author" content="Team Skylark">
-      
-      <!-- Bootstrap CSS -->
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css">
-      <!-- Font Awesome -->
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-      <!-- Google Fonts -->
-      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-      <!-- Owl Carousel -->
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
-      
-      <style>
-         :root {
-            --primary: #4ECDC4;
-            --secondary: #FF6B6B;
-            --dark: #292F36;
-            --light: #F7FFF7;
-            --accent: #FFE66D;
-         }
-         
-         body {
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PetMet - Find Your Perfect Pet Match</title>
+    <meta name="description" content="PetMet helps you find your perfect pet match using AI and natural language processing. Adopt from shelters, rescuers, and private owners.">
+    <meta name="author" content="Team Skylark">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Variables - Matching the search page theme */
+        :root {
+            --primary-color: #ff6b6b;
+            --secondary-color: #4ecdc4;
+            --accent-color: #ffe66d;
+            --text-dark: #2d3436;
+            --text-light: #636e72;
+            --bg-light: #f8f9fa;
+            --bg-white: #ffffff;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 5px 20px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.15);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
             font-family: 'Poppins', sans-serif;
-            color: var(--dark);
+            color: var(--text-dark);
+            background-color: var(--bg-light);
             line-height: 1.6;
-            background-color: var(--light);
-         }
-         
-         /* Header Styles */
-         .header_section {
+            overflow-x: hidden;
+        }
+        
+        /* Header Section */
+        .header_section {
             padding: 15px 0;
-            background-color: white;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-            position: sticky;
+            background-color: var(--bg-white);
+            box-shadow: var(--shadow-sm);
+            position: fixed;
             top: 0;
+            left: 0;
+            right: 0;
             z-index: 1000;
-         }
-         
-         .navbar-brand {
+            transition: var(--transition);
+        }
+        
+        .header_section.scrolled {
+            padding: 10px 0;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .navbar-brand {
             display: flex;
             align-items: center;
-            font-weight: 700;
-            color: var(--primary) !important;
-            font-size: 1.5rem;
-         }
-         
-         .navbar-brand img {
-            margin-right: 10px;
+            font-family: 'Chewy', cursive;
+            font-size: 2rem;
+            color: var(--primary-color) !important;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .navbar-brand:hover {
+            transform: translateY(-2px);
+        }
+        
+        .navbar-brand img {
+            width: 50px;
+            height: 50px;
+            margin-right: 12px;
             border-radius: 50%;
-         }
-         
-         .nav-link {
+            box-shadow: 0 3px 10px rgba(255, 107, 107, 0.2);
+            transition: var(--transition);
+        }
+        
+        .navbar-brand:hover img {
+            transform: rotate(-5deg) scale(1.1);
+        }
+        
+        .nav-link {
             font-weight: 500;
-            color: var(--dark) !important;
-            margin: 0 10px;
+            color: var(--text-dark) !important;
+            margin: 0 15px;
             position: relative;
-            transition: all 0.3s ease;
-         }
-         
-         .nav-link:after {
+            transition: var(--transition);
+            padding: 8px 0 !important;
+        }
+        
+        .nav-link::after {
             content: '';
             position: absolute;
             width: 0;
-            height: 2px;
-            background-color: var(--primary);
-            bottom: 0;
-            left: 0;
-            transition: width 0.3s ease;
-         }
-         
-         .nav-link:hover:after {
-            width: 100%;
-         }
-         
-         .nav-item.active .nav-link:after {
-            width: 100%;
-         }
-         
-         .btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            border-radius: 30px;
-            padding: 8px 25px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-         }
-         
-         .btn-primary:hover {
-            background-color: transparent;
-            color: var(--primary);
-         }
-         
-         /* Banner Section */
-         .banner_section {
-    padding: 100px 0;
-    background-image: linear-gradient(rgba(73, 205, 196, 0.1), rgba(73, 205, 196, 0.2)), url("/static/images/web bg pic.png");
-    background-size: cover;
-    background-position: center;
-    position: relative;
-}
-         
-         .banner_taital {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 20px;
-            line-height: 1.2;
-         }
-         
-         .banner_text {
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-            color: var(--dark);
-         }
-         
-         .banner-content {
-            max-width: 700px;
-            text-align: center;
-            margin: 0 auto;
-         }
-         
-         /* Services Section */
-         .service_section {
-            padding: 80px 0;
-            position: relative;
-         }
-         
-         .section-title {
-            text-align: center;
-            margin-bottom: 50px;
-            position: relative;
-         }
-         
-         .section-title h2 {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: var(--dark);
-            display: inline-block;
-         }
-         
-         .section-title h2:after {
-            content: '';
-            position: absolute;
-            width: 80px;
             height: 3px;
-            background-color: var(--primary);
-            bottom: -10px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-         }
-         
-         .service-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after,
+        .nav-item.active .nav-link::after {
+            width: 100%;
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, var(--primary-color), #ff5252);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+            color: white;
+        }
+        
+        /* Hero Section */
+        .hero_section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            padding: 120px 0 80px;
+            overflow: hidden;
+        }
+        
+        .hero_section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: drift 20s linear infinite;
+            opacity: 0.3;
+        }
+        
+        @keyframes drift {
+            from { transform: translate(0, 0); }
+            to { transform: translate(50px, 50px); }
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
             text-align: center;
-            transition: all 0.3s ease;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-            height: 100%;
-            margin-bottom: 30px;
-         }
-         
-         .service-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-         }
-         
-         .service-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
+            color: white;
+        }
+        
+        .hero-title {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .hero-title h1 {
+            font-family: 'Chewy', cursive;
+            font-size: 4.5rem;
+            color: var(--accent-color);
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 15px;
+            opacity: 0.95;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+        
+        .hero-description {
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+        
+        .btn-hero-primary {
+            background: linear-gradient(135deg, var(--primary-color), #ff5252);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-hero-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .btn-hero-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: var(--transition);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-hero-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .hero-image {
+            position: relative;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.2));
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            padding: 40px 0;
+            background: var(--bg-white);
+            position: relative;
+            margin-top: -40px;
+            border-radius: 40px 40px 0 0;
+            z-index: 10;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 15px;
+            background: linear-gradient(135deg, var(--secondary-color), #45b7aa);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: rgba(78, 205, 196, 0.1);
-            border-radius: 50%;
-         }
-         
-         .service-icon img {
-            width: 45px;
-            height: auto;
-         }
-         
-         .service-card h4 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--dark);
-         }
-         
-         .service-card p {
-            color: #666;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.3);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: var(--text-light);
             font-size: 0.95rem;
-         }
-         
-         /* About Section */
-         .about_section {
-            padding: 80px 0 40px;
-            background-color: #fff;
-         }
-         
-         .about_section_2 {
-            padding: 0 0 80px;
-            background-color: #fff;
-         }
-         
-         .about-content {
-            padding-right: 30px;
-         }
-         
-         .about-img {
+        }
+        
+        /* Services Section */
+        .services_section {
+            padding: 80px 0;
+            background: var(--bg-light);
             position: relative;
-            border-radius: 15px;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title span {
+            font-family: 'Chewy', cursive;
+            color: var(--primary-color);
+        }
+        
+        .section-subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .service-card {
+            background: var(--bg-white);
+            border-radius: var(--border-radius);
+            padding: 40px 30px;
+            text-align: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+            position: relative;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-         }
-         
-         .about-img img {
+        }
+        
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .service-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 82, 82, 0.1));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--primary-color);
+            transition: var(--transition);
+        }
+        
+        .service-card:hover .service-icon {
+            background: linear-gradient(135deg, var(--primary-color), #ff5252);
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .service-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+        
+        .service-description {
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+        
+        /* About Section */
+        .about_section {
+            padding: 80px 0;
+            background: var(--bg-white);
+        }
+        
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        
+        .about-text {
+            padding-right: 30px;
+        }
+        
+        .about-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+        }
+        
+        .about-title span {
+            font-family: 'Chewy', cursive;
+            color: var(--secondary-color);
+        }
+        
+        .about-description {
+            color: var(--text-light);
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        
+        .about-features {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(69, 183, 170, 0.1));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+        }
+        
+        .about-image {
+            position: relative;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+        }
+        
+        .about-image:hover {
+            transform: scale(1.05);
+        }
+        
+        .about-image img {
             width: 100%;
             height: auto;
-            transition: transform 0.5s ease;
-         }
-         
-         .about-img:hover img {
-            transform: scale(1.05);
-         }
-         
-         /* Team Section */
-         .team_section {
+            display: block;
+        }
+        
+        /* Team Section */
+        .team_section {
             padding: 80px 0;
-            background-color: #f9f9f9;
-         }
-         
-         .team-member {
+            background: var(--bg-light);
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+        }
+        
+        .team-member {
             text-align: center;
-            margin-bottom: 30px;
-         }
-         
-         .team-img {
+            transition: var(--transition);
+        }
+        
+        .team-member:hover {
+            transform: translateY(-10px);
+        }
+        
+        .team-image {
             width: 200px;
             height: 200px;
+            margin: 0 auto 25px;
+            position: relative;
             border-radius: 50%;
             overflow: hidden;
-            margin: 0 auto 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border: 5px solid white;
-         }
-         
-         .team-img img {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 5px solid var(--bg-white);
+            transition: var(--transition);
+        }
+        
+        .team-member:hover .team-image {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary-color);
+        }
+        
+        .team-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-         }
-         
-         .team-info h4 {
-            font-size: 1.25rem;
-            margin-bottom: 5px;
-            font-weight: 600;
-         }
-         
-         .team-info p.role {
-            color: var(--primary);
-            font-weight: 500;
-            margin-bottom: 10px;
-         }
-         
-         .team-info p.description {
-            font-size: 0.9rem;
-            color: #666;
-         }
-         
-         /* CTA Section */
-         .cta_section {
-            padding: 100px 0;
-            background: linear-gradient(rgba(41, 47, 54, 0.8), rgba(41, 47, 54, 0.8)), url('/static/images/pet-cta-bg.jpg');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            text-align: center;
-         }
-         
-         .cta_section h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-         }
-         
-         .btn-cta {
-            background-color: var(--secondary);
-            color: white;
-            border: 2px solid var(--secondary);
-            border-radius: 30px;
-            padding: 12px 35px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-         }
-         
-         .btn-cta:hover {
-            background-color: transparent;
-            color: white;
-         }
-         
-         /* Footer */
-         .footer_section {
-            padding: 80px 0 30px;
-            background-color: var(--dark);
-            color: #ccc;
-         }
-         
-         .footer-title {
-            color: white;
+            transition: var(--transition);
+        }
+        
+        .team-member:hover .team-image img {
+            transform: scale(1.1);
+        }
+        
+        .team-name {
             font-size: 1.3rem;
             font-weight: 600;
-            margin-bottom: 25px;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+        
+        .team-role {
+            color: var(--primary-color);
+            font-weight: 500;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+        
+        .team-description {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+        
+        /* CTA Section */
+        .cta_section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, var(--primary-color), #ff5252);
+            color: white;
+            text-align: center;
             position: relative;
-         }
-         
-         .footer-title:after {
+            overflow: hidden;
+        }
+        
+        .cta_section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            animation: drift 20s linear infinite;
+        }
+        
+        .cta-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .cta-title {
+            font-family: 'Chewy', cursive;
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .cta-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.95;
+        }
+        
+        .btn-cta {
+            background: var(--bg-white);
+            color: var(--primary-color);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        
+        /* Footer */
+        .footer_section {
+            padding: 60px 0 30px;
+            background: var(--text-dark);
+            color: #ccc;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-brand {
+            font-family: 'Chewy', cursive;
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .footer-title {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-title::after {
             content: '';
             position: absolute;
             width: 50px;
-            height: 2px;
-            background-color: var(--primary);
-            bottom: -10px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            bottom: 0;
             left: 0;
-         }
-         
-         .footer-links {
+        }
+        
+        .footer-links {
             list-style: none;
             padding: 0;
-         }
-         
-         .footer-links li {
-            margin-bottom: 10px;
-         }
-         
-         .footer-links a {
+        }
+        
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+        
+        .footer-links a {
             color: #ccc;
             text-decoration: none;
-            transition: all 0.3s ease;
-         }
-         
-         .footer-links a:hover {
-            color: var(--primary);
-            padding-left: 5px;
-         }
-         
-         .social-icons {
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary-color);
+            transform: translateX(5px);
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 12px;
             margin-top: 20px;
-         }
-         
-         .social-icons a {
-            display: inline-block;
+        }
+        
+        .social-icon {
             width: 40px;
             height: 40px;
-            background-color: rgba(255,255,255,0.1);
-            color: white;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 50%;
-            text-align: center;
-            line-height: 40px;
-            margin-right: 10px;
-            transition: all 0.3s ease;
-         }
-         
-         .social-icons a:hover {
-            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        
+        .social-icon:hover {
+            background: var(--primary-color);
             transform: translateY(-3px);
-         }
-         
-         .newsletter-form {
+            color: white;
+        }
+        
+        .newsletter-form {
             position: relative;
             margin-top: 20px;
-         }
-         
-         .newsletter-input {
+        }
+        
+        .newsletter-input {
             width: 100%;
-            padding: 12px 15px;
-            background-color: rgba(255,255,255,0.1);
-            border: none;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 30px;
             color: white;
-            font-size: 0.9rem;
-         }
-         
-         .newsletter-input::placeholder {
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+        
+        .newsletter-input::placeholder {
             color: #aaa;
-         }
-         
-         .newsletter-btn {
+        }
+        
+        .newsletter-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary-color);
+        }
+        
+        .newsletter-btn {
             position: absolute;
             right: 5px;
             top: 5px;
-            background-color: var(--primary);
+            bottom: 5px;
+            background: var(--primary-color);
             color: white;
             border: none;
-            border-radius: 30px;
-            padding: 7px 15px;
+            border-radius: 25px;
+            padding: 0 20px;
             font-weight: 500;
-            transition: all 0.3s ease;
-         }
-         
-         .newsletter-btn:hover {
-            background-color: var(--secondary);
-         }
-         
-         .copyright {
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .newsletter-btn:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+        
+        .footer-bottom {
             text-align: center;
             padding-top: 30px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            margin-top: 50px;
-            font-size: 0.9rem;
-         }
-         
-         /* Responsive */
-         @media (max-width: 991px) {
-            .banner_taital {
-               font-size: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .copyright {
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+        
+        #viewCounterBtn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        #viewCounterBtn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--primary-color);
+        }
+        
+        #viewCounter {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border-left: 3px solid var(--primary-color);
+            margin-top: 15px;
+            display: inline-block;
+        }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 991px) {
+            .hero-title h1 {
+                font-size: 3.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.3rem;
             }
             
             .about-content {
-               padding-right: 0;
-               margin-bottom: 30px;
-            }
-         }
-         
-         @media (max-width: 767px) {
-            .banner_section {
-               padding: 60px 0;
+                grid-template-columns: 1fr;
+                gap: 40px;
             }
             
-            .banner_taital {
-               font-size: 1.8rem;
+            .about-text {
+                padding-right: 0;
+                text-align: center;
             }
             
-            .section-title h2 {
-               font-size: 1.8rem;
+            .about-features {
+                justify-content: center;
             }
-            
-            .service-card {
-               margin-bottom: 30px;
-            }
-            
-            .footer-col {
-               margin-bottom: 40px;
-            }
-         }
-         /* View Counter Button Styles */
-#viewCounterBtn {
-    background-color: transparent;
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 20px;
-    padding: 3px 12px;
-    font-size: 0.8rem;
-    transition: all 0.3s ease;
-}
-
-#viewCounterBtn:hover {
-    background-color: rgba(255,255,255,0.1);
-    border-color: var(--primary);
-}
-
-#viewCounter {
-    background-color: rgba(0,0,0,0.2);
-    padding: 8px 12px;
-    border-radius: 5px;
-    border-left: 3px solid var(--primary);
-}
-      </style>
-   </head>
-   <body>
-      <!-- Header Section -->
-      <div class="header_section">
-         <div class="container">
-            <nav class="navbar navbar-expand-lg navbar-light">
-               <a class="navbar-brand" href="{%url 'landing' %}">
-                  <img src="{%static 'PetMetLogo.jpg' %}" style="width: 50px; height: 50px;">
-                  PetMet
-               </a>
-               <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                  <span class="navbar-toggler-icon"></span>
-               </button>
-               <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                  <ul class="navbar-nav ml-auto">
-                     <li class="nav-item active">
-                        <a class="nav-link" href="{%url 'landing' %}">Home</a>
-                     </li>
-                     <li class="nav-item">
-                        <a class="nav-link" href="#services">Services</a>
-                     </li>
-                     <li class="nav-item">
-                        <a class="nav-link" href="#about">About Us</a>
-                     </li>
-                     <li class="nav-item">
-                        <a class="nav-link" href="#team">Our Team</a>
-                     </li>
-                  </ul>
-                  <a href="{%url 'login' %}" class="btn btn-primary ml-3">Login</a>
-               </div>
-            </nav>
-         </div>
-      </div>
-      
-      <!-- Banner Section -->
-      <div class="banner_section">
-         <div class="container">
-            <div class="row justify-content-center">
-               <div class="col-lg-10">
-                  <div class="banner-content text-center">
-                     <h1 class="banner_taital">PETMET: OPTIMIZING PET ADOPTION THROUGH NLP-POWERED MATCHING WITH LOCATION BASED INSIGHTS</h1>
-                     <p class="banner_text">Using advanced Natural Language Processing to connect pet lovers with their ideal companions</p>
-                     <a href="#services" class="btn btn-primary btn-lg">Get Started</a>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-      
-      <!-- Services Section -->
-      <div id="services" class="service_section">
-         <div class="container">
-            <div class="section-title">
-               <h2>Our Services</h2>
-            </div>
-            
-            <div class="row">
-               <div class="col-lg-4 col-md-6">
-                  <div class="service-card">
-                     <div class="service-icon">
-                        <img src="{%static 'pet-adoptionIcon.png' %}" alt="Adoption Icon">
-                     </div>
-                     <h4>Facilitating Pet Adoptions</h4>
-                     <p>Connect with available animals from shelters, rescue organizations, and private owners to find your perfect companion.</p>
-                  </div>
-               </div>
-               
-               <div class="col-lg-4 col-md-6">
-                  <div class="service-card">
-                     <div class="service-icon">
-                        <img src="{%static 'pet-adoptionIcon.png' %}" alt="User-friendly Approach">
-                     </div>
-                     <h4>Find, View & Welcome</h4>
-                     <p>Discover a convenient and user-friendly method to find, view, and welcome animals in need of a loving home.</p>
-                  </div>
-               </div>
-               
-               <div class="col-lg-4 col-md-6">
-                  <div class="service-card">
-                     <div class="service-icon">
-                        <img src="{%static 'pet-adoptionIcon.png' %}" alt="AI Matching">
-                     </div>
-                     <h4>AI-Powered Pet Matching</h4>
-                     <p>Advanced language processing enhances pet adoption by matching pets with adopters based on lifestyles and preferences.</p>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-      
-      <!-- About Section -->
-      <div id="about" class="about_section">
-         <div class="container">
-            <div class="section-title">
-               <h2>About Skylark</h2>
-            </div>
-         </div>
-      </div>
-      
-      <div class="about_section_2">
-         <div class="container">
-            <div class="row align-items-center">
-               <div class="col-md-6">
-                  <div class="about-content">
-                     <p>Team SKYLARK is a dedicated group of Bachelor of Science in Computer Science (BSCS) students from Gordon College located in Olongapo City, Philippines. Their passion for creating positive impact is evident in their roles and contributions to the project.</p>
-                     <p>Together, the team is dedicated to making pet adoption easier and more accessible. Stay tuned for their exciting developments!</p>
-                  </div>
-               </div>
-               <div class="col-md-6">
-                  <div class="about-img">
-                     <img src="{%static 'TeamLogo.png' %}" alt="Team Skylark Logo" class="img-fluid">
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-      
-      <!-- Team Section -->
-      <div id="team" class="team_section">
-         <div class="container">
-            <div class="section-title">
-               <h2>Meet Our Team</h2>
-            </div>
-            
-            <div class="row">
-               <div class="col-lg-3 col-md-6">
-                  <div class="team-member">
-                     <div class="team-img">
-                        <img src="{%static 'team/Arvin.png' %}" alt="Arvin Shelby De Leon">
-                     </div>
-                     <div class="team-info">
-                        <h4>Arvin Shelby De Leon</h4>
-                        <p class="role">Project Adviser</p>
-                        <p class="description">Provides invaluable professional guidance, keeping the team on the right track and ensuring focused efforts.</p>
-                     </div>
-                  </div>
-               </div>
-               
-               <div class="col-lg-3 col-md-6">
-                  <div class="team-member">
-                     <div class="team-img">
-                        <img src="{%static 'team/455955679_1001877174954352_6720492336956922263_n.jpg' %}" alt="Allen Nebres">
-                     </div>
-                     <div class="team-info">
-                        <h4>Allen Nebres</h4>
-                        <p class="role">Hustler</p>
-                        <p class="description">The driving force behind turning ideas into action with a relentless work ethic and determination.</p>
-                     </div>
-                  </div>
-               </div>
-               
-               <div class="col-lg-3 col-md-6">
-                  <div class="team-member">
-                     <div class="team-img">
-                        <img src="{% static 'team/455700785_1038882434606928_3900257605003181516_n.jpg' %}" alt="Claudine Derain">
-                     </div>
-                     <div class="team-info">
-                        <h4>Claudine Derain</h4>
-                        <p class="role">Hipster</p>
-                        <p class="description">The creative genius bringing a fashionable twist to make the project user-friendly and visually appealing.</p>
-                     </div>
-                  </div>
-               </div>
-               
-               <div class="col-lg-3 col-md-6">
-                  <div class="team-member">
-                     <div class="team-img">
-                        <img src="{% static 'team/bernalene.png' %}" alt="Bernalene Dulay">
-                     </div>
-                     <div class="team-info">
-                        <h4>Bernalene Dulay</h4>
-                        <p class="role">Hacker</p>
-                        <p class="description">The tech genius solving code and technological problems to ensure smooth and effective functionality.</p>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-      
-      <!-- CTA Section -->
-      <div class="cta_section">
-         <div class="container">
-            <h2>"ADOPT DON'T SHOP - SAVE A LIFE"</h2>
-            <p>Make a difference in a pet's life today</p>
-            <a href="#services" class="btn btn-cta mt-3">Find Your Match</a>
-         </div>
-      </div>
-      
-      <!-- Footer Section -->
-<div class="footer_section">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-4 col-md-6 footer-col">
-                <h4 class="footer-title">PetMet</h4>
-                <p>PetMet is dedicated to optimizing pet adoption through NLP-powered pet matching with location-based insights, making it easier for pets to find loving homes.</p>
-                <div class="social-icons">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
-            
-            <div class="col-lg-2 col-md-6 footer-col">
-                <h4 class="footer-title">Quick Links</h4>
-                <ul class="footer-links">
-                    <li><a href="{%url 'landing' %}">Home</a></li>
-                    <li><a href="#services">Services</a></li>
-                    <li><a href="#about">About Us</a></li>
-                    <li><a href="#team">Our Team</a></li>
-                    <li><a href="{%url 'login' %}">Login</a></li>
-                </ul>
-            </div>
-            
-            <div class="col-lg-3 col-md-6 footer-col">
-                <h4 class="footer-title">Contact Us</h4>
-                <ul class="footer-links">
-                    <li><i class="fas fa-map-marker-alt mr-2"></i> Gordon College, Olongapo City, Philippines</li>
-                    <li><i class="fas fa-phone-alt mr-2"></i> +63 123 456 7890</li>
-                    <li><i class="fas fa-envelope mr-2"></i> info@petmet.com</li>
-                </ul>
-            </div>
-            
-            <div class="col-lg-3 col-md-6 footer-col">
-                <h4 class="footer-title">Newsletter</h4>
-                <p>Subscribe to our newsletter for updates on pet adoption events and success stories.</p>
-                <div class="newsletter-form">
-                    <input type="email" class="newsletter-input" placeholder="Enter your email">
-                    <button class="newsletter-btn">Subscribe</button>
-                </div>
-            </div>
-        </div>
+        }
         
-        <div class="copyright">
-            <p>&copy; 2025 PetMet. All Rights Reserved. | Designed by Team Skylark</p>
-            <button id="viewCounterBtn" class="btn btn-sm btn-outline-light mt-2">
-                <i class="fas fa-eye"></i> Show View Count
-            </button>
-            <div id="viewCounter" class="mt-2" style="display: none;">
-                <p class="mb-0">Total visits: {{ page_view.views }}</p>
-                <small class="text-muted">Last updated: {{ page_view.last_updated|date:"M d, Y H:i" }}</small>
+        @media (max-width: 768px) {
+            .hero_section {
+                padding: 100px 0 60px;
+            }
+            
+            .hero-title h1 {
+                font-size: 3rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .hero-description {
+                font-size: 1rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-hero-primary,
+            .btn-hero-secondary {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .team-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 30px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .navbar-brand {
+                font-size: 1.5rem;
+            }
+            
+            .navbar-brand img {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .hero-title h1 {
+                font-size: 2.5rem;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .cta-title {
+                font-size: 2rem;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .footer-title::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .social-icons {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <div class="header_section" id="header">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light">
+                <a class="navbar-brand" href="{%url 'landing' %}">
+                    <img src="{%static 'PetMetLogo.jpg' %}" alt="PetMet Logo">
+                    PetMet
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="#home">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#services">Services</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#about">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#team">Team</a>
+                        </li>
+                    </ul>
+                    <a href="{%url 'login' %}" class="btn btn-login ml-3">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                </div>
+            </nav>
+        </div>
+    </div>
+    
+    <!-- Hero Section -->
+    <div id="home" class="hero_section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <div class="hero-title">
+                            <h1>PetMet</h1>
+                        </div>
+                        <p class="hero-subtitle">Find Your Perfect Pet Match</p>
+                        <p class="hero-description">
+                            Using advanced Natural Language Processing and AI-powered matching to connect loving families with their ideal pet companions.
+                        </p>
+                        <div class="hero-buttons">
+                            <a href="#services" class="btn-hero-primary">
+                                <i class="fas fa-paw"></i> Get Started
+                            </a>
+                            <a href="#about" class="btn-hero-secondary">
+                                <i class="fas fa-info-circle"></i> Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="hero-image">
+                        <!-- <img src="{%static 'images/hero-pets.png' %}" alt="Happy Pets"> -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-      
-      <!-- Javascript files -->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-      
-      <script>
-         // Smooth scrolling for anchor links
-         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    
+    <!-- Stats Section -->
+    <div class="stats-section">
+        <div class="container">
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="stat-number">1,000+</div>
+                    <div class="stat-label">Pets Adopted</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-number">5,000+</div>
+                    <div class="stat-label">Happy Families</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <div class="stat-number">50+</div>
+                    <div class="stat-label">Partner Shelters</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Services Section -->
+    <div id="services" class="services_section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our <span>Services</span></h2>
+                <p class="section-subtitle">Discover how PetMet makes pet adoption easier and more meaningful</p>
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h4 class="service-title">Smart Pet Search</h4>
+                    <p class="service-description">
+                        Use natural language to describe your ideal pet. Our AI understands phrases like "friendly golden retriever" or "playful kitten."
+                    </p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h4 class="service-title">AI-Powered Matching</h4>
+                    <p class="service-description">
+                        Our advanced algorithms match you with pets based on your lifestyle, preferences, and living situation for the perfect fit.
+                    </p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <h4 class="service-title">Location-Based Results</h4>
+                    <p class="service-description">
+                        Find pets available for adoption near you. View shelters, rescues, and foster homes on an interactive map.
+                    </p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4 class="service-title">Verified Listings</h4>
+                    <p class="service-description">
+                        All pet listings are verified from trusted shelters, rescue organizations, and responsible private owners.
+                    </p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h4 class="service-title">Direct Communication</h4>
+                    <p class="service-description">
+                        Connect directly with shelters and current pet owners through our secure messaging platform.
+                    </p>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h4 class="service-title">Mobile Friendly</h4>
+                    <p class="service-description">
+                        Access PetMet anywhere with our responsive design that works perfectly on all devices.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- About Section -->
+    <div id="about" class="about_section">
+        <div class="container">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2 class="about-title">About <span>Team Skylark</span></h2>
+                    <p class="about-description">
+                        We are a passionate team of Computer Science students from Gordon College, Olongapo City, Philippines. Our mission is to revolutionize pet adoption through technology, making it easier for loving animals to find their forever homes.
+                    </p>
+                    <p class="about-description">
+                        PetMet combines cutting-edge Natural Language Processing with location-based services to create the most intuitive pet adoption platform. We believe every pet deserves a loving home, and every family deserves the perfect companion.
+                    </p>
+                    <div class="about-features">
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div>
+                                <strong>Student Innovation</strong>
+                                <p>Built by BSCS students passionate about technology and animal welfare</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div>
+                                <strong>Mission Driven</strong>
+                                <p>Committed to reducing pet homelessness through innovative solutions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-image">
+                    <img src="{%static 'TeamLogo.png' %}" alt="Team Skylark">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Team Section -->
+    <div id="team" class="team_section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Meet Our <span>Team</span></h2>
+                <p class="section-subtitle">The passionate individuals behind PetMet</p>
+            </div>
+            
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="team-image">
+                        <img src="{%static 'team/Arvin.png' %}" alt="Arvin Shelby De Leon">
+                    </div>
+                    <h4 class="team-name">Arvin Shelby De Leon</h4>
+                    <p class="team-role">Project Adviser</p>
+                    <p class="team-description">
+                        Provides invaluable professional guidance, keeping the team on track with focused efforts.
+                    </p>
+                </div>
+                
+                <div class="team-member">
+                    <div class="team-image">
+                        <img src="{%static 'team/455955679_1001877174954352_6720492336956922263_n.jpg' %}" alt="Allen Nebres">
+                    </div>
+                    <h4 class="team-name">Allen Nebres</h4>
+                    <p class="team-role">Hustler</p>
+                    <p class="team-description">
+                        The driving force behind turning ideas into action with relentless work ethic.
+                    </p>
+                </div>
+                
+                <div class="team-member">
+                    <div class="team-image">
+                        <img src="{%static 'team/455700785_1038882434606928_3900257605003181516_n.jpg' %}" alt="Claudine Derain">
+                    </div>
+                    <h4 class="team-name">Claudine Derain</h4>
+                    <p class="team-role">Hipster</p>
+                    <p class="team-description">
+                        The creative genius bringing a fashionable twist to make the project user-friendly.
+                    </p>
+                </div>
+                
+                <div class="team-member">
+                    <div class="team-image">
+                        <img src="{%static 'team/bernalene.png' %}" alt="Bernalene Dulay">
+                    </div>
+                    <h4 class="team-name">Bernalene Dulay</h4>
+                    <p class="team-role">Hacker</p>
+                    <p class="team-description">
+                        The tech genius solving code and technological problems for smooth functionality.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- CTA Section -->
+    <div class="cta_section">
+        <div class="cta-content">
+            <h2 class="cta-title">"Adopt Don't Shop - Save a Life"</h2>
+            <p class="cta-subtitle">Join thousands of families who found their perfect pet companion</p>
+            <a href="{%url 'login' %}" class="btn-cta">
+                <i class="fas fa-paw"></i> Start Your Journey
+            </a>
+        </div>
+    </div>
+    
+    <!-- Footer Section -->
+    <div class="footer_section">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-col">
+                    <h3 class="footer-brand">PetMet</h3>
+                    <p>Connecting loving families with their perfect pet companions through AI-powered matching.</p>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-col">
+                    <h4 class="footer-title">Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#home"><i class="fas fa-chevron-right"></i> Home</a></li>
+                        <li><a href="#services"><i class="fas fa-chevron-right"></i> Services</a></li>
+                        <li><a href="#about"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                        <li><a href="#team"><i class="fas fa-chevron-right"></i> Our Team</a></li>
+                        <li><a href="{%url 'login' %}"><i class="fas fa-chevron-right"></i> Login</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4 class="footer-title">Contact Info</h4>
+                    <ul class="footer-links">
+                        <li><i class="fas fa-map-marker-alt"></i> Gordon College, Olongapo City</li>
+                        <li><i class="fas fa-phone"></i> +63 123 456 7890</li>
+                        <li><i class="fas fa-envelope"></i> info@petmet.com</li>
+                        <li><i class="fas fa-clock"></i> Mon-Fri: 9AM-5PM</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4 class="footer-title">Newsletter</h4>
+                    <p>Subscribe for pet adoption tips and success stories</p>
+                    <form class="newsletter-form">
+                        <input type="email" class="newsletter-input" placeholder="Your email">
+                        <button type="submit" class="newsletter-btn">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="copyright">&copy; 2025 PetMet. All Rights Reserved. | Made with ❤️ by Team Skylark</p>
+                <button id="viewCounterBtn" class="btn btn-sm">
+                    <i class="fas fa-eye"></i> Show Views
+                </button>
+                <div id="viewCounter" style="display: none;">
+                    <p class="mb-0">Total visits: {{ page_view.views }}</p>
+                    <small class="text-muted">Last updated: {{ page_view.last_updated|date:"M d, Y H:i" }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.min.js"></script>
+    
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
-               e.preventDefault();
-               
-               const targetId = this.getAttribute('href');
-               const targetElement = document.querySelector(targetId);
-               
-               if (targetElement) {
-                  window.scrollTo({
-                     top: targetElement.offsetTop - 80,
-                     behavior: 'smooth'
-                  });
-               }
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const headerOffset = 80;
+                    const elementPosition = target.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
             });
-         });
-         
-         // Add active class to nav items on scroll
-         window.addEventListener('scroll', function() {
+        });
+        
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+            
+            // Update active nav link
             const sections = document.querySelectorAll('div[id]');
             const scrollPosition = window.pageYOffset + 100;
             
             sections.forEach(section => {
-               const sectionTop = section.offsetTop;
-               const sectionHeight = section.offsetHeight;
-               const sectionId = section.getAttribute('id');
-               
-               if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-                  document.querySelector('.navbar-nav a[href="#' + sectionId + '"]')?.parentElement.classList.add('active');
-               } else {
-                  document.querySelector('.navbar-nav a[href="#' + sectionId + '"]')?.parentElement.classList.remove('active');
-               }
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.offsetHeight;
+                const sectionId = section.getAttribute('id');
+                
+                if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                    document.querySelectorAll('.nav-link').forEach(link => {
+                        link.parentElement.classList.remove('active');
+                    });
+                    const activeLink = document.querySelector(`.nav-link[href="#${sectionId}"]`);
+                    if (activeLink) {
+                        activeLink.parentElement.classList.add('active');
+                    }
+                }
             });
-         });
-
-          // View counter toggle
-    document.getElementById('viewCounterBtn').addEventListener('click', function() {
-        const counter = document.getElementById('viewCounter');
-        const btn = this;
+        });
         
-        if (counter.style.display === 'none') {
-            counter.style.display = 'block';
-            btn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide View Count';
-        } else {
-            counter.style.display = 'none';
-            btn.innerHTML = '<i class="fas fa-eye"></i> Show View Count';
-        }
-    });
-      </script>
-   </body>
+        // View counter toggle
+        document.getElementById('viewCounterBtn').addEventListener('click', function() {
+            const counter = document.getElementById('viewCounter');
+            const btn = this;
+            
+            if (counter.style.display === 'none') {
+                counter.style.display = 'inline-block';
+                btn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Views';
+            } else {
+                counter.style.display = 'none';
+                btn.innerHTML = '<i class="fas fa-eye"></i> Show Views';
+            }
+        });
+        
+        // Newsletter form
+        document.querySelector('.newsletter-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('.newsletter-input').value;
+            if (email) {
+                alert('Thank you for subscribing!');
+                this.reset();
+            }
+        });
+    </script>
+</body>
 </html>

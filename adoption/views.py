@@ -1,15 +1,17 @@
 # adoption/views.py
-# Complete views file with NLP search integration + Web Search
+# Minimal changes to fix the disappearing pets issue
 
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.core.cache import cache
 from django.db.models import Q
 import json
 import math
 import requests
 import time
+import hashlib
 from bs4 import BeautifulSoup
 import re
 
@@ -20,8 +22,385 @@ from .models import PendingPetForAdoption
 from .utils.search_helpers import perform_smart_search, get_search_suggestions, analyze_search_query, build_search_filters
 from .utils.nlp_search import PetSearchNLP
 
-# ==================== NEW WEB SEARCH CLASS ====================
+# ==================== ENHANCED GEOCODING WITH CACHING ====================
 
+def geocode_location(location_name):
+    """
+    Convert location name to coordinates using Nominatim geocoding with caching
+    """
+    if not location_name:
+        return None
+    
+    # Create cache key
+    cache_key = f"geocode_{hashlib.md5(location_name.lower().encode()).hexdigest()}"
+    
+    # Try to get from cache first
+    cached_result = cache.get(cache_key)
+    if cached_result:
+        print(f"Using cached coordinates for {location_name}")
+        return cached_result
+    
+    # Check fallback coordinates first (faster and more reliable)
+    fallback_coords = get_fallback_coordinates(location_name)
+    if fallback_coords:
+        print(f"Using fallback coordinates for {location_name}")
+        # Cache the fallback result for 1 hour
+        cache.set(cache_key, fallback_coords, 3600)
+        return fallback_coords
+    
+    try:
+        print(f"Geocoding via API: {location_name}")
+        
+        # Use Nominatim (OpenStreetMap) geocoding service
+        url = "https://nominatim.openstreetmap.org/search"
+        params = {
+            'q': f"{location_name}, Philippines",
+            'format': 'json',
+            'limit': 1,
+            'countrycodes': 'PH'
+        }
+        
+        headers = {
+            'User-Agent': 'PetAdoptionMap/1.0'
+        }
+        
+        response = requests.get(url, params=params, headers=headers, timeout=10)
+        
+        if response.status_code == 200:
+            data = response.json()
+            
+            if data and len(data) > 0:
+                result = {
+                    'lat': float(data[0]['lat']),
+                    'lng': float(data[0]['lon'])
+                }
+                
+                # Cache for 24 hours
+                cache.set(cache_key, result, 86400)
+                print(f"Geocoded successfully: {location_name}")
+                return result
+        
+        print(f"Geocoding API failed for {location_name}")
+        
+    except Exception as e:
+        print(f"Geocoding error for {location_name}: {e}")
+    
+    # Return None if all fails - don't force wrong coordinates
+    return None
+
+
+def get_fallback_coordinates(location_name):
+    """
+    Enhanced fallback coordinates for Philippine locations
+    """
+    fallback_locations = {
+        # Central Luzon - Your area
+        'olongapo': {'lat': 14.8267, 'lng': 120.2823},
+        'olongapo city': {'lat': 14.8267, 'lng': 120.2823},
+        'subic': {'lat': 14.8833, 'lng': 120.2333},
+        'subic bay': {'lat': 14.8833, 'lng': 120.2333},
+        'angeles': {'lat': 15.1455, 'lng': 120.5931},
+        'angeles city': {'lat': 15.1455, 'lng': 120.5931},
+        'clark': {'lat': 15.1855, 'lng': 120.5600},
+        'tarlac': {'lat': 15.4751, 'lng': 120.5969},
+        'pampanga': {'lat': 15.0794, 'lng': 120.6200},
+        'bataan': {'lat': 14.6417, 'lng': 120.4736},
+        'nueva ecija': {'lat': 15.5784, 'lng': 121.1113},
+        'zambales': {'lat': 15.5093, 'lng': 119.9673},
+        
+        # Metro Manila
+        'manila': {'lat': 14.5995, 'lng': 120.9842},
+        'quezon city': {'lat': 14.6760, 'lng': 121.0437},
+        'makati': {'lat': 14.5547, 'lng': 121.0244},
+        'pasig': {'lat': 14.5764, 'lng': 121.0851},
+        'taguig': {'lat': 14.5176, 'lng': 121.0509},
+        'mandaluyong': {'lat': 14.5794, 'lng': 121.0359},
+        'san juan': {'lat': 14.6019, 'lng': 121.0355},
+        'pasay': {'lat': 14.5378, 'lng': 120.9956},
+        'caloocan': {'lat': 14.6488, 'lng': 120.9638},
+        'marikina': {'lat': 14.6507, 'lng': 121.1029},
+        'muntinlupa': {'lat': 14.3754, 'lng': 121.0392},
+        'las pinas': {'lat': 14.4583, 'lng': 120.9761},
+        'paranaque': {'lat': 14.4793, 'lng': 121.0198},
+        'valenzuela': {'lat': 14.7000, 'lng': 120.9822},
+        'malabon': {'lat': 14.6651, 'lng': 120.9567},
+        'navotas': {'lat': 14.6691, 'lng': 120.9478},
+        
+        # Other major cities
+        'baguio': {'lat': 16.4023, 'lng': 120.5960},
+        'cebu': {'lat': 10.3157, 'lng': 123.8854},
+        'cebu city': {'lat': 10.3157, 'lng': 123.8854},
+        'davao': {'lat': 7.1907, 'lng': 125.4553},
+        'davao city': {'lat': 7.1907, 'lng': 125.4553},
+        'iloilo': {'lat': 10.7202, 'lng': 122.5621},
+        'bacolod': {'lat': 10.6760, 'lng': 122.9540},
+        'cagayan de oro': {'lat': 8.4542, 'lng': 124.6319},
+        'zamboanga': {'lat': 6.9214, 'lng': 122.0790},
+        'tacloban': {'lat': 11.2447, 'lng': 125.0110},
+        
+        # Specific areas from your data
+        'santa rita': {'lat': 14.8267, 'lng': 120.2823},
+        'sierra bullones': {'lat': 9.9167, 'lng': 124.2833},
+    }
+    
+    location_lower = location_name.lower().strip()
+    
+    # Exact match first
+    if location_lower in fallback_locations:
+        return fallback_locations[location_lower]
+    
+    # Partial match
+    for key, coords in fallback_locations.items():
+        if key in location_lower or location_lower in key:
+            return coords
+    
+    return None
+
+# ==================== UPDATED MAP VIEWS WITH CACHING ====================
+
+@require_http_methods(["GET"])
+def get_pets_locations(request):
+    """
+    API endpoint to get all pets with their locations for the map
+    Enhanced with caching to prevent disappearing pets
+    """
+    try:
+        print("API called: get_pets_locations")
+        
+        # Check if we have cached pet locations
+        pets_cache_key = "all_pets_locations_v2"
+        cached_pets = cache.get(pets_cache_key)
+        
+        if cached_pets:
+            print(f"Returning {len(cached_pets)} cached pets")
+            return JsonResponse(cached_pets, safe=False)
+        
+        # Get all pets that have a location field and are approved or pending
+        pets = PendingPetForAdoption.objects.filter(
+            location__isnull=False,
+            adoption_status__in=['approved', 'pending']
+        ).exclude(location='')
+        
+        print(f"Found {pets.count()} pets with location data")
+        
+        pets_data = []
+        failed_geocodes = []
+        
+        for pet in pets:
+            try:
+                print(f"Processing pet: {pet.name} in {pet.location}")
+                
+                # Get coordinates from location name (with caching)
+                coordinates = geocode_location(pet.location)
+                
+                if coordinates:
+                    pet_data = {
+                        'id': pet.id,
+                        'name': pet.name,
+                        'type': pet.animal_type.lower() if pet.animal_type else 'other',
+                        'breed': pet.breed if pet.breed else 'Mixed',
+                        'age': pet.age if pet.age else 'Unknown',
+                        'lat': coordinates['lat'],
+                        'lng': coordinates['lng'],
+                        'description': pet.additional_details if pet.additional_details else '',
+                        'location_name': pet.location,
+                        'gender': pet.gender if pet.gender else 'Unknown',
+                        'color': pet.color if pet.color else 'Unknown',
+                        'adoption_status': pet.adoption_status,
+                        'created_at': pet.created_at.isoformat() if pet.created_at else None,
+                    }
+                    
+                    # Handle image URL
+                    if pet.img:
+                        try:
+                            pet_data['image_url'] = pet.img.url
+                        except:
+                            pet_data['image_url'] = None
+                    else:
+                        pet_data['image_url'] = None
+                    
+                    # Handle owner contact (from the user who posted)
+                    if pet.user:
+                        pet_data['owner_contact'] = f"{pet.user.first_name} {pet.user.last_name}".strip()
+                        if not pet_data['owner_contact']:
+                            pet_data['owner_contact'] = pet.user.username
+                        pet_data['owner_email'] = pet.user.email
+                    else:
+                        pet_data['owner_contact'] = pet.author if pet.author else 'Unknown'
+                        pet_data['owner_email'] = ''
+                    
+                    pets_data.append(pet_data)
+                    print(f"Added pet: {pet_data['name']} at {pet_data['lat']}, {pet_data['lng']}")
+                else:
+                    failed_geocodes.append({
+                        'id': pet.id,
+                        'name': pet.name,
+                        'location': pet.location
+                    })
+                    print(f"Failed to geocode: {pet.name} in {pet.location}")
+                
+            except Exception as e:
+                print(f"Error processing pet {pet.id}: {e}")
+                failed_geocodes.append({
+                    'id': pet.id,
+                    'name': pet.name,
+                    'location': getattr(pet, 'location', 'Unknown'),
+                    'error': str(e)
+                })
+                continue
+        
+        # Cache the successful results for 10 minutes to prevent repeated API calls
+        if pets_data:
+            cache.set(pets_cache_key, pets_data, 600)
+        
+        print(f"Returning {len(pets_data)} pets, {len(failed_geocodes)} failed")
+        
+        # Always return the pets array directly for frontend compatibility
+        return JsonResponse(pets_data, safe=False)
+        
+    except Exception as e:
+        print(f"API Error: {e}")
+        return JsonResponse({'error': str(e), 'pets': []}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def search_pets_by_location(request):
+    """
+    API endpoint to search pets by location and radius
+    Enhanced with caching
+    """
+    try:
+        data = json.loads(request.body)
+        
+        center_lat = float(data.get('lat'))
+        center_lng = float(data.get('lng'))
+        radius_km = float(data.get('radius', 5))
+        pet_type = data.get('pet_type', 'all')
+        
+        print(f"Searching pets around {center_lat}, {center_lng} within {radius_km}km for {pet_type}")
+        
+        # Create cache key for this specific search
+        search_cache_key = f"location_search_{center_lat:.4f}_{center_lng:.4f}_{radius_km}_{pet_type}"
+        cached_result = cache.get(search_cache_key)
+        
+        if cached_result:
+            print(f"Returning cached search results: {len(cached_result['pets'])} pets")
+            return JsonResponse(cached_result)
+        
+        pets_query = PendingPetForAdoption.objects.filter(
+            location__isnull=False,
+            adoption_status__in=['approved', 'pending']
+        ).exclude(location='')
+        
+        if pet_type != 'all':
+            pets_query = pets_query.filter(animal_type__icontains=pet_type)
+        
+        pets_data = []
+        processed_count = 0
+        failed_count = 0
+        
+        for pet in pets_query:
+            try:
+                processed_count += 1
+                coordinates = geocode_location(pet.location)
+                
+                if coordinates:
+                    distance = calculate_distance(
+                        center_lat, center_lng,
+                        coordinates['lat'], coordinates['lng']
+                    )
+                    
+                    if distance <= radius_km:
+                        pet_data = {
+                            'id': pet.id,
+                            'name': pet.name,
+                            'type': pet.animal_type.lower() if pet.animal_type else 'other',
+                            'breed': pet.breed if pet.breed else 'Mixed',
+                            'age': pet.age if pet.age else 'Unknown',
+                            'lat': coordinates['lat'],
+                            'lng': coordinates['lng'],
+                            'description': pet.additional_details if pet.additional_details else '',
+                            'distance': round(distance, 2),
+                            'location_name': pet.location,
+                            'gender': pet.gender if pet.gender else 'Unknown',
+                            'color': pet.color if pet.color else 'Unknown',
+                            'adoption_status': pet.adoption_status,
+                        }
+                        
+                        if pet.img:
+                            try:
+                                pet_data['image_url'] = pet.img.url
+                            except:
+                                pet_data['image_url'] = None
+                        else:
+                            pet_data['image_url'] = None
+                        
+                        # Handle owner contact
+                        if pet.user:
+                            pet_data['owner_contact'] = f"{pet.user.first_name} {pet.user.last_name}".strip()
+                            if not pet_data['owner_contact']:
+                                pet_data['owner_contact'] = pet.user.username
+                            pet_data['owner_email'] = pet.user.email
+                        else:
+                            pet_data['owner_contact'] = pet.author if pet.author else 'Unknown'
+                            pet_data['owner_email'] = ''
+                        
+                        pets_data.append(pet_data)
+                        print(f"Found pet within radius: {pet.name} ({distance:.2f}km away)")
+                else:
+                    failed_count += 1
+                    
+            except Exception as e:
+                print(f"Error processing pet {pet.id}: {e}")
+                failed_count += 1
+                continue
+        
+        result = {
+            'pets': pets_data,
+            'count': len(pets_data),
+            'search_params': {
+                'lat': center_lat,
+                'lng': center_lng,
+                'radius': radius_km,
+                'pet_type': pet_type
+            },
+            'debug_info': {
+                'processed_pets': processed_count,
+                'failed_geocodes': failed_count,
+                'found_in_radius': len(pets_data)
+            }
+        }
+        
+        # Cache successful searches for 5 minutes
+        cache.set(search_cache_key, result, 300)
+        
+        print(f"Search complete: {len(pets_data)} pets found")
+        return JsonResponse(result)
+        
+    except Exception as e:
+        print(f"Search Error: {e}")
+        return JsonResponse({'error': str(e), 'pets': []}, status=500)
+
+# ==================== CACHE MANAGEMENT ====================
+
+@require_http_methods(["POST"])
+@csrf_exempt
+def clear_pets_cache(request):
+    """
+    Clear pets location cache to force refresh
+    """
+    try:
+        cache.delete("all_pets_locations_v2")
+        # Clear search caches with pattern (basic implementation)
+        print("Pets location cache cleared")
+        return JsonResponse({'message': 'Cache cleared successfully'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+# ==================== KEEP ALL YOUR EXISTING VIEWS UNCHANGED ====================
+
+# Your existing web search class and views remain exactly the same
 class SimplePetWebSearch:
     """Simple web search for pets by name"""
     
@@ -292,7 +671,6 @@ class SimplePetWebSearch:
         cleaned = re.sub(r'[^\w\s.,!?-]', '', cleaned)
         return cleaned
 
-# ==================== NEW WEB SEARCH VIEW ====================
 
 @require_http_methods(["GET"])
 def search_pets_web(request):
@@ -323,7 +701,6 @@ def search_pets_web(request):
             'message': 'Error searching web for pets'
         })
 
-# ==================== EXISTING NLP SEARCH VIEWS ====================
 
 def search_results(request):
     """
@@ -382,6 +759,7 @@ def search_results(request):
     
     return render(request, 'search_results.html', context)
 
+
 @require_http_methods(["GET"])
 def search_suggestions_api(request):
     """
@@ -414,6 +792,7 @@ def search_suggestions_api(request):
         print(f"Error in search suggestions: {e}")
         return JsonResponse({'suggestions': [], 'error': str(e)})
 
+
 @require_http_methods(["GET"])
 def analyze_query_api(request):
     """
@@ -436,6 +815,7 @@ def analyze_query_api(request):
     except Exception as e:
         print(f"Error analyzing query: {e}")
         return JsonResponse({'entities': {}, 'error': str(e)})
+
 
 @require_http_methods(["POST"])
 @csrf_exempt
@@ -531,251 +911,24 @@ def smart_search_api(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-# ==================== EXISTING MAP VIEWS (UNCHANGED) ====================
-
-@require_http_methods(["GET"])
-def get_pets_locations(request):
-    """
-    API endpoint to get all pets with their locations for the map
-    """
-    try:
-        print("🔍 API called: get_pets_locations")
-        
-        # Get all pets that have a location field and are approved or pending
-        pets = PendingPetForAdoption.objects.filter(
-            location__isnull=False,
-            adoption_status__in=['approved', 'pending']  # Show only approved and pending pets
-        ).exclude(location='')
-        
-        print(f"📊 Found {pets.count()} pets with location data")
-        
-        pets_data = []
-        for pet in pets:
-            try:
-                # Get coordinates from location name
-                coordinates = geocode_location(pet.location)
-                
-                if coordinates:
-                    pet_data = {
-                        'id': pet.id,
-                        'name': pet.name,
-                        'type': pet.animal_type.lower() if pet.animal_type else 'other',
-                        'breed': pet.breed if pet.breed else 'Mixed',
-                        'age': pet.age if pet.age else 'Unknown',
-                        'lat': coordinates['lat'],
-                        'lng': coordinates['lng'],
-                        'description': pet.additional_details if pet.additional_details else '',
-                        'location_name': pet.location,
-                        'gender': pet.gender if pet.gender else 'Unknown',
-                        'color': pet.color if pet.color else 'Unknown',
-                        'adoption_status': pet.adoption_status,
-                        'created_at': pet.created_at.isoformat() if pet.created_at else None,
-                    }
-                    
-                    # Handle image URL
-                    if pet.img:
-                        try:
-                            pet_data['image_url'] = pet.img.url
-                        except:
-                            pet_data['image_url'] = None
-                    else:
-                        pet_data['image_url'] = None
-                    
-                    # Handle owner contact (from the user who posted)
-                    if pet.user:
-                        pet_data['owner_contact'] = f"{pet.user.first_name} {pet.user.last_name}".strip()
-                        if not pet_data['owner_contact']:
-                            pet_data['owner_contact'] = pet.user.username
-                        pet_data['owner_email'] = pet.user.email
-                    else:
-                        pet_data['owner_contact'] = pet.author if pet.author else 'Unknown'
-                        pet_data['owner_email'] = ''
-                    
-                    pets_data.append(pet_data)
-                    print(f"✅ Added pet: {pet_data['name']} at {pet_data['lat']}, {pet_data['lng']}")
-                
-                # Add delay to avoid rate limiting
-                time.sleep(0.1)
-                
-            except Exception as e:
-                print(f"❌ Error processing pet {pet.id}: {e}")
-                continue
-        
-        print(f"🎯 Returning {len(pets_data)} pets")
-        return JsonResponse(pets_data, safe=False)
-        
-    except Exception as e:
-        print(f"🚨 API Error: {e}")
-        return JsonResponse({'error': str(e), 'pets': []}, status=500)
-
-
-def geocode_location(location_name):
-    """
-    Convert location name to coordinates using Nominatim geocoding
-    """
-    try:
-        # Use Nominatim (OpenStreetMap) geocoding service
-        url = "https://nominatim.openstreetmap.org/search"
-        params = {
-            'q': f"{location_name}, Philippines",
-            'format': 'json',
-            'limit': 1,
-            'countrycodes': 'PH'
-        }
-        
-        headers = {
-            'User-Agent': 'PetAdoptionMap/1.0'
-        }
-        
-        response = requests.get(url, params=params, headers=headers, timeout=5)
-        data = response.json()
-        
-        if data and len(data) > 0:
-            return {
-                'lat': float(data[0]['lat']),
-                'lng': float(data[0]['lon'])
-            }
-        else:
-            # Fallback coordinates for common Philippine cities
-            fallback_coords = get_fallback_coordinates(location_name)
-            if fallback_coords:
-                return fallback_coords
-                
-    except Exception as e:
-        print(f"Geocoding error for {location_name}: {e}")
-        fallback_coords = get_fallback_coordinates(location_name)
-        if fallback_coords:
-            return fallback_coords
-    
-    return None
-
-
-def get_fallback_coordinates(location_name):
-    """
-    Fallback coordinates for common Philippine locations
-    """
-    fallback_locations = {
-        'olongapo': {'lat': 14.8267, 'lng': 120.2823},
-        'olongapo city': {'lat': 14.8267, 'lng': 120.2823},
-        'subic': {'lat': 14.8833, 'lng': 120.2333},
-        'manila': {'lat': 14.5995, 'lng': 120.9842},
-        'quezon city': {'lat': 14.6760, 'lng': 121.0437},
-        'makati': {'lat': 14.5547, 'lng': 121.0244},
-        'pasig': {'lat': 14.5764, 'lng': 121.0851},
-        'taguig': {'lat': 14.5176, 'lng': 121.0509},
-        'baguio': {'lat': 16.4023, 'lng': 120.5960},
-        'cebu': {'lat': 10.3157, 'lng': 123.8854},
-        'davao': {'lat': 7.1907, 'lng': 125.4553},
-        'santa rita': {'lat': 14.8267, 'lng': 120.2823},
-        'sierra bullones': {'lat': 9.9167, 'lng': 124.2833},
-    }
-    
-    location_lower = location_name.lower().strip()
-    
-    if location_lower in fallback_locations:
-        return fallback_locations[location_lower]
-    
-    for key, coords in fallback_locations.items():
-        if key in location_lower or location_lower in key:
-            return coords
-    
-    return {'lat': 14.8267, 'lng': 120.2823}
-
-
-@csrf_exempt
-@require_http_methods(["POST"])
-def search_pets_by_location(request):
-    """
-    API endpoint to search pets by location and radius
-    """
-    try:
-        data = json.loads(request.body)
-        
-        center_lat = float(data.get('lat'))
-        center_lng = float(data.get('lng'))
-        radius_km = float(data.get('radius', 5))
-        pet_type = data.get('pet_type', 'all')
-        
-        pets_query = PendingPetForAdoption.objects.filter(
-            location__isnull=False,
-            adoption_status__in=['approved', 'pending']  # Show only approved and pending pets
-        ).exclude(location='')
-        
-        if pet_type != 'all':
-            pets_query = pets_query.filter(animal_type__icontains=pet_type)
-        
-        pets_data = []
-        for pet in pets_query:
-            try:
-                coordinates = geocode_location(pet.location)
-                
-                if coordinates:
-                    distance = calculate_distance(
-                        center_lat, center_lng,
-                        coordinates['lat'], coordinates['lng']
-                    )
-                    
-                    if distance <= radius_km:
-                        pet_data = {
-                            'id': pet.id,
-                            'name': pet.name,
-                            'type': pet.animal_type.lower() if pet.animal_type else 'other',
-                            'breed': pet.breed if pet.breed else 'Mixed',
-                            'age': pet.age if pet.age else 'Unknown',
-                            'lat': coordinates['lat'],
-                            'lng': coordinates['lng'],
-                            'description': pet.additional_details if pet.additional_details else '',
-                            'distance': round(distance, 2),
-                            'location_name': pet.location,
-                            'gender': pet.gender if pet.gender else 'Unknown',
-                            'color': pet.color if pet.color else 'Unknown',
-                            'adoption_status': pet.adoption_status,
-                        }
-                        
-                        if pet.img:
-                            try:
-                                pet_data['image_url'] = pet.img.url
-                            except:
-                                pet_data['image_url'] = None
-                        else:
-                            pet_data['image_url'] = None
-                        
-                        pets_data.append(pet_data)
-                
-                time.sleep(0.1)
-                
-            except Exception as e:
-                print(f"Error processing pet {pet.id}: {e}")
-                continue
-        
-        return JsonResponse({
-            'pets': pets_data,
-            'count': len(pets_data),
-            'search_params': {
-                'lat': center_lat,
-                'lng': center_lng,
-                'radius': radius_km,
-                'pet_type': pet_type
-            }
-        })
-        
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-
 
 def calculate_distance(lat1, lon1, lat2, lon2):
     """
     Calculate distance between two points using Haversine formula
     """
-    lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
-    
-    dlat = lat2 - lat1
-    dlon = lon2 - lon1
-    a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
-    c = 2 * math.asin(math.sqrt(a))
-    r = 6371  # Earth radius in kilometers
-    
-    return c * r
+    try:
+        lat1, lon1, lat2, lon2 = map(math.radians, [lat1, lon1, lat2, lon2])
+        
+        dlat = lat2 - lat1
+        dlon = lon2 - lon1
+        a = math.sin(dlat/2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon/2)**2
+        c = 2 * math.asin(math.sqrt(a))
+        r = 6371  # Earth radius in kilometers
+        
+        return c * r
+    except Exception as e:
+        print(f"Distance calculation error: {e}")
+        return float('inf')
 
 
 def debug_model_fields(request):

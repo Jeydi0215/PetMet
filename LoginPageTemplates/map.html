@@ -3,7 +3,7 @@
 {% block content %}
 <style>
     body {
-        background-image: url('https://images.unsplash.com/photo-1444212477490-ca407925329e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+     
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -112,6 +112,12 @@
     .btn-primary:hover {
         background-color: #2980b9;
         transform: translateY(-2px);
+    }
+
+    .btn-primary:disabled {
+        background-color: #bdc3c7;
+        cursor: not-allowed;
+        transform: none;
     }
 
     .controls-row {
@@ -424,6 +430,35 @@
         transform: translateY(-1px);
     }
 
+    /* Search status message */
+    .search-status {
+        background: rgba(52, 152, 219, 0.1);
+        border: 1px solid rgba(52, 152, 219, 0.3);
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+        text-align: center;
+        color: #2c3e50;
+        font-weight: 500;
+        display: none;
+    }
+
+    .search-status.show {
+        display: block;
+    }
+
+    .search-status.success {
+        background: rgba(46, 204, 113, 0.1);
+        border-color: rgba(46, 204, 113, 0.3);
+        color: #27ae60;
+    }
+
+    .search-status.error {
+        background: rgba(231, 76, 60, 0.1);
+        border-color: rgba(231, 76, 60, 0.3);
+        color: #e74c3c;
+    }
+
     /* Legend */
     .map-legend {
         background: rgba(255, 255, 255, 0.95);
@@ -521,12 +556,12 @@
             <div class="controls-row">
                 <div class="form-group">
                     <label for="location">Search Location</label>
-                    <input type="text" class="form-control" id="location" placeholder="Enter address or click on map">
+                    <input type="text" class="form-control" id="location" placeholder="Enter city name (e.g. Baguio, Manila, Cebu)">
                 </div>
                 
                 <div class="form-group">
                     <label for="radius">Radius (km)</label>
-                    <input type="number" class="form-control" id="radius" value="5" min="0.1" max="50" step="0.1">
+                    <input type="number" class="form-control" id="radius" value="10" min="0.1" max="50" step="0.1">
                 </div>
                 
                 <div class="form-group">
@@ -543,9 +578,35 @@
                 
                 <button class="btn-primary" onclick="searchPets()">Search Pets</button>
             </div>
+            
+            <div id="searchStatus" class="search-status"></div>
         </div>
 
         <div id="map"></div>
+        
+        <div class="map-legend">
+            <h4 style="margin: 0 0 10px 0; color: #2c3e50;">Pet Types</h4>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #e74c3c; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🐕</div>
+                <span>Dogs</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #f39c12; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🐱</div>
+                <span>Cats</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #3498db; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🐦</div>
+                <span>Birds</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #9b59b6; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🐰</div>
+                <span>Rabbits</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #2ecc71; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 14px;">🐾</div>
+                <span>Other Pets</span>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -623,374 +684,545 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
 <script>
-    // Initialize the map
-    let map;
-    let currentLocationMarker;
-    let radiusCircle;
-    let petMarkers = [];
-    
-    // Pet data will be loaded from database
-    let allPets = [];
-    
-    // CSRF token for Django AJAX requests
-    function getCSRFToken() {
-        return document.querySelector('[name=csrfmiddlewaretoken]').value;
-    }
+// Initialize the map
+let map;
+let currentLocationMarker;
+let radiusCircle;
+let petMarkers = [];
 
-    // Pet type colors
-    const petColors = {
-        dog: '#e74c3c',
-        cat: '#f39c12',
-        bird: '#3498db',
-        rabbit: '#9b59b6',
-        other: '#2ecc71'
-    };
+// Pet data will be loaded from database
+let allPets = [];
 
-    function initMap() {
-        // Initialize map centered on Olongapo, Central Luzon, Philippines
-        map = L.map('map').setView([14.6760, 120.9450], 13);
+// CSRF token for Django AJAX requests
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
 
-        // Add tile layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+// Pet type colors
+const petColors = {
+    dog: '#e74c3c',
+    cat: '#f39c12',
+    bird: '#3498db',
+    rabbit: '#9b59b6',
+    other: '#2ecc71'
+};
 
-        // Add click event to map for location selection
-        map.on('click', function(e) {
-            setSearchLocation(e.latlng.lat, e.latlng.lng);
-            reverseGeocode(e.latlng.lat, e.latlng.lng);
+function initMap() {
+    // Initialize map centered on Olongapo, Central Luzon, Philippines
+    map = L.map('map').setView([14.8267, 120.2823], 13);
+
+    // Add tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Add click event to map for location selection
+    map.on('click', function(e) {
+        setSearchLocation(e.latlng.lat, e.latlng.lng);
+        reverseGeocode(e.latlng.lat, e.latlng.lng);
+    });
+
+    // Load pets from database
+    loadPetsFromDatabase();
+}
+
+async function loadPetsFromDatabase() {
+    try {
+        console.log('Loading pets from database...');
+        showSearchStatus('Loading pets from database...', 'info');
+        
+        const response = await fetch('/adoption/api/pets/locations/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
         });
-
-        // Load pets from database instead of sample data
-        loadPetsFromDatabase();
-    }
-
-    async function loadPetsFromDatabase() {
-        try {
-            const response = await fetch('/adoption/api/pets/locations/', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken()
-                },
-            });
+        
+        if (response.ok) {
+            allPets = await response.json();
+            console.log(`Loaded ${allPets.length} pets from database`);
+            showSearchStatus(`Loaded ${allPets.length} pets from database`, 'success');
+            displayAllPets();
             
-            if (response.ok) {
-                allPets = await response.json();
-                displayAllPets();
-            } else {
-                console.error('Failed to load pets from database');
-                // Fallback to sample data for development
-                loadSampleData();
-            }
-        } catch (error) {
-            console.error('Error loading pets:', error);
-            // Fallback to sample data for development
+            // Hide status message after 3 seconds
+            setTimeout(() => {
+                hideSearchStatus();
+            }, 3000);
+        } else {
+            console.error('Failed to load pets from database');
+            showSearchStatus('Failed to load pets from database', 'error');
             loadSampleData();
         }
+    } catch (error) {
+        console.error('Error loading pets:', error);
+        showSearchStatus('Error loading pets from database', 'error');
+        loadSampleData();
+    }
+}
+
+function setSearchLocation(lat, lng) {
+    // Remove previous location marker and radius
+    if (currentLocationMarker) {
+        map.removeLayer(currentLocationMarker);
+    }
+    if (radiusCircle) {
+        map.removeLayer(radiusCircle);
     }
 
-    function setSearchLocation(lat, lng) {
-        // Remove previous location marker and radius
-        if (currentLocationMarker) {
-            map.removeLayer(currentLocationMarker);
-        }
-        if (radiusCircle) {
-            map.removeLayer(radiusCircle);
-        }
+    // Add new location marker
+    currentLocationMarker = L.marker([lat, lng], {
+        icon: L.divIcon({
+            className: 'search-location-marker',
+            html: '<div style="background-color: #e74c3c; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>',
+            iconSize: [26, 26],
+            iconAnchor: [13, 13]
+        })
+    }).addTo(map);
 
-        // Add new location marker
-        currentLocationMarker = L.marker([lat, lng], {
-            icon: L.divIcon({
-                className: 'search-location-marker',
-                html: '<div style="background-color: #e74c3c; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>',
-                iconSize: [26, 26],
-                iconAnchor: [13, 13]
-            })
-        }).addTo(map);
+    // Add radius circle
+    const radius = parseFloat(document.getElementById('radius').value) * 1000; // Convert km to meters
+    radiusCircle = L.circle([lat, lng], {
+        radius: radius,
+        fillColor: '#34495e',
+        fillOpacity: 0.1,
+        color: '#34495e',
+        weight: 2,
+        opacity: 0.5
+    }).addTo(map);
 
-        // Add radius circle
-        const radius = parseFloat(document.getElementById('radius').value) * 1000; // Convert km to meters
-        radiusCircle = L.circle([lat, lng], {
-            radius: radius,
-            fillColor: '#34495e',
-            fillOpacity: 0.1,
-            color: '#34495e',
-            weight: 2,
-            opacity: 0.5
-        }).addTo(map);
+    // Store current search location
+    window.currentSearchLocation = { lat, lng };
+}
 
-        // Store current search location
-        window.currentSearchLocation = { lat, lng };
-    }
-
-    function reverseGeocode(lat, lng) {
-        // Simple reverse geocoding using Nominatim
-        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.display_name) {
-                    document.getElementById('location').value = data.display_name;
-                }
-            })
-            .catch(error => {
-                console.log('Reverse geocoding failed:', error);
-            });
-    }
-
-    function displayAllPets() {
-        clearPetMarkers();
-        
-        allPets.forEach(pet => {
-            addPetMarker(pet);
-        });
-    }
-
-    function addPetMarker(pet) {
-        const marker = L.marker([pet.lat, pet.lng], {
-            icon: L.divIcon({
-                className: 'pet-marker',
-                html: `<div style="background-color: ${petColors[pet.type] || petColors.other}; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px;">${pet.type === 'dog' ? '🐕' : pet.type === 'cat' ? '🐱' : pet.type === 'bird' ? '🐦' : pet.type === 'rabbit' ? '🐰' : '🐾'}</div>`,
-                iconSize: [36, 36],
-                iconAnchor: [18, 18]
-            })
-        }).addTo(map);
-
-        // Add click event to marker to directly open modal
-        marker.on('click', function() {
-            showPetModal(pet.id);
-        });
-
-        petMarkers.push(marker);
-    }
-
-    function clearPetMarkers() {
-        petMarkers.forEach(marker => {
-            map.removeLayer(marker);
-        });
-        petMarkers = [];
-    }
-
-    function searchPets() {
-        const location = document.getElementById('location').value;
-        const radius = parseFloat(document.getElementById('radius').value);
-        const petType = document.getElementById('petType').value;
-
-        if (!window.currentSearchLocation && !location) {
-            alert('Please select a location on the map or enter an address');
-            return;
-        }
-
-        // If location text is provided but no coordinates, geocode it
-        if (location && !window.currentSearchLocation) {
-            geocodeLocation(location, radius, petType);
-            return;
-        }
-
-        // Filter pets based on proximity and type
-        filterAndDisplayPets(window.currentSearchLocation, radius, petType);
-    }
-
-    function geocodeLocation(address, radius, petType) {
-        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data && data.length > 0) {
-                    const lat = parseFloat(data[0].lat);
-                    const lng = parseFloat(data[0].lon);
-                    
-                    // Set map view and search location
-                    map.setView([lat, lng], 14);
-                    setSearchLocation(lat, lng);
-                    
-                    // Filter and display pets
-                    filterAndDisplayPets({ lat, lng }, radius, petType);
-                } else {
-                    alert('Location not found. Please try a different address or click on the map.');
-                }
-            })
-            .catch(error => {
-                console.error('Geocoding failed:', error);
-                alert('Failed to find location. Please try again.');
-            });
-    }
-
-    function filterAndDisplayPets(centerLocation, radiusKm, petType) {
-        clearPetMarkers();
-        
-        const filteredPets = allPets.filter(pet => {
-            // Filter by pet type
-            if (petType !== 'all' && pet.type !== petType) {
-                return false;
+function reverseGeocode(lat, lng) {
+    // Simple reverse geocoding using Nominatim
+    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.display_name) {
+                document.getElementById('location').value = data.display_name;
             }
-            
-            // Calculate distance
-            const distance = calculateDistance(
-                centerLocation.lat, centerLocation.lng,
-                pet.lat, pet.lng
-            );
-            
-            return distance <= radiusKm;
+        })
+        .catch(error => {
+            console.log('Reverse geocoding failed:', error);
         });
+}
 
-        // Display filtered pets
-        filteredPets.forEach(pet => {
-            addPetMarker(pet);
-        });
+function displayAllPets() {
+    clearPetMarkers();
+    
+    allPets.forEach(pet => {
+        addPetMarker(pet);
+    });
+    
+    console.log(`Displayed ${allPets.length} pets on map`);
+}
 
-        // Show results count
-        const resultText = filteredPets.length === 1 ? 'pet' : 'pets';
-        const typeText = petType === 'all' ? 'pets' : petType + 's';
-        alert(`Found ${filteredPets.length} ${typeText} within ${radiusKm}km radius`);
+function addPetMarker(pet) {
+    // Create emoji icon based on pet type
+    let iconEmoji = '';
+    switch(pet.type) {
+        case 'dog': iconEmoji = '🐕'; break;
+        case 'cat': iconEmoji = '🐱'; break;
+        case 'bird': iconEmoji = '🐦'; break;
+        case 'rabbit': iconEmoji = '🐰'; break;
+        default: iconEmoji = '🐾'; break;
     }
+    
+    const marker = L.marker([pet.lat, pet.lng], {
+        icon: L.divIcon({
+            className: 'pet-marker',
+            html: `<div style="background-color: ${petColors[pet.type] || petColors.other}; width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 16px;">${iconEmoji}</div>`,
+            iconSize: [36, 36],
+            iconAnchor: [18, 18]
+        })
+    }).addTo(map);
 
-    function showPetModal(petId) {
-        const pet = allPets.find(p => p.id === petId);
-        if (!pet) {
-            alert('Pet details not found');
-            return;
-        }
+    // Add click event to marker to directly open modal
+    marker.on('click', function() {
+        showPetModal(pet.id);
+    });
 
-        // Populate modal with pet data
-        document.getElementById('modalTitle').textContent = `${pet.name} - ${pet.type.charAt(0).toUpperCase() + pet.type.slice(1)}`;
-        document.getElementById('modalPetName').textContent = pet.name;
-        document.getElementById('modalPetImage').src = pet.image_url || '/static/images/default-pet.png';
-        document.getElementById('modalPetImage').alt = pet.name;
-        document.getElementById('modalPetTypeBadge').textContent = pet.type.charAt(0).toUpperCase() + pet.type.slice(1);
-        document.getElementById('modalPetBreed').textContent = pet.breed || 'Mixed';
-        document.getElementById('modalPetAge').textContent = pet.age || 'Unknown';
-        document.getElementById('modalPetGender').textContent = pet.gender || 'Unknown';
-        document.getElementById('modalPetColor').textContent = pet.color || 'Unknown';
-        document.getElementById('modalPetDescription').textContent = pet.description || 'No description available for this pet.';
-        document.getElementById('modalOwnerContact').textContent = pet.owner_contact || 'Not specified';
-        document.getElementById('modalOwnerEmail').textContent = pet.owner_email || 'Not specified';
-        document.getElementById('modalPetLocation').textContent = pet.location_name || 'Location not specified';
+    petMarkers.push(marker);
+}
 
-        // Store current pet data for contact function
-        window.currentModalPet = pet;
+function clearPetMarkers() {
+    petMarkers.forEach(marker => {
+        map.removeLayer(marker);
+    });
+    petMarkers = [];
+}
 
-        // Show modal with class toggle
-        const modal = document.getElementById('petModal');
-        modal.style.display = 'block';
-        modal.classList.add('show');
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling
-    }
+// FIXED: This is the main function that was causing the issue
+async function searchPets() {
+    const location = document.getElementById('location').value.trim();
+    const radius = parseFloat(document.getElementById('radius').value);
+    const petType = document.getElementById('petType').value;
 
-    function closePetModal() {
-        const modal = document.getElementById('petModal');
-        modal.classList.remove('show');
-        setTimeout(() => {
-            modal.style.display = 'none';
-        }, 300);
-        document.body.style.overflow = 'auto'; // Restore scrolling
-        window.currentModalPet = null;
-    }
+    console.log(`Searching for ${petType} pets in ${location} within ${radius}km`);
 
-    function contactOwner() {
-        const pet = window.currentModalPet;
-        if (!pet) return;
+    // Show loading state
+    const searchButton = document.querySelector('.btn-primary');
+    const originalText = searchButton.textContent;
+    searchButton.textContent = 'Searching...';
+    searchButton.disabled = true;
+    
+    showSearchStatus('Searching for pets...', 'info');
 
-        if (pet.owner_email) {
-            const subject = encodeURIComponent(`Interested in adopting ${pet.name}`);
-            const body = encodeURIComponent(`Hello,\n\nI am interested in adopting ${pet.name} (${pet.type}). Could you please provide more information about the adoption process?\n\nThank you!`);
-            window.open(`mailto:${pet.owner_email}?subject=${subject}&body=${body}`);
+    try {
+        // If location is provided, geocode it first
+        if (location) {
+            console.log(`Geocoding location: ${location}`);
+            showSearchStatus(`Finding location: ${location}...`, 'info');
+            const coordinates = await geocodeLocationAsync(location);
+            
+            if (coordinates) {
+                console.log(`Found coordinates: ${coordinates.lat}, ${coordinates.lng}`);
+                
+                // Move map to the new location
+                map.setView([coordinates.lat, coordinates.lng], 13);
+                setSearchLocation(coordinates.lat, coordinates.lng);
+                
+                // Search for pets in this area using the backend API
+                await searchPetsInArea(coordinates.lat, coordinates.lng, radius, petType);
+            } else {
+                showSearchStatus('Location not found. Please try a different address or click on the map.', 'error');
+            }
+        } else if (window.currentSearchLocation) {
+            // Use current map location
+            await searchPetsInArea(window.currentSearchLocation.lat, window.currentSearchLocation.lng, radius, petType);
         } else {
-            alert('Contact information not available for this pet. Please try contacting through the posted contact details.');
+            showSearchStatus('Please enter a location or click on the map to select a search area', 'error');
         }
+    } catch (error) {
+        console.error('Search error:', error);
+        showSearchStatus('Search failed. Please try again.', 'error');
+    } finally {
+        // Restore button state
+        searchButton.textContent = originalText;
+        searchButton.disabled = false;
     }
+}
 
-    // Close modal when clicking on modal background
-    window.onclick = function(event) {
-        const modal = document.getElementById('petModal');
-        if (event.target === modal) {
-            closePetModal();
-        }
-    }
-
-    // Close modal with Escape key
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            closePetModal();
-        }
-    });
-
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 6371; // Radius of the Earth in kilometers
-        const dLat = deg2rad(lat2 - lat1);
-        const dLon = deg2rad(lon2 - lon1);
-        const a = 
-            Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-            Math.sin(dLon/2) * Math.sin(dLon/2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        const distance = R * c; // Distance in kilometers
-        return distance;
-    }
-
-    function deg2rad(deg) {
-        return deg * (Math.PI/180);
-    }
-
-    // Initialize map when page loads
-    document.addEventListener('DOMContentLoaded', function() {
-        initMap();
-    });
-
-    // Handle enter key in location input
-    document.getElementById('location').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            searchPets();
-        }
-    });
-
-    // Handle radius change
-    document.getElementById('radius').addEventListener('change', function() {
-        if (window.currentSearchLocation) {
-            const radius = parseFloat(this.value) * 1000;
-            if (radiusCircle) {
-                radiusCircle.setRadius(radius);
+// NEW: Async geocoding function
+async function geocodeLocationAsync(address) {
+    try {
+        // Try to geocode with Philippines context
+        const searchQuery = address.includes('Philippines') ? address : `${address}, Philippines`;
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1&countrycodes=PH`;
+        
+        const response = await fetch(url, {
+            headers: {
+                'User-Agent': 'PetAdoptionMap/1.0'
             }
+        });
+        
+        const data = await response.json();
+        
+        if (data && data.length > 0) {
+            return {
+                lat: parseFloat(data[0].lat),
+                lng: parseFloat(data[0].lon)
+            };
         }
-    });
+        
+        // Try fallback coordinates
+        return getFallbackCoordinates(address);
+        
+    } catch (error) {
+        console.error('Geocoding error:', error);
+        return getFallbackCoordinates(address);
+    }
+}
 
-    // Sample data fallback function (for development)
-    function loadSampleData() {
-        allPets = [
-            {
-                id: 1,
-                name: "Buddy",
-                type: "dog",
-                breed: "Golden Retriever",
-                age: "2 years",
-                gender: "Male",
-                color: "Golden",
-                lat: 14.6760,
-                lng: 120.9450,
-                image_url: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400",
-                description: "Friendly and energetic dog looking for a loving home. Great with kids and other pets.",
-                location_name: "Olongapo City",
-                owner_contact: "Pet Shelter",
-                owner_email: "contact@petshelter.com"
+// NEW: Fallback coordinates for common Philippine locations
+function getFallbackCoordinates(locationName) {
+    const fallbackLocations = {
+        'olongapo': { lat: 14.8267, lng: 120.2823 },
+        'olongapo city': { lat: 14.8267, lng: 120.2823 },
+        'baguio': { lat: 16.4023, lng: 120.5960 },
+        'baguio city': { lat: 16.4023, lng: 120.5960 },
+        'manila': { lat: 14.5995, lng: 120.9842 },
+        'cebu': { lat: 10.3157, lng: 123.8854 },
+        'cebu city': { lat: 10.3157, lng: 123.8854 },
+        'davao': { lat: 7.1907, lng: 125.4553 },
+        'davao city': { lat: 7.1907, lng: 125.4553 },
+        'angeles': { lat: 15.1455, lng: 120.5931 },
+        'angeles city': { lat: 15.1455, lng: 120.5931 },
+        'tarlac': { lat: 15.4751, lng: 120.5969 },
+        'tarlac city': { lat: 15.4751, lng: 120.5969 },
+        'subic': { lat: 14.8833, lng: 120.2333 },
+        'subic bay': { lat: 14.8833, lng: 120.2333 },
+        'quezon city': { lat: 14.6760, lng: 121.0437 },
+        'makati': { lat: 14.5547, lng: 121.0244 },
+        'makati city': { lat: 14.5547, lng: 121.0244 },
+        'pasig': { lat: 14.5764, lng: 121.0851 },
+        'pasig city': { lat: 14.5764, lng: 121.0851 },
+        'iloilo': { lat: 10.7202, lng: 122.5621 },
+        'iloilo city': { lat: 10.7202, lng: 122.5621 },
+        'bacolod': { lat: 10.6760, lng: 122.9540 },
+        'bacolod city': { lat: 10.6760, lng: 122.9540 }
+    };
+    
+    const locationLower = locationName.toLowerCase().trim();
+    
+    // Exact match
+    if (fallbackLocations[locationLower]) {
+        console.log(`Using fallback coordinates for ${locationName}`);
+        return fallbackLocations[locationLower];
+    }
+    
+    // Partial match
+    for (const [key, coords] of Object.entries(fallbackLocations)) {
+        if (key.includes(locationLower) || locationLower.includes(key)) {
+            console.log(`Using fallback coordinates for ${locationName} (matched with ${key})`);
+            return coords;
+        }
+    }
+    
+    console.log(`No coordinates found for ${locationName}`);
+    return null;
+}
+
+// NEW: Search pets in specific area using backend API
+async function searchPetsInArea(lat, lng, radius, petType) {
+    try {
+        console.log(`Searching pets at ${lat}, ${lng} within ${radius}km for type: ${petType}`);
+        showSearchStatus(`Searching for pets in this area...`, 'info');
+        
+        const response = await fetch('/adoption/api/search/location/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
             },
-            {
-                id: 2,
-                name: "Whiskers",
-                type: "cat",
-                breed: "Persian",
-                age: "1 year",
-                gender: "Female",
-                color: "White",
-                lat: 14.6800,
-                lng: 120.9500,
-                image_url: "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400",
-                description: "Calm and affectionate cat. Perfect for apartment living.",
-                location_name: "Subic Bay",
-                owner_contact: "Maria Santos",
-                owner_email: "maria@email.com"
-            }
-        ];
-        displayAllPets();
+            body: JSON.stringify({
+                lat: lat,
+                lng: lng,
+                radius: radius,
+                pet_type: petType
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        
+        console.log(`Found ${data.pets.length} pets in search area`);
+        
+        // Clear existing markers and show only search results
+        clearPetMarkers();
+        
+        // Add markers for found pets
+        data.pets.forEach(pet => {
+            addPetMarker(pet);
+        });
+        
+        // Show results message
+        const petTypeText = petType === 'all' ? 'pets' : `${petType}s`;
+        const message = `Found ${data.pets.length} ${petTypeText} within ${radius}km`;
+        
+        showSearchStatus(message, 'success');
+        
+        // Hide status message after 5 seconds
+        setTimeout(() => {
+            hideSearchStatus();
+        }, 5000);
+        
+    } catch (error) {
+        console.error('Error searching pets in area:', error);
+        showSearchStatus('Failed to search pets in this area. Please try again.', 'error');
     }
+}
+
+// NEW: Search status functions
+function showSearchStatus(message, type = 'info') {
+    const statusElement = document.getElementById('searchStatus');
+    statusElement.textContent = message;
+    statusElement.className = `search-status show ${type}`;
+}
+
+function hideSearchStatus() {
+    const statusElement = document.getElementById('searchStatus');
+    statusElement.classList.remove('show');
+}
+
+function showPetModal(petId) {
+    const pet = allPets.find(p => p.id === petId);
+    if (!pet) {
+        showSearchStatus('Pet details not found', 'error');
+        return;
+    }
+
+    // Populate modal with pet data
+    document.getElementById('modalTitle').textContent = `${pet.name} - ${pet.type.charAt(0).toUpperCase() + pet.type.slice(1)}`;
+    document.getElementById('modalPetName').textContent = pet.name;
+    document.getElementById('modalPetImage').src = pet.image_url || '/static/images/default-pet.png';
+    document.getElementById('modalPetImage').alt = pet.name;
+    document.getElementById('modalPetTypeBadge').textContent = pet.type.charAt(0).toUpperCase() + pet.type.slice(1);
+    document.getElementById('modalPetBreed').textContent = pet.breed || 'Mixed';
+    document.getElementById('modalPetAge').textContent = pet.age || 'Unknown';
+    document.getElementById('modalPetGender').textContent = pet.gender || 'Unknown';
+    document.getElementById('modalPetColor').textContent = pet.color || 'Unknown';
+    document.getElementById('modalPetDescription').textContent = pet.description || 'No description available for this pet.';
+    document.getElementById('modalOwnerContact').textContent = pet.owner_contact || 'Not specified';
+    document.getElementById('modalOwnerEmail').textContent = pet.owner_email || 'Not specified';
+    document.getElementById('modalPetLocation').textContent = pet.location_name || 'Location not specified';
+
+    // Store current pet data for contact function
+    window.currentModalPet = pet;
+
+    // Show modal with class toggle
+    const modal = document.getElementById('petModal');
+    modal.style.display = 'block';
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+function closePetModal() {
+    const modal = document.getElementById('petModal');
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+    document.body.style.overflow = 'auto'; // Restore scrolling
+    window.currentModalPet = null;
+}
+
+function contactOwner() {
+    const pet = window.currentModalPet;
+    if (!pet) return;
+
+    if (pet.owner_email && pet.owner_email !== 'Not specified') {
+        const subject = encodeURIComponent(`Interested in adopting ${pet.name}`);
+        const body = encodeURIComponent(`Hello,\n\nI am interested in adopting ${pet.name} (${pet.type}). Could you please provide more information about the adoption process?\n\nThank you!`);
+        window.open(`mailto:${pet.owner_email}?subject=${subject}&body=${body}`);
+    } else {
+        showSearchStatus('Contact information not available for this pet. Please try contacting through other posted details.', 'error');
+    }
+}
+
+// Close modal when clicking on modal background
+window.onclick = function(event) {
+    const modal = document.getElementById('petModal');
+    if (event.target === modal) {
+        closePetModal();
+    }
+}
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closePetModal();
+    }
+});
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radius of the Earth in kilometers
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const distance = R * c; // Distance in kilometers
+    return distance;
+}
+
+function deg2rad(deg) {
+    return deg * (Math.PI/180);
+}
+
+// Initialize map when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initMap();
+});
+
+// Handle enter key in location input
+document.getElementById('location').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        searchPets();
+    }
+});
+
+// Handle radius change
+document.getElementById('radius').addEventListener('change', function() {
+    if (window.currentSearchLocation) {
+        const radius = parseFloat(this.value) * 1000;
+        if (radiusCircle) {
+            radiusCircle.setRadius(radius);
+        }
+    }
+});
+
+// Sample data fallback function (for development)
+function loadSampleData() {
+    allPets = [
+        {
+            id: 1,
+            name: "Buddy",
+            type: "dog",
+            breed: "Golden Retriever",
+            age: "2 years",
+            gender: "Male",
+            color: "Golden",
+            lat: 14.8267,
+            lng: 120.2823,
+            image_url: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400",
+            description: "Friendly and energetic dog looking for a loving home. Great with kids and other pets.",
+            location_name: "Olongapo City",
+            owner_contact: "Pet Shelter",
+            owner_email: "contact@petshelter.com"
+        },
+        {
+            id: 2,
+            name: "Whiskers",
+            type: "cat",
+            breed: "Persian",
+            age: "1 year",
+            gender: "Female",
+            color: "White",
+            lat: 16.4023,
+            lng: 120.5960,
+            image_url: "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=400",
+            description: "Calm and affectionate cat. Perfect for apartment living.",
+            location_name: "Baguio City",
+            owner_contact: "Maria Santos",
+            owner_email: "maria@email.com"
+        },
+        {
+            id: 3,
+            name: "Charlie",
+            type: "dog",
+            breed: "Labrador",
+            age: "3 years",
+            gender: "Male",
+            color: "Brown",
+            lat: 14.5995,
+            lng: 120.9842,
+            image_url: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400",
+            description: "Loyal and well-trained dog. Great for families.",
+            location_name: "Manila",
+            owner_contact: "John Doe",
+            owner_email: "john@email.com"
+        }
+    ];
+    displayAllPets();
+    showSearchStatus('Loaded sample data for testing', 'info');
+    
+    setTimeout(() => {
+        hideSearchStatus();
+    }, 3000);
+}
+
+// Make search function globally available for testing
+window.searchPetsByLocation = searchPets;
+
+console.log('Pet map JavaScript loaded successfully');
 </script>
 
 {% endblock %}

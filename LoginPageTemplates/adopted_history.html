@@ -1,83 +1,732 @@
 {% extends 'base4.html' %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="mb-0">Adoption History</h1>
-        <div class="d-flex">
-            <input type="text" class="form-control me-2" placeholder="Search adoptions..." style="max-width: 250px;">
-            <button class="btn btn-outline-secondary">
-                <i class="bi bi-funnel"></i> Filter
-            </button>
-        </div>
+<div class="adoption-history-page">
+    <!-- Floating background elements -->
+    <div class="floating-bg">
+        <div class="float-item heart-1">💕</div>
+        <div class="float-item heart-2">💖</div>
+        <div class="float-item paw-1">🐾</div>
+        <div class="float-item paw-2">🐾</div>
+        <div class="float-item home-1">🏠</div>
+        <div class="float-item star-1">⭐</div>
     </div>
 
-    {% if adopted_pets %}
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        {% for adoption in adopted_pets %}
-        <div class="col">
-            <div class="card h-100 shadow-sm border-0">
-                <div class="position-relative">
-                    <img src="{{ adoption.img.url }}" class="card-img-top" alt="{{ adoption.name }}" style="height: 180px; object-fit: cover;">
-                    <span class="position-absolute top-0 end-0 bg-{% if adoption.adoption_status == 'Approved' %}success{% else %}warning{% endif %} text-white px-2 py-1 m-2 rounded-pill small">
-                        {{ adoption.adoption_status }}
-                    </span>
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">{{ adoption.name }}</h5>
-                    <div class="d-flex flex-wrap gap-1 mb-3">
-                        <span class="badge bg-light text-dark">{{ adoption.animal_type }}</span>
-                        <span class="badge bg-light text-dark">{{ adoption.breed }}</span>
-                        <span class="badge bg-light text-dark">{{ adoption.age }} years</span>
-                    </div>
-                    
-                    {% for approved_adoption in approved_adoptions %}
-                        {% if approved_adoption.pet_id == adoption.id %}
-                        <div class="alert alert-success p-2 mb-3">
-                            <i class="bi bi-calendar-check me-2"></i>
-                            <small>Approved on {{ approved_adoption.approval_date_time|date:"M d, Y" }}</small>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="page-header">
+            <div class="header-left">
+                <h1>Adoption History</h1>
+                <p class="subtitle">Celebrating all the pets who found their forever homes! </p>
+            </div>
+            
+         
+        </div>
+
+        {% if adopted_pets %}
+        <!-- Pet Cards Grid -->
+        <div class="pets-grid">
+            {% for adoption in adopted_pets %}
+            <div class="pet-card">
+                <div class="card-inner">
+                    <!-- Pet Photo -->
+                    <div class="pet-photo-section">
+                        <div class="photo-frame">
+                            <img src="{{ adoption.img.url }}" alt="{{ adoption.name }}" class="pet-photo" />
+                            <div class="photo-overlay">
+                                <div class="status-badge status-{{ adoption.adoption_status|lower }}">
+                                    {% if adoption.adoption_status == 'Approved' %}
+                                        <span class="status-icon"></span>
+                                        <span class="status-text">{{ adoption.adoption_status }}</span>
+                                    {% else %}
+                                        <span class="status-icon"></span>
+                                        <span class="status-text">{{ adoption.adoption_status }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
-                        {% endif %}
-                    {% endfor %}
+                    </div>
+
+                    <!-- Pet Info -->
+                    <div class="pet-info-section">
+                        <div class="pet-name">{{ adoption.name }}</div>
+                        
+                        <div class="pet-tags">
+                            <span class="tag animal-tag">🐕 {{ adoption.animal_type }}</span>
+                            <span class="tag breed-tag">🧬 {{ adoption.breed }}</span>
+                            <span class="tag age-tag">🎂 {{ adoption.age }} years</span>
+                        </div>
+
+                        {% for approved_adoption in approved_adoptions %}
+                            {% if approved_adoption.pet_id == adoption.id %}
+                            <div class="adoption-success">
+                                <div class="success-content">
+                                    <span class="success-icon"></span>
+                                    <div class="success-text">
+                                        <span class="success-label">Found their home!</span>
+                                        <span class="success-date">{{ approved_adoption.approval_date_time|date:"M d, Y" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+
+                        <div class="card-action">
+                            <a href="{% url 'admin_adoption_detail_history' adoption.id %}" class="view-details-btn">
+                                <span class="btn-icon"></span>
+                                <span class="btn-text">View Their Story</span>
+                                <span class="btn-sparkle"></span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-footer bg-white border-0">
-                    <a href="{% url 'admin_adoption_detail_history' adoption.id %}" class="btn btn-outline-primary w-100">
-                        <i class="bi bi-eye me-2"></i>View Details
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-content">
+                <div class="empty-illustration">
+                    <span class="empty-icon">📚</span>
+                    <div class="empty-decoration">
+                        <span class="deco-heart">💕</span>
+                        <span class="deco-paw">🐾</span>
+                        <span class="deco-star">⭐</span>
+                    </div>
+                </div>
+                <h3 class="empty-title">The Story Book is Empty!</h3>
+                <p class="empty-description">No happy endings to share yet, but we're sure there will be many beautiful stories to come! 🌈</p>
+                <div class="empty-action">
+                    <a href="#" class="add-pet-btn">
+                        <span class="btn-icon">➕</span>
+                        <span class="btn-text">Add First Pet</span>
                     </a>
                 </div>
             </div>
         </div>
-        {% endfor %}
+        {% endif %}
+
+        <!-- Fun Footer -->
+       
     </div>
-    {% else %}
-    <div class="text-center py-5">
-        <div class="card border-0 bg-light">
-            <div class="card-body py-5">
-                <i class="bi bi-archive text-muted" style="font-size: 3rem;"></i>
-                <h4 class="mt-3">No adoption history found</h4>
-                <p class="text-muted">There are no completed adoptions in your records yet.</p>
-            </div>
-        </div>
-    </div>
-    {% endif %}
 </div>
 
 <style>
-    .card {
-        transition: transform 0.2s, box-shadow 0.2s;
-        border-radius: 10px;
-        overflow: hidden;
+    @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+    .adoption-history-page {
+        font-family: 'Quicksand', sans-serif;
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        min-height: 100vh;
+        position: relative;
+        padding: 0;
     }
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+
+    /* Floating Background */
+    .floating-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
     }
-    .badge {
+
+    .float-item {
+        position: absolute;
+        font-size: 24px;
+        opacity: 0.1;
+        animation: gentle-float 12s ease-in-out infinite;
+    }
+
+    .heart-1 { top: 15%; left: 10%; animation-delay: 0s; }
+    .heart-2 { top: 70%; right: 15%; animation-delay: 4s; }
+    .paw-1 { top: 35%; left: 5%; animation-delay: 1s; }
+    .paw-2 { top: 80%; right: 8%; animation-delay: 5s; }
+    .home-1 { top: 50%; right: 12%; animation-delay: 2s; }
+    .star-1 { top: 25%; right: 20%; animation-delay: 3s; }
+
+    @keyframes gentle-float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.1; }
+        50% { transform: translateY(-25px) rotate(5deg); opacity: 0.2; }
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Page Header */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 50px;
+        flex-wrap: wrap;
+        gap: 30px;
+    }
+
+    .header-left h1 {
+        font-size: 42px;
+        font-weight: 700;
+        color: #2d3748;
+        margin: 0 0 10px 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        animation: bounce-in 1s ease-out;
+    }
+
+    .subtitle {
+        font-size: 18px;
+        color: #4a5568;
+        margin: 0;
         font-weight: 500;
     }
-    .alert-success {
-        background-color: #e8f5e9;
-        border-color: #c8e6c9;
+
+    @keyframes bounce-in {
+        0% { transform: scale(0.3); opacity: 0; }
+        50% { transform: scale(1.05); }
+        70% { transform: scale(0.9); }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: white;
+        border-radius: 25px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        border: 3px solid #ff8a80;
+        overflow: hidden;
+    }
+
+    .search-input {
+        border: none;
+        outline: none;
+        padding: 12px 20px;
+        font-size: 16px;
+        width: 250px;
+        background: transparent;
+        color: #2d3748;
+        font-family: 'Quicksand', sans-serif;
+    }
+
+    .search-input::placeholder {
+        color: #a0aec0;
+        font-weight: 500;
+    }
+
+    .search-btn {
+        background: #ff8a80;
+        border: none;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .search-btn:hover {
+        background: #ff5722;
+        transform: scale(1.05);
+    }
+
+    .filter-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        background: white;
+        border: 3px solid #4ecdc4;
+        border-radius: 25px;
+        color: #2d3748;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    }
+
+    .filter-btn:hover {
+        background: #4ecdc4;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 30px rgba(78, 205, 196, 0.3);
+    }
+
+    .filter-icon {
+        font-size: 18px;
+    }
+
+    /* Pet Cards Grid */
+    .pets-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+
+    .pet-card {
+        background: white;
+        border-radius: 25px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        border: 3px solid #ffd54f;
+        animation: fade-in-up 0.6s ease-out;
+        position: relative;
+    }
+
+    .pet-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #ff8a80, #ffd54f, #4ecdc4);
+    }
+
+    .pet-card:hover {
+        transform: translateY(-10px) rotate(1deg);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+    }
+
+    @keyframes fade-in-up {
+        0% { transform: translateY(30px); opacity: 0; }
+        100% { transform: translateY(0); opacity: 1; }
+    }
+
+    .card-inner {
+        padding: 0;
+    }
+
+    /* Pet Photo Section */
+    .pet-photo-section {
+        position: relative;
+        height: 220px;
+        overflow: hidden;
+    }
+
+    .photo-frame {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .pet-photo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .pet-card:hover .pet-photo {
+        transform: scale(1.05);
+    }
+
+    .photo-overlay {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+    }
+
+    .status-badge {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 14px;
+        backdrop-filter: blur(10px);
+        border: 2px solid rgba(255,255,255,0.3);
+    }
+
+    .status-badge.status-approved {
+        background: rgba(76, 175, 80, 0.9);
+        color: white;
+    }
+
+    .status-badge.status-pending {
+        background: rgba(255, 193, 7, 0.9);
+        color: white;
+    }
+
+    .status-icon {
+        font-size: 16px;
+    }
+
+    /* Pet Info Section */
+    .pet-info-section {
+        padding: 25px;
+    }
+
+    .pet-name {
+        font-size: 24px;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .pet-tags {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+
+    .tag {
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 13px;
+        font-weight: 600;
+        border: 2px solid;
+    }
+
+    .animal-tag {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border-color: #81c784;
+    }
+
+    .breed-tag {
+        background: #f3e5f5;
+        color: #7b1fa2;
+        border-color: #ba68c8;
+    }
+
+    .age-tag {
+        background: #fff3e0;
+        color: #ef6c00;
+        border-color: #ffb74d;
+    }
+
+    /* Adoption Success */
+    .adoption-success {
+        background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+        border: 2px solid #81c784;
+        border-radius: 15px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .success-content {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .success-icon {
+        font-size: 24px;
+        animation: celebrate 2s ease-in-out infinite;
+    }
+
+    @keyframes celebrate {
+        0%, 100% { transform: scale(1) rotate(0deg); }
+        50% { transform: scale(1.1) rotate(5deg); }
+    }
+
+    .success-text {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .success-label {
+        font-weight: 600;
+        color: #2e7d32;
+        font-size: 14px;
+    }
+
+    .success-date {
+        font-size: 12px;
+        color: #4caf50;
+        font-weight: 500;
+    }
+
+    /* Card Action */
+    .card-action {
+        text-align: center;
+    }
+
+    .view-details-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 25px;
+        background: linear-gradient(135deg, #ff8a80, #ff5722);
+        color: white;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        border: none;
+        cursor: pointer;
+    }
+
+    .view-details-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .view-details-btn:hover::before {
+        left: 100%;
+    }
+
+    .view-details-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 87, 34, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-sparkle {
+        position: absolute;
+        top: 2px;
+        right: 8px;
+        font-size: 12px;
+        animation: sparkle 2s ease-in-out infinite;
+    }
+
+    @keyframes sparkle {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.6; transform: scale(1.3); }
+    }
+
+    /* Empty State */
+    .empty-state {
+        background: white;
+        border-radius: 30px;
+        padding: 60px 40px;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        border: 4px solid #ffd54f;
+        margin-bottom: 50px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .empty-state::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: linear-gradient(90deg, #ff8a80, #ffd54f, #4ecdc4);
+    }
+
+    .empty-illustration {
+        position: relative;
+        margin-bottom: 30px;
+    }
+
+    .empty-icon {
+        font-size: 80px;
+        animation: gentle-bounce 3s ease-in-out infinite;
+    }
+
+    @keyframes gentle-bounce {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .empty-decoration {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        height: 100px;
+        pointer-events: none;
+    }
+
+    .empty-decoration span {
+        position: absolute;
+        font-size: 20px;
+        animation: float-decoration 6s ease-in-out infinite;
+        opacity: 0.3;
+    }
+
+    .deco-heart { top: 10px; left: 20px; animation-delay: 0s; }
+    .deco-paw { top: 30px; right: 20px; animation-delay: 1s; }
+    .deco-star { bottom: 20px; left: 50%; animation-delay: 2s; }
+
+    @keyframes float-decoration {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+    }
+
+    .empty-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2d3748;
+        margin: 0 0 15px 0;
+    }
+
+    .empty-description {
+        font-size: 16px;
+        color: #4a5568;
+        margin: 0 0 30px 0;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.6;
+    }
+
+    .add-pet-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #4ecdc4, #44a08d);
+        color: white;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(78, 205, 196, 0.3);
+    }
+
+    .add-pet-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(78, 205, 196, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    /* Page Footer */
+    .page-footer {
+        background: rgba(255,255,255,0.9);
+        border-radius: 25px;
+        padding: 30px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+        border: 3px solid rgba(255,255,255,0.3);
+    }
+
+    .footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .footer-icon {
+        font-size: 32px;
+        animation: gentle-bounce 4s ease-in-out infinite;
+    }
+
+    .footer-content p {
+        margin: 0;
+        font-size: 18px;
+        color: #4a5568;
+        font-weight: 600;
+        max-width: 500px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px 15px;
+        }
+
+        .page-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .header-left h1 {
+            font-size: 32px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+        }
+
+        .header-actions {
+            justify-content: center;
+        }
+
+        .search-input {
+            width: 200px;
+        }
+
+        .pets-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .empty-state {
+            padding: 40px 20px;
+        }
+
+        .empty-icon {
+            font-size: 60px;
+        }
+
+        .footer-content {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .header-left h1 {
+            font-size: 28px;
+        }
+
+        .search-box {
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+        }
+
+        .filter-btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .pet-info-section {
+            padding: 20px;
+        }
+
+        .pet-name {
+            font-size: 20px;
+        }
+
+        .footer-content p {
+            font-size: 16px;
+        }
     }
 </style>
 {% endblock %}

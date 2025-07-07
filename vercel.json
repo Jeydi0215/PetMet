@@ -1,11 +1,14 @@
 {
   "builds": [
     {
+      "src": "vercel-build.sh",
+      "use": "@vercel/static"
+    },
+    {
       "src": "PetMet/wsgi.py",
       "use": "@vercel/python",
       "config": {
-        "maxLambdaSize": "15mb",
-        "installCommand": "pip install --upgrade pip && pip install -r requirements.txt"
+        "maxLambdaSize": "15mb"
       }
     }
   ],

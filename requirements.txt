@@ -12,3 +12,4 @@ whitenoise[brotli]
 gunicorn
 django-cors-headers
 Pillow
+gunicorn

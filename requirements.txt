@@ -1,13 +1,7 @@
 django>=3.2,<5
 djangorestframework
 djangorestframework-simplejwt
-geopy
-pytz
-psycopg2-binary
 dj-database-url
-whitenoise[brotli]
-gunicorn
 django-cors-headers
 Pillow
 mysqlclient
-bs4

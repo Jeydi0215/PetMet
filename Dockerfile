@@ -1,36 +1,35 @@
-# Use a specific, stable Python version
+# Use Python 3.12.3 base image
 FROM python:3.12.3-slim
 
-# Show Python version for verification
+# Print Python version to confirm it's correct
 RUN python --version
 
-# Set environment variables to prevent .pyc files and buffer logs
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Environment settings
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies required by Pillow, psycopg2, and build tools
+# Install system-level dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
+    g++ \
+    build-essential \
     libpq-dev \
     libjpeg-dev \
     zlib1g-dev \
     curl \
     && apt-get clean
 
-# Copy and show requirements.txt (for debugging)
+# Copy and print requirements for debug
 COPY requirements.txt .
 RUN cat requirements.txt
 
-# Upgrade pip + install core build tools
+# Upgrade pip and core build tools
 RUN pip install --upgrade pip setuptools wheel
 
-# Install dependencies one-by-one to isolate failures
-# Comment this line if you want to switch to full batch install
-# RUN pip install -r requirements.txt
-
+# Install Python dependencies one by one to isolate issues
 RUN pip install django
 RUN pip install djangorestframework
 RUN pip install djangorestframework-simplejwt
@@ -46,12 +45,12 @@ RUN pip install gunicorn
 RUN pip install django-cors-headers
 RUN pip install Pillow
 
-# Copy the rest of your project files
+# Copy project files
 COPY . .
 
-# Run collectstatic and migrations (won't fail the build if settings aren't ready yet)
+# Collect static files and run migrations
 RUN python manage.py collectstatic --noinput || true
 RUN python manage.py migrate || true
 
-# Run Gunicorn on the correct port
+# Run Gunicorn
 CMD gunicorn PetMet.wsgi:application --bind 0.0.0.0:$PORT

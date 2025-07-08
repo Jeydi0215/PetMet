@@ -15,4 +15,5 @@ Pillow
 mysqlclient
 setuptools==65.5.1
 wheel
-torch  # ✅ Added PyTorch (CPU-only)
+torch
+torchvision  # ✅ added

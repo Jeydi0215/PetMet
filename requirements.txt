@@ -13,5 +13,5 @@ gunicorn
 django-cors-headers
 Pillow
 gunicorn
-setuptools>=65
+setuptools==65.5.1
 wheel

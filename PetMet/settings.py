@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 import pytz
+import dj_database_url
 
 TIME_ZONE = 'Asia/Manila'
 USE_TZ = True
@@ -20,7 +21,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-ALLOWED_HOSTS = ['10.0.2.2', 'localhost', '127.0.0.1', '.vercel.app']
+ALLOWED_HOSTS = ['10.0.2.2', 'localhost', '127.0.0.1', '.onrender.com']
 
 
 
@@ -72,9 +73,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
 }
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',   
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -119,17 +120,7 @@ SESSION_COOKIE_HTTPONLY = True
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'db_petmet',
-        'USER': 'root',
-        'PASSWORD':'',
-        'HOST':'localhost',
-        'PORT':'3306',
-    }
-}
-
-
+    'default': dj_database_url.config( default='postgresql://postgres:postgres@localhost:5432/mysite',        conn_max_age=600    )}
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 

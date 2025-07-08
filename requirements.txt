@@ -13,3 +13,5 @@ gunicorn
 django-cors-headers
 Pillow
 gunicorn
+setuptools
+wheel

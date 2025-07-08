@@ -12,5 +12,6 @@ whitenoise[brotli]
 gunicorn
 django-cors-headers
 Pillow
+mysqlclient
 setuptools==65.5.1
 wheel

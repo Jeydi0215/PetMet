@@ -1,8 +1,6 @@
 django>=3.2,<5
 djangorestframework
 djangorestframework-simplejwt
-numpy==1.26.4
-spacy>=3.5,<4
 geopy
 pytz
 psycopg2-binary
@@ -10,5 +8,4 @@ dj-database-url
 whitenoise[brotli]
 gunicorn
 django-cors-headers
-Pillow
-mysqlclient
+
